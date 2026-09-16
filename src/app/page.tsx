@@ -7,33 +7,30 @@ import {
   Sparkles, 
   ArrowRight, 
   Truck, 
-  MessageCircle,
-  ChevronLeft,
-  ChevronRight,
-  ShieldCheck,
-  CreditCard,
-  Headphones,
-  Heart,
-  Droplet,
-  Diamond
+  ShieldCheck, 
+  CreditCard, 
+  Headphones, 
+  Heart, 
+  Droplet, 
+  Diamond 
 } from 'lucide-react';
+import { getCategories } from '@/services/categoriesService';
 import { getProducts } from '@/services/productsService';
-import { Product } from '@/types';
+import { getBrands, Brand } from '@/services/brandsService';
+import { Category, Product } from '@/types';
 import { getWhatsAppNumber, formatPrice } from '@/lib/whatsapp';
 
-const MAISONS_LOGOS = [
-  { name: 'DIOR', font: 'font-serif font-bold text-xl tracking-widest' },
-  { name: 'CHANEL', font: 'font-sans font-black text-xl tracking-widest' },
-  { name: 'YVES SAINT LAURENT', font: 'font-serif text-sm tracking-wider' },
-  { name: 'GUERLAIN', font: 'font-serif italic font-bold text-lg' },
-  { name: 'TOM FORD', font: 'font-sans font-bold text-lg tracking-wider' },
-  { name: 'paco rabanne', font: 'font-sans font-medium text-sm lowercase tracking-tight' },
-  { name: 'Jean Paul GAULTIER', font: 'font-serif font-bold text-sm tracking-tight' },
-  { name: 'Calvin Klein', font: 'font-sans text-base tracking-widest' }
-];
+const DEFAULT_UNIVERS_IMAGES: Record<string, string> = {
+  'huiles parfumées': 'https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=800&q=80',
+  'extraits de parfum': 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80',
+  'parfums authentiques': 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80',
+  'default': 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'
+};
 
 export default function HomePage() {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
 
   const whatsappNumber = getWhatsAppNumber();
@@ -42,10 +39,16 @@ export default function HomePage() {
     async function loadData() {
       try {
         setLoading(true);
-        const prods = await getProducts().catch(() => []);
-        setProducts(prods);
+        const [catsData, prodsData, brandsData] = await Promise.all([
+          getCategories().catch(() => []),
+          getProducts().catch(() => []),
+          getBrands().catch(() => [])
+        ]);
+        setCategories(catsData);
+        setProducts(prodsData);
+        setBrands(brandsData);
       } catch (err) {
-        console.error("Failed to load homepage products:", err);
+        console.error("Failed to load homepage data:", err);
       } finally {
         setLoading(false);
       }
@@ -53,22 +56,25 @@ export default function HomePage() {
     loadData();
   }, []);
 
+  // Best sellers filtered or top products
+  const bestSellers = products.filter(p => p.isBestSeller !== false).slice(0, 6);
+  const displayBestSellers = bestSellers.length > 0 ? bestSellers : products.slice(0, 6);
+
   return (
     <div className="space-y-16 sm:space-y-20 pb-20 bg-[#FAF9F6]">
       
-      {/* 1. HERO SECTION (1:1 MATCH EXEMPLE.JPG) */}
+      {/* 1. HERO SECTION (RELIABLE HIGH RES IMAGE FIX) */}
       <section className="relative pt-36 pb-20 sm:pt-40 sm:pb-28 bg-[#181514] text-white overflow-hidden min-h-[550px] flex items-center">
-        {/* Background Image Overlay */}
         <div className="absolute inset-0 z-0 opacity-40">
           <Image
-            src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1600&q=80"
+            src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=1600&q=80"
             alt="Perfume Luxury Background"
             fill
             className="object-cover object-center"
             priority
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#181514] via-[#181514]/80 to-transparent z-0" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#181514] via-[#181514]/85 to-transparent z-0" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -113,7 +119,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Side Bottle Display & Script Text */}
+            {/* Right Side Bottle Display */}
             <div className="lg:col-span-5 relative hidden lg:flex justify-center items-center">
               <div className="relative w-80 h-96">
                 <div className="absolute -top-6 -left-6 z-20 text-right">
@@ -122,8 +128,8 @@ export default function HomePage() {
                   </p>
                 </div>
                 <Image
-                  src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"
-                  alt="Coco Mademoiselle Chanel"
+                  src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"
+                  alt="Chanel Perfume Bottle"
                   fill
                   className="object-contain drop-shadow-2xl"
                 />
@@ -153,18 +159,17 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          {/* CARD 1: HUILES PARFUMÉES */}
+          {/* UNIVERS 1: HUILES PARFUMÉES */}
           <div className="bg-white rounded-lg overflow-hidden border border-stone-200/80 shadow-xs flex flex-col justify-between group hover:border-[#9B7B56] transition-all">
             <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=800&q=80"
+                src={categories.find(c => c.name.toLowerCase().includes('huile'))?.imageUrl || DEFAULT_UNIVERS_IMAGES['huiles parfumées']}
                 alt="Huiles Parfumées"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
             
-            {/* Lower Pink Container with Icon Badge */}
             <div className="relative bg-[#F5ECEB] p-8 text-center space-y-4 pt-10">
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white border border-[#9B7B56]/30 flex items-center justify-center text-[#9B7B56] shadow-xs">
                 <Droplet className="w-5 h-5" />
@@ -178,7 +183,7 @@ export default function HomePage() {
               </p>
               <div className="pt-2">
                 <Link
-                  href="/catalogue/huiles-parfumees"
+                  href="/catalogue"
                   className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-xs transition-colors"
                 >
                   <span>DÉCOUVRIR</span>
@@ -188,18 +193,17 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* CARD 2: EXTRAITS DE PARFUM */}
+          {/* UNIVERS 2: EXTRAITS DE PARFUM */}
           <div className="bg-white rounded-lg overflow-hidden border border-stone-200/80 shadow-xs flex flex-col justify-between group hover:border-[#9B7B56] transition-all">
             <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"
+                src={categories.find(c => c.name.toLowerCase().includes('extrait'))?.imageUrl || DEFAULT_UNIVERS_IMAGES['extraits de parfum']}
                 alt="Extraits de Parfum"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
 
-            {/* Lower Pink Container with Icon Badge */}
             <div className="relative bg-[#F5ECEB] p-8 text-center space-y-4 pt-10">
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white border border-[#9B7B56]/30 flex items-center justify-center text-[#9B7B56] shadow-xs">
                 <Sparkles className="w-5 h-5" />
@@ -213,7 +217,7 @@ export default function HomePage() {
               </p>
               <div className="pt-2">
                 <Link
-                  href="/catalogue/extraits-de-parfum"
+                  href="/catalogue"
                   className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-xs transition-colors"
                 >
                   <span>DÉCOUVRIR</span>
@@ -223,18 +227,17 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* CARD 3: PARFUMS AUTHENTIQUES */}
+          {/* UNIVERS 3: PARFUMS AUTHENTIQUES */}
           <div className="bg-white rounded-lg overflow-hidden border border-stone-200/80 shadow-xs flex flex-col justify-between group hover:border-[#9B7B56] transition-all">
             <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"
+                src={categories.find(c => c.name.toLowerCase().includes('authentique'))?.imageUrl || DEFAULT_UNIVERS_IMAGES['parfums authentiques']}
                 alt="Parfums Authentiques"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
 
-            {/* Lower Pink Container with Icon Badge */}
             <div className="relative bg-[#F5ECEB] p-8 text-center space-y-4 pt-10">
               <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white border border-[#9B7B56]/30 flex items-center justify-center text-[#9B7B56] shadow-xs">
                 <Diamond className="w-5 h-5" />
@@ -248,7 +251,7 @@ export default function HomePage() {
               </p>
               <div className="pt-2">
                 <Link
-                  href="/catalogue/parfums-authentiques"
+                  href="/catalogue"
                   className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-xs transition-colors"
                 >
                   <span>DÉCOUVRIR</span>
@@ -261,7 +264,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. NOS MAISONS DE PARFUM (1:1 MATCH EXEMPLE.JPG) */}
+      {/* 3. NOS MAISONS DE PARFUM (DYNAMIC BRANDS FROM FIRESTORE) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         
         <div className="flex justify-between items-end border-b border-stone-200/80 pb-4">
@@ -282,17 +285,22 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Carousel Row with Logos */}
+        {/* Carousel Row with Dynamic Brands */}
         <div className="relative">
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-            {MAISONS_LOGOS.map((brand) => (
+            {brands.map((brand) => (
               <div
-                key={brand.name}
-                className="p-5 bg-white border border-stone-200/80 rounded-sm text-center flex items-center justify-center min-h-[75px] shadow-2xs hover:border-[#9B7B56] transition-colors"
+                key={brand.id}
+                className="p-5 bg-white border border-stone-200/80 rounded-sm text-center flex flex-col items-center justify-center min-h-[75px] shadow-2xs hover:border-[#9B7B56] transition-colors"
               >
-                <span className={`text-stone-900 ${brand.font}`}>
+                <span className="font-serif font-bold text-stone-900 text-sm tracking-widest uppercase">
                   {brand.name}
                 </span>
+                {brand.subtitle && (
+                  <span className="text-[9px] text-stone-400 font-sans font-light truncate max-w-full">
+                    {brand.subtitle}
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -300,7 +308,7 @@ export default function HomePage() {
 
       </section>
 
-      {/* 4. NOS BEST-SELLERS (1:1 MATCH EXEMPLE.JPG) */}
+      {/* 4. NOS BEST-SELLERS (DYNAMIC BEST-SELLERS FROM FIRESTORE) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         <div>
@@ -314,7 +322,7 @@ export default function HomePage() {
 
         {/* 6 Product Cards Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-          {products.slice(0, 6).map((prod) => {
+          {displayBestSellers.map((prod) => {
             const firstFmt = prod.formats?.[0] || { sizeMl: 5, price: 15000 };
             const displayPrice = firstFmt.price;
 
@@ -369,7 +377,7 @@ export default function HomePage() {
 
       </section>
 
-      {/* 5. TRUST BADGES ROW (1:1 MATCH EXEMPLE.JPG) */}
+      {/* 5. TRUST BADGES ROW */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-white border border-stone-200/80 rounded-sm divide-y sm:divide-y-0 lg:divide-x divide-stone-200">
           
@@ -408,7 +416,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. BOTTOM DARK BANNER (1:1 MATCH EXEMPLE.JPG) */}
+      {/* 6. BOTTOM DARK BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-sm overflow-hidden bg-[#181514] text-white p-8 sm:p-14 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
           <div className="space-y-3 max-w-xl text-center md:text-left">
