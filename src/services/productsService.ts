@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Product, ProductFormat } from '@/types';
+import { getCategoryById } from './categoriesService';
 
 const PRODUCTS_COLLECTION = 'products';
 
@@ -46,16 +47,34 @@ export async function getProducts(): Promise<Product[]> {
   }
 }
 
-export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
+export async function getProductsByCategory(idOrSlug: string): Promise<Product[]> {
   try {
     const allProducts = await getProducts();
-    return allProducts.filter(p => 
-      p.categoryId === categoryId || 
-      (p.categoryIds && p.categoryIds.includes(categoryId))
-    );
+    const cat = await getCategoryById(idOrSlug);
+
+    const targetId = cat ? cat.id : idOrSlug;
+    const targetName = cat ? cat.name.toLowerCase() : idOrSlug.toLowerCase().replace(/-/g, ' ');
+
+    return allProducts.filter(p => {
+      // Check direct ID or categoryIds match
+      if (p.categoryId === targetId) return true;
+      if (p.categoryIds && p.categoryIds.includes(targetId)) return true;
+
+      // Check name / keyword match
+      const pCatName = (p.categoryName || '').toLowerCase();
+      const pCatNames = (p.categoryNames || []).map(n => n.toLowerCase());
+
+      const keywords = targetName.split(' ').filter(w => w.length > 3);
+      for (const kw of keywords) {
+        if (pCatName.includes(kw)) return true;
+        if (pCatNames.some(n => n.includes(kw))) return true;
+      }
+
+      return false;
+    });
   } catch (error) {
-    console.error(`Error fetching products for category ${categoryId}:`, error);
-    throw error;
+    console.error(`Error fetching products for category ${idOrSlug}:`, error);
+    return [];
   }
 }
 

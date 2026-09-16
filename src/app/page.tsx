@@ -183,7 +183,7 @@ export default function HomePage() {
               </p>
               <div className="pt-2">
                 <Link
-                  href="/catalogue"
+                  href={categories.find(c => c.name.toLowerCase().includes('huile')) ? `/catalogue/${categories.find(c => c.name.toLowerCase().includes('huile'))?.id}` : "/catalogue/huiles-parfumees"}
                   className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-xs transition-colors"
                 >
                   <span>DÉCOUVRIR</span>
@@ -217,7 +217,7 @@ export default function HomePage() {
               </p>
               <div className="pt-2">
                 <Link
-                  href="/catalogue"
+                  href={categories.find(c => c.name.toLowerCase().includes('extrait')) ? `/catalogue/${categories.find(c => c.name.toLowerCase().includes('extrait'))?.id}` : "/catalogue/extraits-de-parfum"}
                   className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-xs transition-colors"
                 >
                   <span>DÉCOUVRIR</span>
@@ -251,7 +251,7 @@ export default function HomePage() {
               </p>
               <div className="pt-2">
                 <Link
-                  href="/catalogue"
+                  href={categories.find(c => c.name.toLowerCase().includes('authentique')) ? `/catalogue/${categories.find(c => c.name.toLowerCase().includes('authentique'))?.id}` : "/catalogue/parfums-authentiques"}
                   className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-xs transition-colors"
                 >
                   <span>DÉCOUVRIR</span>
