@@ -4,26 +4,24 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { 
-  MessageCircle, 
-  Menu, 
-  Search, 
-  User, 
-  Heart, 
-  ShoppingBag, 
-  Truck,
-  Camera
-} from 'lucide-react';
+import { MessageCircle, Menu, X, ShoppingBag } from 'lucide-react';
 import { getWhatsAppNumber } from '@/lib/whatsapp';
 
 export const Navbar: React.FC = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
 
   const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY";
   const whatsappNumber = getWhatsAppNumber();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -31,10 +29,8 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { href: '/', label: 'Accueil' },
-    { href: '/catalogue', label: 'Huiles parfumées' },
-    { href: '/catalogue', label: 'Extraits de parfum' },
-    { href: '/catalogue', label: 'Parfums authentiques' },
-    { href: '/comment-commander', label: 'Coffrets' },
+    { href: '/catalogue', label: 'Nos Parfums' },
+    { href: '/comment-commander', label: 'Comment Commander' },
     { href: '/contact', label: 'Contact' },
   ];
 
@@ -44,175 +40,126 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-      
-      {/* 1. TOP ANNOUNCEMENT BAR (DUSTY ROSE / ROSE GOLD - EXACT FROM EXEMPLE.JPG) */}
-      <div className="bg-[#C39493] text-white text-[11px] py-1.5 px-4 sm:px-8 flex items-center justify-between font-sans">
-        <div className="flex items-center space-x-2">
-          <Truck className="w-3.5 h-3.5 flex-shrink-0" />
-          <span className="font-medium tracking-wide">
-            Livraison partout au Sénégal &nbsp;|&nbsp; Paiement à la livraison
-          </span>
-        </div>
-        <div className="hidden sm:flex items-center space-x-4">
-          <span className="font-serif italic text-xs tracking-wider opacity-90">
-            Your scent. Your signature.
-          </span>
-          <div className="flex items-center space-x-2 border-l border-white/30 pl-3">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" title="Instagram">
-              <Camera className="w-3.5 h-3.5" />
-            </a>
-            <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" title="WhatsApp">
-              <MessageCircle className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        </div>
+      {/* Top Banner Dusty Rose */}
+      <div className="bg-[#D8A7B1] text-white text-[11px] sm:text-xs tracking-widest uppercase font-medium py-1.5 px-4 text-center">
+        <span>✨ Livraison partout au Sénégal &bull; Paiement à la livraison</span>
       </div>
 
-      {/* 2. MAIN HEADER NAVBAR (DARK LUXURY - EXACT FROM EXEMPLE.JPG) */}
-      <div className="bg-[#181516] text-white border-b border-stone-800 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="grid grid-cols-12 items-center">
+      {/* Main Light Luxury Header */}
+      <nav
+        className={`transition-all duration-300 ${
+          isScrolled
+            ? 'bg-white/95 backdrop-blur-md border-b border-stone-200/80 shadow-xs py-3'
+            : 'bg-[#faf9f6]/95 backdrop-blur-sm py-4 border-b border-stone-200/50'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
             
-            {/* Left Icons: Hamburger & Search */}
-            <div className="col-span-3 flex items-center space-x-3">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-1.5 text-stone-300 hover:text-white transition-colors"
-                aria-label="Menu"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setSearchOpen(!searchOpen)}
-                className="p-1.5 text-stone-300 hover:text-white transition-colors hidden sm:block"
-                aria-label="Recherche"
-              >
-                <Search className="w-5 h-5" />
-              </button>
+            {/* LOGO & BRAND NAME */}
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D8A7B1]/40 bg-white flex-shrink-0 shadow-xs group-hover:border-[#B76E79] transition-colors">
+                <Image
+                  src="/logo.JPG"
+                  alt="SONIA’S PERFUMERY Logo"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <span className="text-base sm:text-lg font-serif font-bold tracking-wider text-stone-900 uppercase">
+                {siteName}
+              </span>
+            </Link>
+
+            {/* DESKTOP NAV LINKS */}
+            <div className="hidden md:flex items-center space-x-8">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-xs font-semibold tracking-widest uppercase transition-colors py-1 ${
+                      isActive
+                        ? 'text-[#B76E79] border-b-2 border-[#B76E79]'
+                        : 'text-stone-700 hover:text-[#B76E79]'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </div>
 
-            {/* Center Logo */}
-            <div className="col-span-6 flex justify-center">
-              <Link href="/" className="flex flex-col items-center group">
-                <div className="relative w-8 h-8 rounded-full overflow-hidden border border-amber-400/40 bg-white mb-0.5">
-                  <Image
-                    src="/logo.JPG"
-                    alt="SONIA’S PERFUMERY Logo"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-                <span className="text-base sm:text-xl font-serif font-bold tracking-[0.2em] text-amber-200 uppercase group-hover:text-amber-100 transition-colors text-center leading-tight">
-                  {siteName}
-                </span>
-              </Link>
-            </div>
-
-            {/* Right Icons: Account, Wishlist, WhatsApp / Bag */}
-            <div className="col-span-3 flex items-center justify-end space-x-3">
-              <Link
-                href="/login"
-                className="p-1.5 text-stone-300 hover:text-amber-200 transition-colors hidden sm:block"
-                title="Espace Admin"
-              >
-                <User className="w-5 h-5" />
-              </Link>
+            {/* DESKTOP CTA BUTTON */}
+            <div className="hidden md:flex items-center space-x-4">
               <Link
                 href="/catalogue"
-                className="p-1.5 text-stone-300 hover:text-amber-200 transition-colors hidden sm:block"
-                title="Mes favoris"
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-stone-300 text-stone-700 text-xs font-semibold uppercase tracking-wider hover:bg-stone-100 transition-colors"
               >
-                <Heart className="w-5 h-5" />
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>Catalogue</span>
               </Link>
               <a
-                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour, je souhaite passer une commande.')}`}
+                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour, je souhaite me renseigner sur vos parfums.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 text-emerald-400 hover:text-emerald-300 transition-colors flex items-center space-x-1"
-                title="WhatsApp Commander"
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-[#B76E79] hover:bg-[#a25a65] text-white font-semibold text-xs tracking-wider uppercase shadow-xs transition-colors"
               >
-                <ShoppingBag className="w-5 h-5" />
+                <MessageCircle className="w-3.5 h-3.5" />
+                <span>WhatsApp</span>
               </a>
             </div>
 
-          </div>
-
-          {/* SEARCH BAR INPUT (TOGGLE) */}
-          {searchOpen && (
-            <div className="mt-3 pt-2 border-t border-stone-800 flex justify-center animate-fadeIn">
-              <div className="relative w-full max-w-md">
-                <input
-                  type="text"
-                  placeholder="Rechercher une fragrance, marque ou huile..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 bg-stone-900 border border-stone-700 rounded-full text-xs text-white placeholder-stone-400 focus:outline-none focus:border-amber-400"
-                />
-                <Link
-                  href={searchQuery ? `/catalogue?search=${encodeURIComponent(searchQuery)}` : '/catalogue'}
-                  className="absolute right-3 top-2 text-stone-400 hover:text-white"
-                >
-                  <Search className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* DESKTOP NAVIGATION BAR (DIRECTLY BELOW LOGO) */}
-          <nav className="hidden md:flex justify-center items-center space-x-8 pt-3 pb-1 border-t border-stone-800/60 mt-3 text-xs tracking-wider uppercase">
-            {navLinks.map((link, idx) => {
-              const isActive = pathname === link.href && idx === 0;
-              return (
-                <Link
-                  key={idx}
-                  href={link.href}
-                  className={`transition-colors py-1 ${
-                    isActive
-                      ? 'text-amber-300 border-b-2 border-amber-400 font-bold'
-                      : 'text-stone-300 hover:text-amber-200 font-medium'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-        </div>
-      </div>
-
-      {/* MOBILE MENU OVERLAY */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-[#181516] text-white border-b border-stone-800 px-4 pt-3 pb-6 space-y-4 shadow-2xl animate-fadeIn">
-          <nav className="flex flex-col space-y-2">
-            {navLinks.map((link, idx) => (
-              <Link
-                key={idx}
-                href={link.href}
-                className="px-4 py-3 rounded-lg text-xs font-semibold tracking-wider uppercase text-stone-200 hover:bg-stone-900 hover:text-amber-300 transition-colors"
+            {/* MOBILE MENU TOGGLE */}
+            <div className="flex md:hidden items-center">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-lg text-stone-700 hover:bg-stone-100 transition-colors"
+                aria-label="Menu principal"
               >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="pt-2 border-t border-stone-800 flex justify-between items-center text-xs">
-            <a
-              href={`https://wa.me/${whatsappNumber}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-2 text-emerald-400 font-semibold"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>Assistance WhatsApp</span>
-            </a>
-            <Link href="/login" className="text-stone-400 hover:text-amber-300">
-              Connexion Admin
-            </Link>
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
-      )}
 
+        {/* MOBILE MENU OVERLAY */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-b border-stone-200 px-4 pt-3 pb-6 mt-3 space-y-4 shadow-lg">
+            <div className="flex flex-col space-y-2">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`px-4 py-3 rounded-lg text-xs font-semibold tracking-wider uppercase transition-colors ${
+                      isActive
+                        ? 'bg-[#FDF6F7] text-[#B76E79] font-bold border-l-4 border-[#B76E79]'
+                        : 'text-stone-700 hover:bg-stone-50'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="pt-2 border-t border-stone-100 flex flex-col space-y-2">
+              <a
+                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour, je souhaite me renseigner sur vos parfums.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center space-x-2 py-3 rounded-lg bg-[#B76E79] text-white font-semibold text-xs tracking-wider uppercase shadow-xs"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Commander sur WhatsApp</span>
+              </a>
+            </div>
+          </div>
+        )}
+      </nav>
     </header>
   );
 };
