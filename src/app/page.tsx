@@ -30,7 +30,6 @@ const DEFAULT_UNIVERS_IMAGES: Record<string, string> = {
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
 
   const whatsappNumber = getWhatsAppNumber();
@@ -39,14 +38,12 @@ export default function HomePage() {
     async function loadData() {
       try {
         setLoading(true);
-        const [catsData, prodsData, brandsData] = await Promise.all([
+        const [catsData, prodsData] = await Promise.all([
           getCategories().catch(() => []),
-          getProducts().catch(() => []),
-          getBrands().catch(() => [])
+          getProducts().catch(() => [])
         ]);
         setCategories(catsData);
         setProducts(prodsData);
-        setBrands(brandsData);
       } catch (err) {
         console.error("Failed to load homepage data:", err);
       } finally {
@@ -142,49 +139,7 @@ export default function HomePage() {
 
 
 
-      {/* 3. NOS MAISONS DE PARFUM (DYNAMIC BRANDS FROM FIRESTORE) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        
-        <div className="flex justify-between items-end border-b border-stone-200/80 pb-4">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 uppercase tracking-wider">
-              NOS MAISONS DE PARFUM
-            </h2>
-            <p className="text-xs text-stone-500 font-sans font-light mt-0.5">
-              Les plus grandes marques, réunies pour vous.
-            </p>
-          </div>
-          <Link
-            href="/catalogue"
-            className="text-xs font-serif font-bold text-stone-800 hover:text-[#9B7B56] uppercase tracking-wider flex items-center space-x-1"
-          >
-            <span>VOIR TOUTES</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
 
-        {/* Carousel Row with Dynamic Brands */}
-        <div className="relative">
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-            {brands.map((brand) => (
-              <div
-                key={brand.id}
-                className="p-5 bg-white border border-stone-200/80 rounded-sm text-center flex flex-col items-center justify-center min-h-[75px] shadow-2xs hover:border-[#9B7B56] transition-colors"
-              >
-                <span className="font-serif font-bold text-stone-900 text-sm tracking-widest uppercase">
-                  {brand.name}
-                </span>
-                {brand.subtitle && (
-                  <span className="text-[9px] text-stone-400 font-sans font-light truncate max-w-full">
-                    {brand.subtitle}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-      </section>
 
       {/* 4. NOS BEST-SELLERS (DYNAMIC BEST-SELLERS FROM FIRESTORE) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
