@@ -11,12 +11,9 @@ import {
   ShoppingBag, 
   LogOut, 
   Menu, 
-  X,
-  Database,
-  Loader2
+  X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { seedInitialData } from '@/services/seedService';
 
 export const AdminSidebar: React.FC = () => {
   const pathname = usePathname();
@@ -24,8 +21,6 @@ export const AdminSidebar: React.FC = () => {
   const { logout, user } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [seeding, setSeeding] = useState(false);
-  const [seedMessage, setSeedMessage] = useState<string | null>(null);
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -37,24 +32,6 @@ export const AdminSidebar: React.FC = () => {
   const handleLogout = async () => {
     await logout();
     router.push('/login');
-  };
-
-  const handleSeed = async () => {
-    if (!window.confirm('Voulez-vous générer les données de démonstration (Homme, Femme, Unisexe, Oriental, Sauvage, Bleu...)?')) {
-      return;
-    }
-    setSeeding(true);
-    setSeedMessage(null);
-    try {
-      await seedInitialData();
-      setSeedMessage('Données de démo créées avec succès ! Rechargez les pages.');
-      window.location.reload();
-    } catch (err: any) {
-      console.error('Seed error:', err);
-      setSeedMessage('Erreur lors de la génération : ' + err.message);
-    } finally {
-      setSeeding(false);
-    }
   };
 
   return (
@@ -152,25 +129,6 @@ export const AdminSidebar: React.FC = () => {
               <p className="text-[10px] uppercase text-stone-500 font-semibold">Connecté en tant que</p>
               <p className="text-xs text-stone-900 font-mono truncate">{user.email || 'Admin'}</p>
             </div>
-          )}
-
-          {/* SEED DATA BUTTON */}
-          <button
-            onClick={handleSeed}
-            disabled={seeding}
-            className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 text-xs font-medium transition-colors"
-            title="Injecter des catégories et parfums de test"
-          >
-            {seeding ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-800" />
-            ) : (
-              <Database className="w-3.5 h-3.5 text-amber-800" />
-            )}
-            <span>{seeding ? 'Génération...' : 'Injecter démo test'}</span>
-          </button>
-          
-          {seedMessage && (
-            <p className="text-[10px] text-amber-800 text-center leading-tight">{seedMessage}</p>
           )}
 
           {/* PUBLIC SITE LINK */}
