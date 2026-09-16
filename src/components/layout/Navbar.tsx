@@ -38,7 +38,10 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { href: '/', label: 'Accueil' },
-    { href: '/catalogue', label: 'Parfums' },
+    { href: '/catalogue/huiles-parfumees', label: 'Huiles parfumées' },
+    { href: '/catalogue/extraits-de-parfum', label: 'Extraits de parfum' },
+    { href: '/catalogue', label: 'Parfums authentiques' },
+    { href: '/catalogue/coffrets', label: 'Coffrets' },
     { href: '/contact', label: 'Contact' },
   ];
 
@@ -49,7 +52,7 @@ export const Navbar: React.FC = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
       
-      {/* 1. TOP DUSTY ROSE ANNOUNCEMENT BAR */}
+      {/* 1. TOP DUSTY ROSE ANNOUNCEMENT BAR (EXACT MATCH EXEMPLE1.JPEG) */}
       <div className="bg-[#C5928E] text-white py-1.5 px-4 sm:px-8 text-[11px] sm:text-xs flex justify-between items-center font-serif">
         <div className="flex items-center space-x-2">
           <Truck className="w-3.5 h-3.5" />
@@ -64,7 +67,7 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. MAIN LUXURY DARK NAVBAR */}
+      {/* 2. MAIN LUXURY DARK NAVBAR (EXACT MATCH EXEMPLE1.JPEG) */}
       <div className={`bg-[#141211] text-white transition-all duration-300 border-b border-stone-800 ${isScrolled ? 'py-2 shadow-xl' : 'py-4'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -87,7 +90,7 @@ export const Navbar: React.FC = () => {
               </button>
             </div>
 
-            {/* CENTER BRAND LOGO */}
+            {/* CENTER BRAND LOGO (SONIA'S PERFUMERY GOLD EMBLEM) */}
             <Link href="/" className="flex flex-col items-center group">
               <div className="flex items-center space-x-2">
                 <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37]/50 bg-white">
@@ -128,8 +131,8 @@ export const Navbar: React.FC = () => {
 
           </div>
 
-          {/* SECONDARY NAVIGATION BAR UNDER LOGO (ONLY ACCUEIL, PARFUMS, CONTACT) */}
-          <div className="hidden md:flex items-center justify-center space-x-12 pt-4 pb-1 border-t border-stone-800/60 mt-3 text-xs tracking-widest uppercase font-serif">
+          {/* SECONDARY NAVIGATION BAR UNDER LOGO */}
+          <div className="hidden md:flex items-center justify-center space-x-8 pt-4 pb-1 border-t border-stone-800/60 mt-3 text-xs tracking-widest uppercase font-serif">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
