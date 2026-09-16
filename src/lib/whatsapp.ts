@@ -5,7 +5,7 @@ export const formatPrice = (amount: number): string => {
 };
 
 export const getWhatsAppNumber = (): string => {
-  const rawNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '221770000000';
+  const rawNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '221768360829';
   return rawNumber.replace(/[^0-9]/g, '');
 };
 
