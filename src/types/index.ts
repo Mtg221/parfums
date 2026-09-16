@@ -19,7 +19,7 @@ export interface Product {
   name: string;
   brand?: string; // Maison de Parfum (e.g. Dior, Chanel, YSL)
   description: string;
-  categoryId: string; // Primary category for backwards compatibility
+  categoryId?: string; // Optional category ID
   categoryName?: string;
   categoryIds?: string[]; // Multiple categories / universes
   categoryNames?: string[];

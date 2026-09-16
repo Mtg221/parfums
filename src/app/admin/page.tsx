@@ -84,24 +84,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* METRICS CARDS GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        
-        {/* CATEGORIES CARD */}
-        <Link
-          href="/admin/categories"
-          className="p-6 bg-white border border-stone-200 hover:border-amber-700/50 rounded-xl space-y-3 shadow-xs transition-all group"
-        >
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-stone-500">Total Catégories</span>
-            <div className="p-2 rounded-lg bg-amber-50 text-amber-800 border border-amber-200">
-              <FolderTree className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-3xl font-serif font-bold text-stone-900">{categories.length}</p>
-          <div className="flex items-center text-xs text-amber-800 font-semibold group-hover:translate-x-1 transition-transform">
-            <span>Gérer les catégories →</span>
-          </div>
-        </Link>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
 
         {/* PRODUCTS CARD */}
         <Link

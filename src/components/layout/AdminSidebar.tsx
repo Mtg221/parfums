@@ -25,7 +25,6 @@ export const AdminSidebar: React.FC = () => {
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/categories', label: 'Nos Univers & Catégories', icon: FolderTree },
     { href: '/admin/maisons', label: 'Maisons de Parfum', icon: Building2 },
     { href: '/admin/parfums', label: 'Parfums', icon: Package },
     { href: '/admin/commandes', label: 'Commandes', icon: ShoppingBag },

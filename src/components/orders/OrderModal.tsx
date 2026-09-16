@@ -61,7 +61,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
         notes: notes.trim(),
         productId: product.id,
         productName: product.name,
-        categoryId: product.categoryId,
+        categoryId: product.categoryId || '',
         formatId: selectedFormat.id,
         sizeMl: selectedFormat.sizeMl,
         quantity,

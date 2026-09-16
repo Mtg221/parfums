@@ -113,7 +113,7 @@ export async function createProduct(data: {
   name: string;
   brand?: string;
   description: string;
-  categoryId: string;
+  categoryId?: string;
   categoryName?: string;
   categoryIds?: string[];
   categoryNames?: string[];

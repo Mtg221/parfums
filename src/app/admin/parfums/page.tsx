@@ -145,10 +145,6 @@ export default function AdminParfumsPage() {
       setError('Le nom du parfum est obligatoire.');
       return;
     }
-    if (selectedCategoryIds.length === 0) {
-      setError('Veuillez sélectionner au moins une catégorie / univers.');
-      return;
-    }
     if (formats.length === 0) {
       setError('Veuillez ajouter au moins un format (mL, Prix, Stock).');
       return;
@@ -157,17 +153,10 @@ export default function AdminParfumsPage() {
     setSubmitting(true);
 
     try {
-      const assignedCategories = categories.filter((c) => selectedCategoryIds.includes(c.id));
-      const primaryCat = assignedCategories[0];
-
       const payload = {
         name: name.trim(),
         brand: brand.trim(),
         description: description.trim(),
-        categoryId: primaryCat ? primaryCat.id : '',
-        categoryName: primaryCat ? primaryCat.name : '',
-        categoryIds: selectedCategoryIds,
-        categoryNames: assignedCategories.map(c => c.name),
         imageUrl: imageUrl.trim(),
         formats,
         allowCustomVolume,
@@ -221,7 +210,7 @@ export default function AdminParfumsPage() {
             <span>Gestion des Parfums & Formats</span>
           </h1>
           <p className="text-xs text-stone-500 font-light mt-1">
-            Gérez vos fragrances, maisons de parfum, catégories univers (multi-univers possible), options sur-mesure et best-sellers.
+            Gérez vos fragrances, maisons de parfum, formats, options sur-mesure et best-sellers.
           </p>
         </div>
 
@@ -234,42 +223,7 @@ export default function AdminParfumsPage() {
         </button>
       </div>
 
-      {/* FILTER BAR */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
-        <div className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-stone-700">
-          <Filter className="w-4 h-4 text-[#B76E79]" />
-          <span>Filtrer par catégorie :</span>
-        </div>
 
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedCategoryFilter('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              selectedCategoryFilter === 'all'
-                ? 'bg-[#B76E79] text-white font-bold'
-                : 'bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100'
-            }`}
-          >
-            Toutes ({products.length})
-          </button>
-          {categories.map((c) => {
-            const count = products.filter((p) => p.categoryId === c.id || (p.categoryIds && p.categoryIds.includes(c.id))).length;
-            return (
-              <button
-                key={c.id}
-                onClick={() => setSelectedCategoryFilter(c.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  selectedCategoryFilter === c.id
-                    ? 'bg-[#B76E79] text-white font-bold'
-                    : 'bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100'
-                }`}
-              >
-                {c.name} ({count})
-              </button>
-            );
-          })}
-        </div>
-      </div>
 
       {/* NOTIFICATIONS */}
       {error && (
@@ -324,15 +278,7 @@ export default function AdminParfumsPage() {
 
                       <h2 className="text-xl font-serif font-bold text-stone-900 mt-1">{prod.name}</h2>
 
-                      {/* Univers badges */}
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {assignedCatNames.map((catName) => (
-                          <span key={catName} className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[10px] font-semibold">
-                            <FolderTree className="w-2.5 h-2.5 text-amber-700" />
-                            <span>{catName}</span>
-                          </span>
-                        ))}
-                      </div>
+
 
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {prod.allowCustomVolume !== false && (
@@ -473,42 +419,7 @@ export default function AdminParfumsPage() {
                 </div>
               </div>
 
-              {/* CHECKBOXES FOR MULTI-CATEGORY ASSIGNMENT */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
-                  <FolderTree className="w-3.5 h-3.5 text-[#B76E79]" />
-                  <span>Catégories / Univers (Cochez un ou plusieurs univers) <span className="text-red-600">*</span></span>
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3.5 bg-stone-50 border border-stone-200 rounded-xl">
-                  {categories.map((c) => {
-                    const isChecked = selectedCategoryIds.includes(c.id);
-                    return (
-                      <label
-                        key={c.id}
-                        className={`flex items-center space-x-3 p-2.5 rounded-lg border cursor-pointer transition-all ${
-                          isChecked
-                            ? 'bg-[#FDF6F7] border-[#D8A7B1] text-stone-900 font-bold'
-                            : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-100'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedCategoryIds([...selectedCategoryIds, c.id]);
-                            } else {
-                              setSelectedCategoryIds(selectedCategoryIds.filter(id => id !== c.id));
-                            }
-                          }}
-                          className="w-4 h-4 rounded text-[#B76E79] focus:ring-[#B76E79] border-stone-300"
-                        />
-                        <span className="text-xs">{c.name}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
+
 
               <div className="space-y-1">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
