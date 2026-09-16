@@ -15,7 +15,8 @@ import {
   Sparkles,
   Star,
   Building2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FolderTree
 } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '@/services/productsService';
 import { getCategories } from '@/services/categoriesService';
@@ -38,7 +39,7 @@ export default function AdminParfumsPage() {
   const [name, setName] = useState('');
   const [brand, setBrand] = useState('DIOR');
   const [description, setDescription] = useState('');
-  const [categoryId, setCategoryId] = useState('');
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState('');
   const [allowCustomVolume, setAllowCustomVolume] = useState<boolean>(true);
   const [isBestSeller, setIsBestSeller] = useState<boolean>(true);
@@ -81,7 +82,7 @@ export default function AdminParfumsPage() {
     setName('');
     setBrand(brands.length > 0 ? brands[0].name : 'DIOR');
     setDescription('');
-    setCategoryId(categories.length > 0 ? categories[0].id : '');
+    setSelectedCategoryIds(categories.length > 0 ? [categories[0].id] : []);
     setImageUrl('');
     setAllowCustomVolume(true);
     setIsBestSeller(true);
@@ -101,7 +102,10 @@ export default function AdminParfumsPage() {
     setName(prod.name);
     setBrand(prod.brand || (brands.length > 0 ? brands[0].name : 'DIOR'));
     setDescription(prod.description || '');
-    setCategoryId(prod.categoryId);
+    const currentCatIds = prod.categoryIds && prod.categoryIds.length > 0 
+      ? prod.categoryIds 
+      : (prod.categoryId ? [prod.categoryId] : []);
+    setSelectedCategoryIds(currentCatIds);
     setImageUrl(prod.imageUrl || '');
     setAllowCustomVolume(prod.allowCustomVolume ?? true);
     setIsBestSeller(prod.isBestSeller ?? true);
@@ -141,8 +145,8 @@ export default function AdminParfumsPage() {
       setError('Le nom du parfum est obligatoire.');
       return;
     }
-    if (!categoryId) {
-      setError('Veuillez sélectionner une catégorie pour ce parfum.');
+    if (selectedCategoryIds.length === 0) {
+      setError('Veuillez sélectionner au moins une catégorie / univers.');
       return;
     }
     if (formats.length === 0) {
@@ -153,13 +157,17 @@ export default function AdminParfumsPage() {
     setSubmitting(true);
 
     try {
-      const selectedCat = categories.find((c) => c.id === categoryId);
+      const assignedCategories = categories.filter((c) => selectedCategoryIds.includes(c.id));
+      const primaryCat = assignedCategories[0];
+
       const payload = {
         name: name.trim(),
         brand: brand.trim(),
         description: description.trim(),
-        categoryId,
-        categoryName: selectedCat ? selectedCat.name : '',
+        categoryId: primaryCat ? primaryCat.id : '',
+        categoryName: primaryCat ? primaryCat.name : '',
+        categoryIds: selectedCategoryIds,
+        categoryNames: assignedCategories.map(c => c.name),
         imageUrl: imageUrl.trim(),
         formats,
         allowCustomVolume,
@@ -200,7 +208,7 @@ export default function AdminParfumsPage() {
 
   const filteredProducts = selectedCategoryFilter === 'all'
     ? products
-    : products.filter((p) => p.categoryId === selectedCategoryFilter);
+    : products.filter((p) => p.categoryId === selectedCategoryFilter || (p.categoryIds && p.categoryIds.includes(selectedCategoryFilter)));
 
   return (
     <div className="space-y-8">
@@ -213,7 +221,7 @@ export default function AdminParfumsPage() {
             <span>Gestion des Parfums & Formats</span>
           </h1>
           <p className="text-xs text-stone-500 font-light mt-1">
-            Gérez vos fragrances, maisons de parfum, catégories univers, options sur-mesure et best-sellers.
+            Gérez vos fragrances, maisons de parfum, catégories univers (multi-univers possible), options sur-mesure et best-sellers.
           </p>
         </div>
 
@@ -245,7 +253,7 @@ export default function AdminParfumsPage() {
             Toutes ({products.length})
           </button>
           {categories.map((c) => {
-            const count = products.filter((p) => p.categoryId === c.id).length;
+            const count = products.filter((p) => p.categoryId === c.id || (p.categoryIds && p.categoryIds.includes(c.id))).length;
             return (
               <button
                 key={c.id}
@@ -295,96 +303,108 @@ export default function AdminParfumsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredProducts.map((prod) => (
-            <div
-              key={prod.id}
-              className="bg-white border border-stone-200 rounded-xl p-6 space-y-5 shadow-xs flex flex-col justify-between"
-            >
-              <div className="space-y-2">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-[10px] uppercase tracking-widest text-[#B76E79] font-bold">
-                        {prod.brand || 'DIOR'}
-                      </span>
-                      <span className="text-[10px] text-stone-400">&bull;</span>
-                      <span className="text-[10px] uppercase tracking-wider text-stone-500">
-                        {prod.categoryName || 'Parfum'}
-                      </span>
+          {filteredProducts.map((prod) => {
+            const assignedCatNames = prod.categoryNames && prod.categoryNames.length > 0 
+              ? prod.categoryNames 
+              : (prod.categoryName ? [prod.categoryName] : []);
+
+            return (
+              <div
+                key={prod.id}
+                className="bg-white border border-stone-200 rounded-xl p-6 space-y-5 shadow-xs flex flex-col justify-between"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-[10px] uppercase tracking-widest text-[#B76E79] font-bold">
+                          {prod.brand || 'DIOR'}
+                        </span>
+                      </div>
+
+                      <h2 className="text-xl font-serif font-bold text-stone-900 mt-1">{prod.name}</h2>
+
+                      {/* Univers badges */}
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {assignedCatNames.map((catName) => (
+                          <span key={catName} className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 text-[10px] font-semibold">
+                            <FolderTree className="w-2.5 h-2.5 text-amber-700" />
+                            <span>{catName}</span>
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {prod.allowCustomVolume !== false && (
+                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-[#FDF6F7] border border-[#D8A7B1]/50 text-[10px] text-[#B76E79] font-semibold">
+                            <Sparkles className="w-2.5 h-2.5" />
+                            <span>Sur-mesure</span>
+                          </span>
+                        )}
+                        {prod.isBestSeller !== false && (
+                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-300/60 text-[10px] text-amber-900 font-semibold">
+                            <Star className="w-2.5 h-2.5 text-amber-600 fill-amber-500" />
+                            <span>Best-Seller</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <h2 className="text-xl font-serif font-bold text-stone-900 mt-1">{prod.name}</h2>
-
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {prod.allowCustomVolume !== false && (
-                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-[#FDF6F7] border border-[#D8A7B1]/50 text-[10px] text-[#B76E79] font-semibold">
-                          <Sparkles className="w-2.5 h-2.5" />
-                          <span>Sur-mesure</span>
-                        </span>
-                      )}
-                      {prod.isBestSeller !== false && (
-                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-300/60 text-[10px] text-amber-900 font-semibold">
-                          <Star className="w-2.5 h-2.5 text-amber-600 fill-amber-500" />
-                          <span>Best-Seller</span>
-                        </span>
-                      )}
+                    <div className="flex space-x-1.5">
+                      <button
+                        onClick={() => handleOpenEditModal(prod)}
+                        className="p-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors"
+                        title="Modifier"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(prod.id, prod.name)}
+                        className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
 
-                  <div className="flex space-x-1.5">
-                    <button
-                      onClick={() => handleOpenEditModal(prod)}
-                      className="p-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors"
-                      title="Modifier"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(prod.id, prod.name)}
-                      className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <p className="text-xs text-stone-600 font-light leading-relaxed line-clamp-2 pt-1">
+                    {prod.description || 'Aucune description.'}
+                  </p>
+                </div>
+
+                {/* FORMATS LIST */}
+                <div className="pt-4 border-t border-stone-100 space-y-2">
+                  <p className="text-[10px] uppercase tracking-wider font-semibold text-stone-500 flex items-center space-x-1">
+                    <Layers className="w-3.5 h-3.5 text-[#B76E79]" />
+                    <span>Formats & Stocks :</span>
+                  </p>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {prod.formats.map((fmt) => (
+                      <div
+                        key={fmt.id || fmt.sizeMl}
+                        className={`p-2 rounded-lg border text-xs flex flex-col justify-between space-y-0.5 ${
+                          fmt.stock > 0
+                            ? 'bg-stone-50 border-stone-200 text-stone-800'
+                            : 'bg-red-50 border-red-200 text-red-800'
+                        }`}
+                      >
+                        <div className="flex justify-between font-bold">
+                          <span>{fmt.sizeMl} mL</span>
+                          <span className="text-[#B76E79]">{formatPrice(fmt.price)}</span>
+                        </div>
+                        <div className="text-[10px] text-stone-500">
+                          {fmt.stock > 0 ? `Stock: ${fmt.stock}` : 'Rupture'}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <p className="text-xs text-stone-600 font-light leading-relaxed line-clamp-2 pt-1">
-                  {prod.description || 'Aucune description.'}
-                </p>
               </div>
-
-              {/* FORMATS LIST */}
-              <div className="pt-4 border-t border-stone-100 space-y-2">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-stone-500 flex items-center space-x-1">
-                  <Layers className="w-3.5 h-3.5 text-[#B76E79]" />
-                  <span>Formats & Stocks :</span>
-                </p>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {prod.formats.map((fmt) => (
-                    <div
-                      key={fmt.id || fmt.sizeMl}
-                      className={`p-2 rounded-lg border text-xs flex flex-col justify-between space-y-0.5 ${
-                        fmt.stock > 0
-                          ? 'bg-stone-50 border-stone-200 text-stone-800'
-                          : 'bg-red-50 border-red-200 text-red-800'
-                      }`}
-                    >
-                      <div className="flex justify-between font-bold">
-                        <span>{fmt.sizeMl} mL</span>
-                        <span className="text-[#B76E79]">{formatPrice(fmt.price)}</span>
-                      </div>
-                      <div className="text-[10px] text-stone-500">
-                        {fmt.stock > 0 ? `Stock: ${fmt.stock}` : 'Rupture'}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -453,37 +473,55 @@ export default function AdminParfumsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
-                    Catégorie (Univers) <span className="text-red-600">*</span>
-                  </label>
-                  <select
-                    required
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
-                  >
-                    <option value="" disabled>Sélectionner un univers</option>
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
+              {/* CHECKBOXES FOR MULTI-CATEGORY ASSIGNMENT */}
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
+                  <FolderTree className="w-3.5 h-3.5 text-[#B76E79]" />
+                  <span>Catégories / Univers (Cochez un ou plusieurs univers) <span className="text-red-600">*</span></span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-3.5 bg-stone-50 border border-stone-200 rounded-xl">
+                  {categories.map((c) => {
+                    const isChecked = selectedCategoryIds.includes(c.id);
+                    return (
+                      <label
+                        key={c.id}
+                        className={`flex items-center space-x-3 p-2.5 rounded-lg border cursor-pointer transition-all ${
+                          isChecked
+                            ? 'bg-[#FDF6F7] border-[#D8A7B1] text-stone-900 font-bold'
+                            : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-100'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedCategoryIds([...selectedCategoryIds, c.id]);
+                            } else {
+                              setSelectedCategoryIds(selectedCategoryIds.filter(id => id !== c.id));
+                            }
+                          }}
+                          className="w-4 h-4 rounded text-[#B76E79] focus:ring-[#B76E79] border-stone-300"
+                        />
+                        <span className="text-xs">{c.name}</span>
+                      </label>
+                    );
+                  })}
                 </div>
+              </div>
 
-                <div className="space-y-1">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
-                    <ImageIcon className="w-3.5 h-3.5 text-[#B76E79]" />
-                    <span>Image URL (Flacon)</span>
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://..."
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
-                  />
-                </div>
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
+                  <ImageIcon className="w-3.5 h-3.5 text-[#B76E79]" />
+                  <span>Image URL (Flacon)</span>
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://..."
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
+                />
               </div>
 
               <div className="space-y-1">

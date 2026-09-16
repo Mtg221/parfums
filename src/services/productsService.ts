@@ -6,8 +6,6 @@ import {
   addDoc, 
   updateDoc, 
   deleteDoc, 
-  query, 
-  where, 
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -21,13 +19,18 @@ export async function getProducts(): Promise<Product[]> {
     const products: Product[] = [];
     querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
+      const catIds: string[] = data.categoryIds || (data.categoryId ? [data.categoryId] : []);
+      const catNames: string[] = data.categoryNames || (data.categoryName ? [data.categoryName] : []);
+
       products.push({
         id: docSnap.id,
         name: data.name || '',
         brand: data.brand || '',
         description: data.description || '',
-        categoryId: data.categoryId || '',
-        categoryName: data.categoryName || '',
+        categoryId: data.categoryId || (catIds[0] || ''),
+        categoryName: data.categoryName || (catNames[0] || ''),
+        categoryIds: catIds,
+        categoryNames: catNames,
         imageUrl: data.imageUrl || '',
         formats: data.formats || [],
         allowCustomVolume: data.allowCustomVolume ?? true,
@@ -45,28 +48,11 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
   try {
-    const productsRef = collection(db, PRODUCTS_COLLECTION);
-    const q = query(productsRef, where('categoryId', '==', categoryId));
-    const querySnapshot = await getDocs(q);
-    const products: Product[] = [];
-    querySnapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      products.push({
-        id: docSnap.id,
-        name: data.name || '',
-        brand: data.brand || '',
-        description: data.description || '',
-        categoryId: data.categoryId || '',
-        categoryName: data.categoryName || '',
-        imageUrl: data.imageUrl || '',
-        formats: data.formats || [],
-        allowCustomVolume: data.allowCustomVolume ?? true,
-        isBestSeller: data.isBestSeller ?? true,
-        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
-        updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
-      });
-    });
-    return products;
+    const allProducts = await getProducts();
+    return allProducts.filter(p => 
+      p.categoryId === categoryId || 
+      (p.categoryIds && p.categoryIds.includes(categoryId))
+    );
   } catch (error) {
     console.error(`Error fetching products for category ${categoryId}:`, error);
     throw error;
@@ -79,13 +65,18 @@ export async function getProductById(id: string): Promise<Product | null> {
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
     const data = docSnap.data();
+    const catIds: string[] = data.categoryIds || (data.categoryId ? [data.categoryId] : []);
+    const catNames: string[] = data.categoryNames || (data.categoryName ? [data.categoryName] : []);
+
     return {
       id: docSnap.id,
       name: data.name || '',
       brand: data.brand || '',
       description: data.description || '',
-      categoryId: data.categoryId || '',
-      categoryName: data.categoryName || '',
+      categoryId: data.categoryId || (catIds[0] || ''),
+      categoryName: data.categoryName || (catNames[0] || ''),
+      categoryIds: catIds,
+      categoryNames: catNames,
       imageUrl: data.imageUrl || '',
       formats: data.formats || [],
       allowCustomVolume: data.allowCustomVolume ?? true,
@@ -105,6 +96,8 @@ export async function createProduct(data: {
   description: string;
   categoryId: string;
   categoryName?: string;
+  categoryIds?: string[];
+  categoryNames?: string[];
   imageUrl?: string;
   formats: ProductFormat[];
   allowCustomVolume?: boolean;
@@ -113,6 +106,8 @@ export async function createProduct(data: {
   try {
     const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), {
       ...data,
+      categoryIds: data.categoryIds || (data.categoryId ? [data.categoryId] : []),
+      categoryNames: data.categoryNames || (data.categoryName ? [data.categoryName] : []),
       allowCustomVolume: data.allowCustomVolume ?? true,
       isBestSeller: data.isBestSeller ?? true,
       createdAt: serverTimestamp(),
@@ -133,6 +128,8 @@ export async function updateProduct(
     description: string;
     categoryId: string;
     categoryName?: string;
+    categoryIds?: string[];
+    categoryNames?: string[];
     imageUrl?: string;
     formats: ProductFormat[];
     allowCustomVolume?: boolean;
