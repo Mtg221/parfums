@@ -25,7 +25,7 @@ export const AdminSidebar: React.FC = () => {
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/categories', label: 'Catégories', icon: FolderTree },
+    { href: '/admin/categories', label: 'Nos Univers & Catégories', icon: FolderTree },
     { href: '/admin/maisons', label: 'Maisons de Parfum', icon: Building2 },
     { href: '/admin/parfums', label: 'Parfums', icon: Package },
     { href: '/admin/commandes', label: 'Commandes', icon: ShoppingBag },
@@ -110,11 +110,11 @@ export const AdminSidebar: React.FC = () => {
                   onClick={() => setIsOpen(false)}
                   className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
                     isActive
-                      ? 'bg-amber-50 text-amber-900 border-l-4 border-amber-800 font-bold shadow-xs'
+                      ? 'bg-[#FDF6F7] text-[#B76E79] border-l-4 border-[#B76E79] font-bold shadow-xs'
                       : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-amber-800' : 'text-stone-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-[#B76E79]' : 'text-stone-400'}`} />
                   <span>{item.label}</span>
                 </Link>
               );
