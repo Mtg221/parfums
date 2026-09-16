@@ -36,12 +36,10 @@ export const Navbar: React.FC = () => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
+  // STRICTLY 3 NAV LINKS AS REQUESTED: Accueil, Parfums, Contact
   const navLinks = [
     { href: '/', label: 'Accueil' },
-    { href: '/catalogue/huiles-parfumees', label: 'Huiles parfumées' },
-    { href: '/catalogue/extraits-de-parfum', label: 'Extraits de parfum' },
-    { href: '/catalogue', label: 'Parfums authentiques' },
-    { href: '/catalogue/coffrets', label: 'Coffrets' },
+    { href: '/catalogue', label: 'Parfums' },
     { href: '/contact', label: 'Contact' },
   ];
 
@@ -52,7 +50,7 @@ export const Navbar: React.FC = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
       
-      {/* 1. TOP DUSTY ROSE ANNOUNCEMENT BAR (EXACT MATCH EXEMPLE1.JPEG) */}
+      {/* 1. TOP DUSTY ROSE ANNOUNCEMENT BAR */}
       <div className="bg-[#C5928E] text-white py-1.5 px-4 sm:px-8 text-[11px] sm:text-xs flex justify-between items-center font-serif">
         <div className="flex items-center space-x-2">
           <Truck className="w-3.5 h-3.5" />
@@ -67,7 +65,7 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. MAIN LUXURY DARK NAVBAR (EXACT MATCH EXEMPLE1.JPEG) */}
+      {/* 2. MAIN LUXURY DARK NAVBAR */}
       <div className={`bg-[#141211] text-white transition-all duration-300 border-b border-stone-800 ${isScrolled ? 'py-2 shadow-xl' : 'py-4'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -131,8 +129,8 @@ export const Navbar: React.FC = () => {
 
           </div>
 
-          {/* SECONDARY NAVIGATION BAR UNDER LOGO */}
-          <div className="hidden md:flex items-center justify-center space-x-8 pt-4 pb-1 border-t border-stone-800/60 mt-3 text-xs tracking-widest uppercase font-serif">
+          {/* SECONDARY NAVIGATION BAR UNDER LOGO (UNISQUEMENT: ACCUEIL | PARFUMS | CONTACT) */}
+          <div className="hidden md:flex items-center justify-center space-x-12 pt-4 pb-1 border-t border-stone-800/60 mt-3 text-xs tracking-widest uppercase font-serif">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
