@@ -23,41 +23,82 @@ const DEFAULT_BRANDS: Omit<Brand, 'id'>[] = [
   { name: 'YVES SAINT LAURENT', subtitle: 'Libre & Opium' },
   { name: 'GUERLAIN', subtitle: 'L\'Art & La Matière' },
   { name: 'TOM FORD', subtitle: 'Private Blend' },
-  { name: 'paco rabanne', subtitle: '1 Million & Invictus' },
-  { name: 'Jean Paul GAULTIER', subtitle: 'Le Male & Scandal' },
-  { name: 'Calvin Klein', subtitle: 'CK One & Eternity' }
+  { name: 'PACO RABANNE', subtitle: '1 Million & Invictus' },
+  { name: 'JEAN PAUL GAULTIER', subtitle: 'Le Male & Scandal' },
+  { name: 'CALVIN KLEIN', subtitle: 'CK One & Eternity' },
+  { name: 'LANCÔME', subtitle: 'La Vie Est Belle' },
+  { name: 'GIORGIO ARMANI', subtitle: 'Acqua Di Giò & Si' },
+  { name: 'AZZARO', subtitle: 'Wanted & Chrome' },
+  { name: 'DOLCE & GABBANA', subtitle: 'Light Blue & The One' },
+  { name: 'VIKTOR & ROLF', subtitle: 'Flowerbomb & Spicebomb' },
+  { name: 'NARCISO RODRIGUEZ', subtitle: 'For Her & For Him' },
+  { name: 'VICTORIA\'S SECRET', subtitle: 'Brumes & Parfums Iconiques' },
+  { name: 'MAISON FRANCIS KURKDJIAN', subtitle: 'Baccarat Rouge 540' },
+  { name: 'MONTBLANC', subtitle: 'Legend & Explorer' },
+  { name: 'MAISON AL HARAMAIN', subtitle: 'Parfums Orientaux' },
+  { name: 'MUGLER', subtitle: 'Angel & Alien' },
+  { name: 'ZARA', subtitle: 'Collections Parfums' },
+  { name: 'HERMÈS PARIS', subtitle: 'Terre d\'Hermès & Twilly' },
+  { name: 'CARTIER', subtitle: 'La Panthère & Déclaration' },
+  { name: 'GIVENCHY', subtitle: 'L\'Interdit & Gentleman' },
+  { name: 'BVLGARI', subtitle: 'Man In Black & Omnia' },
+  { name: 'CREED', subtitle: 'Aventus & Collections Exclusives' },
+  { name: 'LOUIS VUITTON', subtitle: 'Parfums d\'Exception' },
+  { name: 'BOSS', subtitle: 'Boss Bottled & The Scent' },
+  { name: 'BURBERRY', subtitle: 'Hero & Goddess' },
+  { name: 'CAROLINA HERRERA', subtitle: 'Good Girl & Bad Boy' },
+  { name: 'VERSACE', subtitle: 'Eros & Dylan Blue' },
+  { name: 'VALENTINO', subtitle: 'Born In Roma' },
+  { name: 'ROCHAS', subtitle: 'Eau de Rochas & Man' },
+  { name: 'ISSEY MIYAKE', subtitle: 'L\'Eau d\'Issey' },
+  { name: 'KENZO', subtitle: 'Flower BY KENZO' },
+  { name: 'GUCCI', subtitle: 'Bloom & Flora' },
+  { name: 'ESCADA', subtitle: 'Fragrances Estivales' },
+  { name: 'ARMANI PRIVÉ', subtitle: 'Haute Parfumerie' },
+  { name: 'NINA RICCI', subtitle: 'Nina & L\'Air du Temps' },
+  { name: 'YVES ROCHER', subtitle: 'Senteurs Naturelles' },
+  { name: 'DIESEL', subtitle: 'Only The Brave & Fuel For Life' },
+  { name: 'MANCERA', subtitle: 'Cedrat Boise & Collections Niche' },
+  { name: 'CACHAREL', subtitle: 'Amor Amor & Anais Anais' },
+  { name: 'LACOSTE', subtitle: 'L.12.12 Blanc & Pour Femme' },
+  { name: 'MARLY PARIS', subtitle: 'Parfums de Marly - Delina & Layton' },
+  { name: 'XERJOFF', subtitle: 'Erba Pura & Collections Luxueuses' },
+  { name: 'LIBERTY', subtitle: 'Senteurs Elegantes' },
+  { name: 'AL REHAB', subtitle: 'Huiles & Fragrances Orientales' },
+  { name: 'CHLOÉ', subtitle: 'Nomade & Signature' },
+  { name: 'PARFUMS ARABES', subtitle: 'Fragrances Orientales et Attars' },
+  { name: 'AUTRES MARQUES', subtitle: 'Sélection Spéciale' }
 ];
 
 export async function getBrands(): Promise<Brand[]> {
   try {
     const querySnapshot = await getDocs(collection(db, BRANDS_COLLECTION));
-    if (querySnapshot.empty) {
-      // Seed default brands if collection is empty
-      const seeded: Brand[] = [];
-      for (const b of DEFAULT_BRANDS) {
-        const docRef = await addDoc(collection(db, BRANDS_COLLECTION), {
-          ...b,
-          createdAt: serverTimestamp(),
-        });
-        seeded.push({ id: docRef.id, ...b });
-      }
-      return seeded;
-    }
-
-    const brands: Brand[] = [];
+    const firestoreBrands: Brand[] = [];
     querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
-      brands.push({
+      firestoreBrands.push({
         id: docSnap.id,
-        name: data.name || '',
+        name: (data.name || '').toUpperCase(),
         subtitle: data.subtitle || '',
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
       });
     });
-    return brands;
+
+    const combined: Brand[] = [...firestoreBrands];
+    DEFAULT_BRANDS.forEach((def, idx) => {
+      const exists = combined.some(b => b.name.toUpperCase() === def.name.toUpperCase());
+      if (!exists) {
+        combined.push({
+          id: `preset-${idx}`,
+          name: def.name.toUpperCase(),
+          subtitle: def.subtitle || '',
+        });
+      }
+    });
+
+    return combined;
   } catch (error) {
     console.error('Error fetching brands:', error);
-    // Return defaults in case of error
     return DEFAULT_BRANDS.map((b, index) => ({ id: `default-${index}`, ...b }));
   }
 }

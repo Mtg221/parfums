@@ -20,58 +20,7 @@ import { getProducts } from '@/services/productsService';
 import { Product } from '@/types';
 import { getWhatsAppNumber, formatPrice } from '@/lib/whatsapp';
 
-const ALL_MAISONS_LIST = [
-  { name: 'DIOR', category: 'maisons' },
-  { name: 'CHANEL', category: 'maisons' },
-  { name: 'YVES SAINT LAURENT', category: 'maisons' },
-  { name: 'GUERLAIN', category: 'maisons' },
-  { name: 'TOM FORD', category: 'maisons' },
-  { name: 'paco rabanne', category: 'maisons' },
-  { name: 'Jean Paul GAULTIER', category: 'maisons' },
-  { name: 'Calvin Klein', category: 'maisons' },
-  { name: 'LANCÔME', category: 'maisons' },
-  { name: 'GIORGIO ARMANI', category: 'maisons' },
-  { name: 'AZZARO', category: 'maisons' },
-  { name: 'DOLCE & GABBANA', category: 'maisons' },
-  { name: 'VIKTOR & ROLF', category: 'maisons' },
-  { name: 'narciso rodriguez', category: 'maisons' },
-  { name: 'VICTORIA\'S SECRET', category: 'maisons' },
-  { name: 'Maison Francis Kurkdjian', category: 'maisons' },
-  { name: 'MONTBLANC', category: 'maisons' },
-  { name: 'MAISON AL HARAMAIN', category: 'arabes' },
-  { name: 'MUGLER', category: 'maisons' },
-  { name: 'ZARA', category: 'autres' },
-  { name: 'HERMÈS PARIS', category: 'maisons' },
-  { name: 'Cartier', category: 'maisons' },
-  { name: 'GIVENCHY', category: 'maisons' },
-  { name: 'BVLGARI', category: 'maisons' },
-  { name: 'CREED', category: 'maisons' },
-  { name: 'LOUIS VUITTON', category: 'maisons' },
-  { name: 'BOSS', category: 'maisons' },
-  { name: 'BURBERRY', category: 'maisons' },
-  { name: 'CAROLINA HERRERA', category: 'maisons' },
-  { name: 'VERSACE', category: 'maisons' },
-  { name: 'VALENTINO', category: 'maisons' },
-  { name: 'ROCHAS', category: 'maisons' },
-  { name: 'ISSEY MIYAKE', category: 'maisons' },
-  { name: 'KENZO', category: 'maisons' },
-  { name: 'GUCCI', category: 'maisons' },
-  { name: 'ESCADA', category: 'maisons' },
-  { name: 'ARMANI PRIVÉ', category: 'maisons' },
-  { name: 'NINA RICCI', category: 'maisons' },
-  { name: 'YVES ROCHER', category: 'autres' },
-  { name: 'DIESEL', category: 'autres' },
-  { name: 'MANCERA', category: 'maisons' },
-  { name: 'cacharel', category: 'maisons' },
-  { name: 'LACOSTE', category: 'autres' },
-  { name: 'MARLY PARIS', category: 'maisons' },
-  { name: 'XERJOFF', category: 'maisons' },
-  { name: 'LIBERTY', category: 'autres' },
-  { name: 'Al Rehab', category: 'arabes' },
-  { name: 'Chloé', category: 'maisons' },
-  { name: 'PARFUMS ARABES', category: 'arabes' },
-  { name: 'Autres marques', category: 'autres' }
-];
+
 
 export default function CataloguePage() {
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -105,22 +54,8 @@ export default function CataloguePage() {
     loadData();
   }, []);
 
-  // Merge Firestore brands with fallback list
-  const combinedBrands = Array.from(new Set([
-    ...brands.map(b => b.name),
-    ...ALL_MAISONS_LIST.map(m => m.name)
-  ])).map(name => {
-    const existing = brands.find(b => b.name.toUpperCase() === name.toUpperCase());
-    const preset = ALL_MAISONS_LIST.find(m => m.name.toUpperCase() === name.toUpperCase());
-    return {
-      name,
-      category: preset ? preset.category : 'maisons',
-      subtitle: existing?.subtitle || ''
-    };
-  });
-
   // Filter Brands by Search
-  const filteredBrandsList = combinedBrands.filter(b => {
+  const filteredBrandsList = brands.filter(b => {
     return b.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
