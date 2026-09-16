@@ -3,128 +3,92 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MessageCircle, Phone, MapPin, Mail, ShieldCheck } from 'lucide-react';
+import { Camera, MessageCircle, Heart } from 'lucide-react';
 import { getWhatsAppNumber } from '@/lib/whatsapp';
 
 export const Footer: React.FC = () => {
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY";
-  const siteSlogan = process.env.NEXT_PUBLIC_SITE_SLOGAN || "L'Essence de l'Élégance & du Raffinement";
   const whatsappNumber = getWhatsAppNumber();
 
   return (
-    <footer className="bg-stone-900 text-stone-300 border-t border-stone-800 py-12 md:py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
+    <footer className="bg-[#12100E] text-stone-300 pt-16 pb-12 border-t border-stone-800 font-serif">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           
-          {/* BRAND COLUMN */}
-          <div className="space-y-4 md:col-span-1">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-amber-500/30 bg-white flex-shrink-0">
-                <Image
-                  src="/logo.JPG"
-                  alt="SONIA’S PERFUMERY Logo"
-                  fill
-                  className="object-cover"
-                />
+          {/* COLUMN 1: BRAND LOGO & TITLE */}
+          <div className="space-y-4">
+            <Link href="/" className="flex flex-col items-start space-y-2">
+              <div className="flex items-center space-x-2">
+                <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37]/50 bg-white">
+                  <Image
+                    src="/logo.JPG"
+                    alt="SONIA'S PERFUMERY"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xl font-bold tracking-[0.2em] text-[#E5C158] uppercase">
+                    SONIA&apos;S
+                  </span>
+                  <span className="text-[9px] tracking-[0.4em] text-stone-400 uppercase -mt-1">
+                    PERFUMERY
+                  </span>
+                </div>
               </div>
-              <span className="text-lg font-serif tracking-widest text-stone-100 font-bold uppercase">
-                {siteName}
-              </span>
             </Link>
-            <p className="text-xs text-stone-400 font-light leading-relaxed">
-              {siteSlogan}. Une sélection exclusive de parfums d&apos;exception pour affirmer votre personnalité unique.
+            <p className="text-xs text-stone-400 font-sans font-light leading-relaxed">
+              L&apos;élégance olfactive et l&apos;art des fragrances rares livrées chez vous au Sénégal.
             </p>
           </div>
 
-          {/* NAVIGATION COLUMN */}
+          {/* COLUMN 2: BOUTIQUE */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold tracking-wider text-amber-300 uppercase">
-              Navigation
-            </h3>
-            <ul className="space-y-2 text-xs">
-              <li>
-                <Link href="/" className="hover:text-amber-300 transition-colors">
-                  Accueil
-                </Link>
-              </li>
-              <li>
-                <Link href="/catalogue" className="hover:text-amber-300 transition-colors">
-                  Nos parfums
-                </Link>
-              </li>
-              <li>
-                <Link href="/comment-commander" className="hover:text-amber-300 transition-colors">
-                  Comment commander
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-amber-300 transition-colors">
-                  Contact
-                </Link>
-              </li>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#E5C158]">Boutique</h4>
+            <ul className="space-y-2 text-xs font-sans font-light text-stone-400">
+              <li><Link href="/catalogue/huiles-parfumees" className="hover:text-white transition-colors">Huiles parfumées</Link></li>
+              <li><Link href="/catalogue/extraits-de-parfum" className="hover:text-white transition-colors">Extraits de parfum</Link></li>
+              <li><Link href="/catalogue/parfums-authentiques" className="hover:text-white transition-colors">Parfums authentiques</Link></li>
+              <li><Link href="/catalogue/coffrets" className="hover:text-white transition-colors">Coffrets</Link></li>
             </ul>
           </div>
 
-          {/* CONTACT COLUMN */}
+          {/* COLUMN 3: INFORMATIONS */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold tracking-wider text-amber-300 uppercase">
-              Contact & Service
-            </h3>
-            <ul className="space-y-2.5 text-xs">
-              <li className="flex items-center space-x-2.5">
-                <Phone className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>+{whatsappNumber}</span>
-              </li>
-              <li className="flex items-center space-x-2.5">
-                <MessageCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <a
-                  href={`https://wa.me/${whatsappNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-emerald-300 transition-colors"
-                >
-                  Assistance WhatsApp
-                </a>
-              </li>
-              <li className="flex items-center space-x-2.5">
-                <Mail className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>contact@soniasperfumery.com</span>
-              </li>
-              <li className="flex items-center space-x-2.5">
-                <MapPin className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>Boutique & Livraison Express</span>
-              </li>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#E5C158]">Informations</h4>
+            <ul className="space-y-2 text-xs font-sans font-light text-stone-400">
+              <li><Link href="/comment-commander" className="hover:text-white transition-colors">À propos</Link></li>
+              <li><Link href="/comment-commander" className="hover:text-white transition-colors">Livraison</Link></li>
+              <li><Link href="/comment-commander" className="hover:text-white transition-colors">Paiement</Link></li>
+              <li><Link href="/comment-commander" className="hover:text-white transition-colors">FAQ</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
 
-          {/* ENGAGEMENT & ADMIN LINK */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold tracking-wider text-amber-300 uppercase">
-              Qualité Garantie
-            </h3>
-            <p className="text-xs text-stone-400 leading-relaxed">
-              Toutes nos fragrances sont authentifiées et conditionnées selon les standards de la haute parfumerie.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/admin"
-                className="inline-flex items-center space-x-1.5 text-xs text-stone-500 hover:text-amber-300 transition-colors"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Espace Administration</span>
-              </Link>
+          {/* COLUMN 4: NOUS SUIVRE & SIGNATURE */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#E5C158]">Nous suivre</h4>
+            <div className="flex items-center space-x-4 text-stone-300">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-stone-900 border border-stone-800 hover:text-white hover:border-stone-700 transition-colors">
+                <Camera className="w-4 h-4" />
+              </a>
+              <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-stone-900 border border-stone-800 hover:text-white hover:border-stone-700 transition-colors">
+                <MessageCircle className="w-4 h-4" />
+              </a>
+            </div>
+            <div className="pt-2 text-right">
+              <p className="italic font-serif text-sm text-[#C5928E]">Your scent, Your signature.</p>
+              <Heart className="w-3.5 h-3.5 text-[#C5928E] inline-block mt-1" />
             </div>
           </div>
 
         </div>
 
-        {/* COPYRIGHT BOTTOM BAR */}
-        <div className="mt-12 pt-6 border-t border-stone-800 text-center md:flex md:items-center md:justify-between text-xs text-stone-500">
-          <p>© 2026 {siteName}. Tous droits réservés.</p>
-          <p className="mt-2 md:mt-0 font-serif italic text-amber-400/80">
-            Maison de Parfumerie d&apos;Exception
-          </p>
+        {/* BOTTOM COPYRIGHT */}
+        <div className="pt-8 border-t border-stone-800/80 text-center text-[11px] text-stone-500 font-sans font-light">
+          © 2026 Sonia&apos;s Perfumery. Tous droits réservés.
         </div>
+
       </div>
     </footer>
   );
