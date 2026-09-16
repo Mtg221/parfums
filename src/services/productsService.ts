@@ -28,6 +28,7 @@ export async function getProducts(): Promise<Product[]> {
         categoryId: data.categoryId || '',
         categoryName: data.categoryName || '',
         formats: data.formats || [],
+        allowCustomVolume: data.allowCustomVolume ?? true, // default to true if undefined
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
         updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
       });
@@ -54,6 +55,7 @@ export async function getProductsByCategory(categoryId: string): Promise<Product
         categoryId: data.categoryId || '',
         categoryName: data.categoryName || '',
         formats: data.formats || [],
+        allowCustomVolume: data.allowCustomVolume ?? true,
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
         updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
       });
@@ -78,6 +80,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       categoryId: data.categoryId || '',
       categoryName: data.categoryName || '',
       formats: data.formats || [],
+      allowCustomVolume: data.allowCustomVolume ?? true,
       createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
       updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
     };
@@ -93,10 +96,12 @@ export async function createProduct(data: {
   categoryId: string;
   categoryName?: string;
   formats: ProductFormat[];
+  allowCustomVolume?: boolean;
 }): Promise<string> {
   try {
     const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), {
       ...data,
+      allowCustomVolume: data.allowCustomVolume ?? true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -115,6 +120,7 @@ export async function updateProduct(
     categoryId: string;
     categoryName?: string;
     formats: ProductFormat[];
+    allowCustomVolume?: boolean;
   }>
 ): Promise<void> {
   try {

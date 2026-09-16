@@ -21,6 +21,7 @@ export interface Product {
   categoryId: string;
   categoryName?: string;
   formats: ProductFormat[];
+  allowCustomVolume?: boolean; // If true, customer can choose custom mL
   createdAt?: string | number | Date;
   updatedAt?: string | number | Date;
 }

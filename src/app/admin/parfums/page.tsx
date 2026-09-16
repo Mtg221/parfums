@@ -11,7 +11,8 @@ import {
   CheckCircle2, 
   X,
   Filter,
-  Layers
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '@/services/productsService';
 import { getCategories } from '@/services/categoriesService';
@@ -32,6 +33,7 @@ export default function AdminParfumsPage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [allowCustomVolume, setAllowCustomVolume] = useState<boolean>(true);
   const [formats, setFormats] = useState<ProductFormat[]>([
     { id: 'fmt-1', sizeMl: 50, price: 22000, stock: 15 },
   ]);
@@ -66,10 +68,12 @@ export default function AdminParfumsPage() {
     setName('');
     setDescription('');
     setCategoryId(categories.length > 0 ? categories[0].id : '');
+    setAllowCustomVolume(true);
     setFormats([
-      { id: 'fmt-' + Date.now() + '-1', sizeMl: 30, price: 15000, stock: 20 },
-      { id: 'fmt-' + Date.now() + '-2', sizeMl: 50, price: 22000, stock: 15 },
-      { id: 'fmt-' + Date.now() + '-3', sizeMl: 100, price: 35000, stock: 8 },
+      { id: 'fmt-' + Date.now() + '-1', sizeMl: 5, price: 3000, stock: 50 },
+      { id: 'fmt-' + Date.now() + '-2', sizeMl: 16, price: 8000, stock: 30 },
+      { id: 'fmt-' + Date.now() + '-3', sizeMl: 20, price: 10000, stock: 25 },
+      { id: 'fmt-' + Date.now() + '-4', sizeMl: 100, price: 35000, stock: 10 },
     ]);
     setError(null);
     setSuccess(null);
@@ -81,6 +85,7 @@ export default function AdminParfumsPage() {
     setName(prod.name);
     setDescription(prod.description || '');
     setCategoryId(prod.categoryId);
+    setAllowCustomVolume(prod.allowCustomVolume ?? true);
     setFormats(prod.formats || []);
     setError(null);
     setSuccess(null);
@@ -136,6 +141,7 @@ export default function AdminParfumsPage() {
         categoryId,
         categoryName: selectedCat ? selectedCat.name : '',
         formats,
+        allowCustomVolume,
       };
 
       if (editingProduct) {
@@ -181,17 +187,17 @@ export default function AdminParfumsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-200 pb-6">
         <div>
           <h1 className="text-3xl font-serif font-bold text-stone-900 flex items-center space-x-3">
-            <Package className="w-7 h-7 text-amber-800" />
+            <Package className="w-7 h-7 text-[#B76E79]" />
             <span>Gestion des Parfums & Formats</span>
           </h1>
           <p className="text-xs text-stone-500 font-light mt-1">
-            Gérez vos eaux de parfum, ajustez les prix en FCFA et suivez les stocks disponibles par format.
+            Gérez vos eaux de parfum, activez l&apos;option sur-mesure et suivez les stocks disponibles par format.
           </p>
         </div>
 
         <button
           onClick={handleOpenAddModal}
-          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs uppercase tracking-wider shadow-xs transition-colors"
+          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-[#B76E79] hover:bg-[#a25a65] text-white font-bold text-xs uppercase tracking-wider shadow-xs transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Ajouter un parfum</span>
@@ -201,7 +207,7 @@ export default function AdminParfumsPage() {
       {/* FILTER BAR */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
         <div className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-stone-700">
-          <Filter className="w-4 h-4 text-amber-800" />
+          <Filter className="w-4 h-4 text-[#B76E79]" />
           <span>Filtrer par catégorie :</span>
         </div>
 
@@ -210,7 +216,7 @@ export default function AdminParfumsPage() {
             onClick={() => setSelectedCategoryFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               selectedCategoryFilter === 'all'
-                ? 'bg-amber-800 text-white font-bold'
+                ? 'bg-[#B76E79] text-white font-bold'
                 : 'bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100'
             }`}
           >
@@ -224,7 +230,7 @@ export default function AdminParfumsPage() {
                 onClick={() => setSelectedCategoryFilter(c.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   selectedCategoryFilter === c.id
-                    ? 'bg-amber-800 text-white font-bold'
+                    ? 'bg-[#B76E79] text-white font-bold'
                     : 'bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100'
                 }`}
               >
@@ -253,14 +259,14 @@ export default function AdminParfumsPage() {
       {/* PRODUCTS LIST */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 text-amber-800 animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#B76E79] animate-spin" />
         </div>
       ) : filteredProducts.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-xl border border-stone-200 space-y-3">
           <p className="text-stone-700 font-medium text-sm">Aucun parfum trouvé pour ce filtre.</p>
           <button
             onClick={handleOpenAddModal}
-            className="text-xs font-semibold text-amber-800 hover:underline"
+            className="text-xs font-semibold text-[#B76E79] hover:underline"
           >
             Ajouter un nouveau parfum
           </button>
@@ -275,10 +281,18 @@ export default function AdminParfumsPage() {
               <div className="space-y-2">
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] uppercase tracking-widest text-amber-800 font-semibold">
-                      {prod.categoryName || 'Catégorie n/a'}
-                    </span>
-                    <h2 className="text-xl font-serif font-bold text-stone-900">{prod.name}</h2>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-[10px] uppercase tracking-widest text-[#B76E79] font-semibold">
+                        {prod.categoryName || 'Catégorie n/a'}
+                      </span>
+                      {prod.allowCustomVolume !== false && (
+                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-[#FDF6F7] border border-[#D8A7B1]/50 text-[10px] text-[#B76E79] font-semibold">
+                          <Sparkles className="w-2.5 h-2.5" />
+                          <span>Sur-mesure activé</span>
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="text-xl font-serif font-bold text-stone-900 mt-1">{prod.name}</h2>
                   </div>
 
                   <div className="flex space-x-1.5">
@@ -307,15 +321,15 @@ export default function AdminParfumsPage() {
               {/* FORMATS LIST */}
               <div className="pt-4 border-t border-stone-100 space-y-2">
                 <p className="text-[10px] uppercase tracking-wider font-semibold text-stone-500 flex items-center space-x-1">
-                  <Layers className="w-3.5 h-3.5 text-amber-800" />
+                  <Layers className="w-3.5 h-3.5 text-[#B76E79]" />
                   <span>Formats & Stocks définis :</span>
                 </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {prod.formats.map((fmt) => (
                     <div
                       key={fmt.id || fmt.sizeMl}
-                      className={`p-2.5 rounded-lg border text-xs flex flex-col justify-between space-y-0.5 ${
+                      className={`p-2 rounded-lg border text-xs flex flex-col justify-between space-y-0.5 ${
                         fmt.stock > 0
                           ? 'bg-stone-50 border-stone-200 text-stone-800'
                           : 'bg-red-50 border-red-200 text-red-800'
@@ -323,10 +337,10 @@ export default function AdminParfumsPage() {
                     >
                       <div className="flex justify-between font-bold">
                         <span>{fmt.sizeMl} mL</span>
-                        <span className="text-amber-800">{formatPrice(fmt.price)}</span>
+                        <span className="text-[#B76E79]">{formatPrice(fmt.price)}</span>
                       </div>
                       <div className="text-[10px] text-stone-500">
-                        {fmt.stock > 0 ? `Stock : ${fmt.stock}` : 'Rupture de stock'}
+                        {fmt.stock > 0 ? `Stock : ${fmt.stock}` : 'Rupture'}
                       </div>
                     </div>
                   ))}
@@ -365,10 +379,10 @@ export default function AdminParfumsPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Ex: Dior Sauvage"
+                    placeholder="Ex: Sauvage Elixir"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-amber-800"
+                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
                   />
                 </div>
 
@@ -380,7 +394,7 @@ export default function AdminParfumsPage() {
                     required
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-amber-800"
+                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
                   >
                     <option value="" disabled>Sélectionner une catégorie</option>
                     {categories.map((c) => (
@@ -399,26 +413,47 @@ export default function AdminParfumsPage() {
                   placeholder="Notes olfactives, inspiration, sillage..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-amber-800"
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
                 />
               </div>
 
+              {/* CHECKBOX SUR-MESURE */}
+              <div className="p-4 rounded-xl bg-[#FDF6F7] border border-[#D8A7B1]/40 space-y-2">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={allowCustomVolume}
+                    onChange={(e) => setAllowCustomVolume(e.target.checked)}
+                    className="w-4 h-4 rounded text-[#B76E79] focus:ring-[#B76E79] border-stone-300"
+                  />
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-4 h-4 text-[#B76E79]" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-stone-900">
+                      Choisir du sur mesure (Activer le litrage libre)
+                    </span>
+                  </div>
+                </label>
+                <p className="text-[11px] text-stone-600 pl-7 font-light">
+                  En cochant cette option, les clients pourront saisir eux-mêmes leur propre besoin en millilitres (mL) lors de leur commande.
+                </p>
+              </div>
+
               {/* DYNAMIC FORMATS EDITOR */}
-              <div className="space-y-3 pt-4 border-t border-stone-100">
+              <div className="space-y-3 pt-2 border-t border-stone-100">
                 <div className="flex justify-between items-center">
                   <div>
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-700">
-                      Formats disponibles & Tarification
+                      Formats standards (ex: 5 mL, 16 mL, 20 mL, 100 mL)
                     </h4>
                     <p className="text-[10px] text-stone-500">Définissez la taille (mL), le prix (FCFA) et le stock disponible.</p>
                   </div>
                   <button
                     type="button"
                     onClick={addFormatField}
-                    className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold"
+                    className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#FDF6F7] hover:bg-[#FBEBEF] text-[#B76E79] border border-[#D8A7B1] text-xs font-semibold"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>+ Ajouter un format</span>
+                    <span>+ Format</span>
                   </button>
                 </div>
 
@@ -436,7 +471,7 @@ export default function AdminParfumsPage() {
                           required
                           value={fmt.sizeMl}
                           onChange={(e) => updateFormatField(fmt.id, 'sizeMl', parseInt(e.target.value) || 0)}
-                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-amber-800"
+                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
                         />
                       </div>
 
@@ -448,7 +483,7 @@ export default function AdminParfumsPage() {
                           required
                           value={fmt.price}
                           onChange={(e) => updateFormatField(fmt.id, 'price', parseInt(e.target.value) || 0)}
-                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-amber-800"
+                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
                         />
                       </div>
 
@@ -460,7 +495,7 @@ export default function AdminParfumsPage() {
                           required
                           value={fmt.stock}
                           onChange={(e) => updateFormatField(fmt.id, 'stock', parseInt(e.target.value) || 0)}
-                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-amber-800"
+                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
                         />
                       </div>
 
@@ -491,7 +526,7 @@ export default function AdminParfumsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 rounded-lg bg-amber-800 hover:bg-amber-900 disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider shadow-xs"
+                  className="px-6 py-2.5 rounded-lg bg-[#B76E79] hover:bg-[#a25a65] disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider shadow-xs"
                 >
                   {submitting ? (
                     <span className="flex items-center space-x-2">

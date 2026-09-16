@@ -184,32 +184,34 @@ export default function ProductDetailPage({
             })}
 
             {/* CUSTOM SIZE OPTION (PERSONNALISÉ SUR-MESURE) */}
-            <button
-              type="button"
-              onClick={() => {
-                setIsCustomFormat(true);
-                setQuantity(1);
-              }}
-              className={`p-3.5 rounded-md border text-left transition-all relative overflow-hidden ${
-                isCustomFormat
-                  ? 'bg-amber-50 border-[#9E7B56] text-stone-900 ring-1 ring-[#9E7B56]/40 shadow-xs'
-                  : 'bg-stone-50 border-dashed border-stone-300 text-stone-700 hover:bg-stone-100'
-              }`}
-            >
-              <div className="flex justify-between items-center">
-                <span className="font-serif font-bold text-xs uppercase flex items-center gap-1">
-                  <Sliders className="w-3.5 h-3.5 text-[#9E7B56]" />
-                  <span>Sur-mesure</span>
-                </span>
-                {isCustomFormat && <CheckCircle2 className="w-4 h-4 text-[#9E7B56]" />}
-              </div>
-              <p className="text-[11px] font-semibold text-[#9E7B56] mt-1">
-                Choisir son mL
-              </p>
-              <p className="text-[10px] text-stone-500 mt-0.5">
-                Volume au choix
-              </p>
-            </button>
+            {product.allowCustomVolume !== false && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCustomFormat(true);
+                  setQuantity(1);
+                }}
+                className={`p-3.5 rounded-md border text-left transition-all relative overflow-hidden ${
+                  isCustomFormat
+                    ? 'bg-amber-50 border-[#9E7B56] text-stone-900 ring-1 ring-[#9E7B56]/40 shadow-xs'
+                    : 'bg-stone-50 border-dashed border-stone-300 text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-serif font-bold text-xs uppercase flex items-center gap-1">
+                    <Sliders className="w-3.5 h-3.5 text-[#9E7B56]" />
+                    <span>Sur-mesure</span>
+                  </span>
+                  {isCustomFormat && <CheckCircle2 className="w-4 h-4 text-[#9E7B56]" />}
+                </div>
+                <p className="text-[11px] font-semibold text-[#9E7B56] mt-1">
+                  Choisir son mL
+                </p>
+                <p className="text-[10px] text-stone-500 mt-0.5">
+                  Volume au choix
+                </p>
+              </button>
+            )}
           </div>
 
           {/* CUSTOM ML INPUT IF CUSTOM OPTION IS ACTIVE */}
