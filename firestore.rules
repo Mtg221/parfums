@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated admin
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    // Categories collection
+    match /categories/{categoryId} {
+      // Anyone can read categories
+      allow read: if true;
+      // Only authenticated admin can create, update, or delete categories
+      allow write: if isAdmin();
+    }
+
+    // Products collection
+    match /products/{productId} {
+      // Anyone can read products
+      allow read: if true;
+      // Only authenticated admin can create, update, or delete products
+      allow write: if isAdmin();
+    }
+
+    // Orders collection
+    match /orders/{orderId} {
+      // Anyone can create an order (customer checkout)
+      allow create: if request.resource.data.customerName is string
+                    && request.resource.data.phone is string
+                    && request.resource.data.address is string
+                    && request.resource.data.productId is string
+                    && request.resource.data.quantity > 0;
+                    
+      // Only admins can read all orders, update status or delete orders
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Admins collection (Optional metadata)
+    match /admins/{adminId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
