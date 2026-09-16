@@ -5,12 +5,7 @@ import {
   ShoppingBag, 
   MessageCircle, 
   Eye, 
-  CheckCircle2, 
-  Clock, 
-  Truck, 
-  XCircle, 
   Loader2, 
-  AlertCircle,
   X,
   Filter
 } from 'lucide-react';
@@ -69,19 +64,19 @@ export default function AdminOrdersPage() {
   const getStatusBadgeClass = (status: OrderStatus) => {
     switch (status) {
       case 'new':
-        return 'bg-red-950/80 text-red-300 border-red-800';
+        return 'bg-red-50 text-red-800 border-red-200';
       case 'confirmed':
-        return 'bg-blue-950/80 text-blue-300 border-blue-800';
+        return 'bg-blue-50 text-blue-800 border-blue-200';
       case 'preparing':
-        return 'bg-amber-950/80 text-amber-300 border-amber-800';
+        return 'bg-amber-50 text-amber-900 border-amber-200';
       case 'shipping':
-        return 'bg-purple-950/80 text-purple-300 border-purple-800';
+        return 'bg-purple-50 text-purple-800 border-purple-200';
       case 'delivered':
-        return 'bg-emerald-950/80 text-emerald-300 border-emerald-800';
+        return 'bg-emerald-50 text-emerald-800 border-emerald-200';
       case 'cancelled':
-        return 'bg-neutral-800 text-neutral-400 border-neutral-700';
+        return 'bg-stone-100 text-stone-600 border-stone-200';
       default:
-        return 'bg-neutral-900 text-neutral-300 border-neutral-800';
+        return 'bg-stone-50 text-stone-700 border-stone-200';
     }
   };
 
@@ -89,22 +84,22 @@ export default function AdminOrdersPage() {
     <div className="space-y-8">
       
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-amber-900/20 pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-200 pb-6">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-amber-100 flex items-center space-x-3">
-            <ShoppingBag className="w-7 h-7 text-amber-400" />
+          <h1 className="text-3xl font-serif font-bold text-stone-900 flex items-center space-x-3">
+            <ShoppingBag className="w-7 h-7 text-amber-800" />
             <span>Gestion des Commandes</span>
           </h1>
-          <p className="text-xs text-neutral-400 font-light mt-1">
+          <p className="text-xs text-stone-500 font-light mt-1">
             Consultez les commandes reçues, modifiez leur statut et contactez directement vos clients sur WhatsApp.
           </p>
         </div>
       </div>
 
       {/* STATUS FILTER CHIPS */}
-      <div className="flex flex-wrap items-center gap-2 p-4 bg-neutral-900/60 rounded-2xl border border-neutral-800">
-        <span className="text-xs font-semibold uppercase tracking-wider text-amber-200 mr-2 flex items-center">
-          <Filter className="w-3.5 h-3.5 text-amber-400 mr-1" />
+      <div className="flex flex-wrap items-center gap-2 p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+        <span className="text-xs font-semibold uppercase tracking-wider text-stone-700 mr-2 flex items-center">
+          <Filter className="w-3.5 h-3.5 text-amber-800 mr-1" />
           Statut :
         </span>
 
@@ -120,10 +115,10 @@ export default function AdminOrdersPage() {
           <button
             key={item.key}
             onClick={() => setFilterStatus(item.key)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               filterStatus === item.key
-                ? 'bg-amber-500 text-neutral-950 font-bold'
-                : 'bg-neutral-950 text-neutral-400 border border-neutral-800 hover:text-white'
+                ? 'bg-amber-800 text-white font-bold'
+                : 'bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100'
             }`}
           >
             {item.label}
@@ -134,18 +129,18 @@ export default function AdminOrdersPage() {
       {/* ORDERS LIST */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-amber-800 animate-spin" />
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="text-center py-16 bg-neutral-900/40 rounded-2xl border border-neutral-800">
-          <p className="text-neutral-300 font-medium">Aucune commande ne correspond à ce filtre.</p>
+        <div className="text-center py-16 bg-white rounded-xl border border-stone-200">
+          <p className="text-stone-700 font-medium text-sm">Aucune commande ne correspond à ce filtre.</p>
         </div>
       ) : (
         <>
           {/* DESKTOP TABLE VIEW */}
-          <div className="hidden md:block overflow-x-auto bg-neutral-900/80 border border-amber-900/20 rounded-2xl shadow-xl">
-            <table className="w-full text-left text-xs text-neutral-300">
-              <thead className="bg-neutral-950 uppercase font-semibold text-amber-200 border-b border-neutral-800">
+          <div className="hidden md:block overflow-x-auto bg-white border border-stone-200 rounded-xl shadow-xs">
+            <table className="w-full text-left text-xs text-stone-700">
+              <thead className="bg-stone-50 uppercase font-semibold text-stone-800 border-b border-stone-200">
                 <tr>
                   <th className="p-4">ID Commande</th>
                   <th className="p-4">Client</th>
@@ -156,18 +151,18 @@ export default function AdminOrdersPage() {
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800">
+              <tbody className="divide-y divide-stone-100">
                 {filteredOrders.map((ord) => (
-                  <tr key={ord.id} className="hover:bg-neutral-950/40 transition-colors">
-                    <td className="p-4 font-mono font-bold text-amber-400">
+                  <tr key={ord.id} className="hover:bg-stone-50/60 transition-colors">
+                    <td className="p-4 font-mono font-bold text-amber-800">
                       #{ord.id.slice(0, 8).toUpperCase()}
                     </td>
-                    <td className="p-4 font-semibold text-neutral-100">{ord.customerName}</td>
+                    <td className="p-4 font-bold text-stone-900">{ord.customerName}</td>
                     <td className="p-4">{ord.phone}</td>
                     <td className="p-4">
-                      <span className="font-semibold text-amber-200">{ord.productName}</span> ({ord.sizeMl} mL x{ord.quantity})
+                      <span className="font-semibold text-stone-900">{ord.productName}</span> ({ord.sizeMl} mL x{ord.quantity})
                     </td>
-                    <td className="p-4 font-bold text-amber-300">{formatPrice(ord.totalPrice)}</td>
+                    <td className="p-4 font-bold text-amber-800">{formatPrice(ord.totalPrice)}</td>
                     <td className="p-4">
                       <select
                         value={ord.status}
@@ -186,7 +181,7 @@ export default function AdminOrdersPage() {
                     <td className="p-4 text-right space-x-2">
                       <button
                         onClick={() => setSelectedOrder(ord)}
-                        className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-amber-300 transition-colors"
+                        className="p-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors"
                         title="Détails"
                       >
                         <Eye className="w-4 h-4" />
@@ -195,7 +190,7 @@ export default function AdminOrdersPage() {
                         href={generateAdminWhatsAppUrl(ord)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-inline-block p-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow transition-colors"
+                        className="inline-inline-block p-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-colors"
                         title="Contacter sur WhatsApp"
                       >
                         <MessageCircle className="w-4 h-4 inline" />
@@ -212,32 +207,32 @@ export default function AdminOrdersPage() {
             {filteredOrders.map((ord) => (
               <div
                 key={ord.id}
-                className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-5 space-y-4 shadow-lg"
+                className="bg-white border border-stone-200 rounded-xl p-5 space-y-4 shadow-xs"
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <span className="font-mono text-xs font-bold text-amber-400">
+                    <span className="font-mono text-xs font-bold text-amber-800">
                       #{ord.id.slice(0, 8).toUpperCase()}
                     </span>
-                    <h4 className="font-bold text-amber-100 text-base">{ord.customerName}</h4>
-                    <p className="text-xs text-neutral-400">{ord.phone}</p>
+                    <h2 className="font-bold text-stone-900 text-base">{ord.customerName}</h2>
+                    <p className="text-xs text-stone-500">{ord.phone}</p>
                   </div>
                   <span className={`text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border ${getStatusBadgeClass(ord.status)}`}>
                     {ord.status}
                   </span>
                 </div>
 
-                <div className="text-xs text-neutral-300 bg-neutral-950 p-3 rounded-xl border border-neutral-800 space-y-1">
-                  <p>Parfum : <strong className="text-amber-200">{ord.productName}</strong></p>
+                <div className="text-xs text-stone-700 bg-stone-50 p-3 rounded-lg border border-stone-200 space-y-1">
+                  <p>Parfum : <strong className="text-stone-900">{ord.productName}</strong></p>
                   <p>Format : {ord.sizeMl} mL — Qté : {ord.quantity}</p>
-                  <p className="text-amber-400 font-bold pt-1 text-sm">Total : {formatPrice(ord.totalPrice)}</p>
+                  <p className="text-amber-800 font-bold pt-1 text-sm">Total : {formatPrice(ord.totalPrice)}</p>
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
                   <select
                     value={ord.status}
                     onChange={(e) => handleStatusChange(ord.id, e.target.value as OrderStatus)}
-                    className="px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-xs font-bold text-amber-300"
+                    className="px-3 py-1.5 rounded-lg bg-white border border-stone-300 text-xs font-bold text-stone-900"
                   >
                     <option value="new">Nouvelle</option>
                     <option value="confirmed">Confirmée</option>
@@ -250,7 +245,7 @@ export default function AdminOrdersPage() {
                   <div className="flex space-x-2">
                     <button
                       onClick={() => setSelectedOrder(ord)}
-                      className="p-2 rounded-lg bg-neutral-800 text-amber-300"
+                      className="p-2 rounded-lg bg-stone-100 text-stone-800"
                     >
                       <Eye className="w-4 h-4" />
                     </button>
@@ -258,7 +253,7 @@ export default function AdminOrdersPage() {
                       href={generateAdminWhatsAppUrl(ord)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-lg bg-emerald-600 text-white"
+                      className="p-2 rounded-lg bg-emerald-700 text-white"
                     >
                       <MessageCircle className="w-4 h-4" />
                     </a>
@@ -272,54 +267,54 @@ export default function AdminOrdersPage() {
 
       {/* DETAILED ORDER MODAL */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/80 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-neutral-900 border border-amber-900/30 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
             
-            <div className="flex justify-between items-center border-b border-neutral-800 pb-4">
+            <div className="flex justify-between items-center border-b border-stone-100 pb-4">
               <div>
-                <span className="font-mono text-xs font-bold text-amber-400">
+                <span className="font-mono text-xs font-bold text-amber-800">
                   #{selectedOrder.id.slice(0, 8).toUpperCase()}
                 </span>
-                <h3 className="text-xl font-serif font-bold text-amber-100">
+                <h3 className="text-xl font-serif font-bold text-stone-900">
                   Détail de la Commande
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="p-1 rounded-lg text-neutral-400 hover:text-white"
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="p-4 bg-neutral-950 rounded-2xl border border-neutral-800 space-y-2">
-                <p className="text-neutral-400 uppercase font-semibold text-[10px]">Information Client</p>
-                <p className="text-sm font-bold text-amber-100">{selectedOrder.customerName}</p>
-                <p className="text-neutral-300">Téléphone : <span className="font-mono">{selectedOrder.phone}</span></p>
-                <p className="text-neutral-300">Adresse : {selectedOrder.address}</p>
+              <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
+                <p className="text-stone-500 uppercase font-semibold text-[10px]">Information Client</p>
+                <p className="text-sm font-bold text-stone-900">{selectedOrder.customerName}</p>
+                <p className="text-stone-700">Téléphone : <span className="font-mono">{selectedOrder.phone}</span></p>
+                <p className="text-stone-700">Adresse : {selectedOrder.address}</p>
                 {selectedOrder.notes && (
-                  <p className="text-neutral-400 italic pt-1">Note : &quot;{selectedOrder.notes}&quot;</p>
+                  <p className="text-stone-500 italic pt-1">Note : &quot;{selectedOrder.notes}&quot;</p>
                 )}
               </div>
 
-              <div className="p-4 bg-neutral-950 rounded-2xl border border-neutral-800 space-y-2">
-                <p className="text-neutral-400 uppercase font-semibold text-[10px]">Article Commandé</p>
-                <div className="flex justify-between text-sm font-bold text-amber-200">
+              <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
+                <p className="text-stone-500 uppercase font-semibold text-[10px]">Article Commandé</p>
+                <div className="flex justify-between text-sm font-bold text-stone-900">
                   <span>{selectedOrder.productName}</span>
-                  <span>{formatPrice(selectedOrder.totalPrice)}</span>
+                  <span className="text-amber-800">{formatPrice(selectedOrder.totalPrice)}</span>
                 </div>
-                <p className="text-neutral-400">
+                <p className="text-stone-600">
                   Format : {selectedOrder.sizeMl} mL — Quantité : x{selectedOrder.quantity} (Prix unit: {formatPrice(selectedOrder.unitPrice)})
                 </p>
               </div>
 
-              <div className="p-4 bg-neutral-950 rounded-2xl border border-neutral-800 space-y-2">
-                <p className="text-neutral-400 uppercase font-semibold text-[10px]">Mise à jour du statut</p>
+              <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+                <p className="text-stone-500 uppercase font-semibold text-[10px]">Mise à jour du statut</p>
                 <select
                   value={selectedOrder.status}
                   onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value as OrderStatus)}
-                  className={`w-full p-2.5 rounded-xl border text-xs font-bold uppercase ${getStatusBadgeClass(selectedOrder.status)}`}
+                  className={`w-full p-2.5 rounded-lg border text-xs font-bold uppercase ${getStatusBadgeClass(selectedOrder.status)}`}
                 >
                   <option value="new">Nouvelle</option>
                   <option value="confirmed">Confirmée</option>
@@ -336,7 +331,7 @@ export default function AdminOrdersPage() {
                 href={generateAdminWhatsAppUrl(selectedOrder)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase"
+                className="w-full flex items-center justify-center space-x-2 py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Contacter le client sur WhatsApp</span>
@@ -344,7 +339,7 @@ export default function AdminOrdersPage() {
 
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="w-full py-3 rounded-xl bg-neutral-800 text-neutral-300 font-semibold text-xs uppercase"
+                className="w-full py-3 rounded-lg bg-stone-100 text-stone-700 font-semibold text-xs uppercase"
               >
                 Fermer
               </button>

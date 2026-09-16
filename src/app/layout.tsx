@@ -19,7 +19,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'AURA PARFUMS'} | Haute Parfumerie & Fragrances d'Exception`,
-  description: "Découvrez notre collection exclusive de parfums de luxe. Commandez facilement vos fragrances préférées et recevez-les en toute sérénité.",
+  description: "Découvrez notre collection exclusive de parfums de luxe. Eaux de parfum d'exception, commande facile et livraison rapide.",
   openGraph: {
     title: 'AURA PARFUMS | Parfumerie de Luxe',
     description: 'Boutique en ligne spécialisée dans la haute parfumerie.',
@@ -34,7 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className={`${playfair.variable} ${inter.variable}`}>
-      <body className="bg-neutral-950 text-neutral-100 font-sans antialiased selection:bg-amber-500 selection:text-neutral-950 min-h-screen flex flex-col justify-between">
+      <body className="bg-[#faf9f6] text-stone-900 font-sans antialiased selection:bg-amber-100 selection:text-amber-900 min-h-screen flex flex-col justify-between">
         <AuthProvider>
           <Navbar />
           <main className="flex-grow">{children}</main>

@@ -87,7 +87,6 @@ export default function AdminParfumsPage() {
     setIsModalOpen(true);
   };
 
-  // Format Handlers (Dynamic format addition/removal/update)
   const addFormatField = () => {
     setFormats((prev) => [
       ...prev,
@@ -179,20 +178,20 @@ export default function AdminParfumsPage() {
     <div className="space-y-8">
       
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-amber-900/20 pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-200 pb-6">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-amber-100 flex items-center space-x-3">
-            <Package className="w-7 h-7 text-amber-400" />
+          <h1 className="text-3xl font-serif font-bold text-stone-900 flex items-center space-x-3">
+            <Package className="w-7 h-7 text-amber-800" />
             <span>Gestion des Parfums & Formats</span>
           </h1>
-          <p className="text-xs text-neutral-400 font-light mt-1">
+          <p className="text-xs text-stone-500 font-light mt-1">
             Gérez vos eaux de parfum, ajustez les prix en FCFA et suivez les stocks disponibles par format.
           </p>
         </div>
 
         <button
           onClick={handleOpenAddModal}
-          className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition-all"
+          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs uppercase tracking-wider shadow-xs transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Ajouter un parfum</span>
@@ -200,9 +199,9 @@ export default function AdminParfumsPage() {
       </div>
 
       {/* FILTER BAR */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-neutral-900/60 rounded-2xl border border-neutral-800">
-        <div className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-amber-200">
-          <Filter className="w-4 h-4 text-amber-400" />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+        <div className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-stone-700">
+          <Filter className="w-4 h-4 text-amber-800" />
           <span>Filtrer par catégorie :</span>
         </div>
 
@@ -211,8 +210,8 @@ export default function AdminParfumsPage() {
             onClick={() => setSelectedCategoryFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               selectedCategoryFilter === 'all'
-                ? 'bg-amber-500 text-neutral-950 font-bold'
-                : 'bg-neutral-950 text-neutral-400 border border-neutral-800 hover:text-white'
+                ? 'bg-amber-800 text-white font-bold'
+                : 'bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100'
             }`}
           >
             Toutes ({products.length})
@@ -225,8 +224,8 @@ export default function AdminParfumsPage() {
                 onClick={() => setSelectedCategoryFilter(c.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   selectedCategoryFilter === c.id
-                    ? 'bg-amber-500 text-neutral-950 font-bold'
-                    : 'bg-neutral-950 text-neutral-400 border border-neutral-800 hover:text-white'
+                    ? 'bg-amber-800 text-white font-bold'
+                    : 'bg-stone-50 text-stone-600 border border-stone-200 hover:bg-stone-100'
                 }`}
               >
                 {c.name} ({count})
@@ -238,15 +237,15 @@ export default function AdminParfumsPage() {
 
       {/* NOTIFICATIONS */}
       {error && (
-        <div className="p-4 bg-red-950/70 border border-red-800 rounded-2xl flex items-center space-x-3 text-red-300 text-xs">
-          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3 text-red-800 text-xs">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {success && (
-        <div className="p-4 bg-emerald-950/70 border border-emerald-800 rounded-2xl flex items-center space-x-3 text-emerald-300 text-xs">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center space-x-3 text-emerald-900 text-xs">
+          <CheckCircle2 className="w-5 h-5 text-emerald-700 flex-shrink-0" />
           <span>{success}</span>
         </div>
       )}
@@ -254,14 +253,14 @@ export default function AdminParfumsPage() {
       {/* PRODUCTS LIST */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-amber-800 animate-spin" />
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="text-center py-16 bg-neutral-900/40 rounded-2xl border border-neutral-800 space-y-3">
-          <p className="text-neutral-300 font-medium">Aucun parfum trouvé pour ce filtre.</p>
+        <div className="text-center py-16 bg-white rounded-xl border border-stone-200 space-y-3">
+          <p className="text-stone-700 font-medium text-sm">Aucun parfum trouvé pour ce filtre.</p>
           <button
             onClick={handleOpenAddModal}
-            className="text-xs font-semibold text-amber-400 hover:underline"
+            className="text-xs font-semibold text-amber-800 hover:underline"
           >
             Ajouter un nouveau parfum
           </button>
@@ -271,28 +270,28 @@ export default function AdminParfumsPage() {
           {filteredProducts.map((prod) => (
             <div
               key={prod.id}
-              className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-6 space-y-5 shadow-xl flex flex-col justify-between"
+              className="bg-white border border-stone-200 rounded-xl p-6 space-y-5 shadow-xs flex flex-col justify-between"
             >
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] uppercase tracking-widest text-amber-400 font-semibold">
+                    <span className="text-[10px] uppercase tracking-widest text-amber-800 font-semibold">
                       {prod.categoryName || 'Catégorie n/a'}
                     </span>
-                    <h3 className="text-2xl font-serif font-bold text-amber-100">{prod.name}</h3>
+                    <h2 className="text-xl font-serif font-bold text-stone-900">{prod.name}</h2>
                   </div>
 
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-1.5">
                     <button
                       onClick={() => handleOpenEditModal(prod)}
-                      className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-amber-300 transition-colors"
+                      className="p-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors"
                       title="Modifier"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(prod.id, prod.name)}
-                      className="p-2 rounded-lg bg-red-950/60 hover:bg-red-900 text-red-300 border border-red-900/40 transition-colors"
+                      className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors"
                       title="Supprimer"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -300,15 +299,15 @@ export default function AdminParfumsPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-neutral-300 font-light leading-relaxed line-clamp-3">
+                <p className="text-xs text-stone-600 font-light leading-relaxed line-clamp-3">
                   {prod.description || 'Aucune description.'}
                 </p>
               </div>
 
-              {/* FORMATS TABLE LIST */}
-              <div className="pt-4 border-t border-neutral-800 space-y-2">
-                <p className="text-[10px] uppercase tracking-wider font-semibold text-neutral-400 flex items-center space-x-1">
-                  <Layers className="w-3.5 h-3.5 text-amber-400" />
+              {/* FORMATS LIST */}
+              <div className="pt-4 border-t border-stone-100 space-y-2">
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-stone-500 flex items-center space-x-1">
+                  <Layers className="w-3.5 h-3.5 text-amber-800" />
                   <span>Formats & Stocks définis :</span>
                 </p>
 
@@ -316,17 +315,17 @@ export default function AdminParfumsPage() {
                   {prod.formats.map((fmt) => (
                     <div
                       key={fmt.id || fmt.sizeMl}
-                      className={`p-2.5 rounded-xl border text-xs flex flex-col justify-between space-y-1 ${
+                      className={`p-2.5 rounded-lg border text-xs flex flex-col justify-between space-y-0.5 ${
                         fmt.stock > 0
-                          ? 'bg-neutral-950 border-neutral-800 text-neutral-200'
-                          : 'bg-red-950/30 border-red-900/40 text-red-300'
+                          ? 'bg-stone-50 border-stone-200 text-stone-800'
+                          : 'bg-red-50 border-red-200 text-red-800'
                       }`}
                     >
                       <div className="flex justify-between font-bold">
                         <span>{fmt.sizeMl} mL</span>
-                        <span className="text-amber-400">{formatPrice(fmt.price)}</span>
+                        <span className="text-amber-800">{formatPrice(fmt.price)}</span>
                       </div>
-                      <div className="text-[10px] text-neutral-400">
+                      <div className="text-[10px] text-stone-500">
                         {fmt.stock > 0 ? `Stock : ${fmt.stock}` : 'Rupture de stock'}
                       </div>
                     </div>
@@ -341,16 +340,16 @@ export default function AdminParfumsPage() {
 
       {/* ADD/EDIT PRODUCT MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/80 backdrop-blur-md overflow-y-auto">
-          <div className="w-full max-w-2xl bg-neutral-900 border border-amber-900/30 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl my-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl my-8">
             
-            <div className="flex justify-between items-center border-b border-neutral-800 pb-4">
-              <h3 className="text-xl font-serif font-bold text-amber-100">
+            <div className="flex justify-between items-center border-b border-stone-100 pb-4">
+              <h3 className="text-xl font-serif font-bold text-stone-900">
                 {editingProduct ? 'Modifier le parfum' : 'Ajouter un parfum'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-lg text-neutral-400 hover:text-white"
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -359,9 +358,9 @@ export default function AdminParfumsPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-amber-200">
-                    Nom du parfum <span className="text-red-400">*</span>
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
+                    Nom du parfum <span className="text-red-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -369,19 +368,19 @@ export default function AdminParfumsPage() {
                     placeholder="Ex: Dior Sauvage"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-neutral-100 text-sm focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-amber-800"
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-amber-200">
-                    Catégorie <span className="text-red-400">*</span>
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
+                    Catégorie <span className="text-red-600">*</span>
                   </label>
                   <select
                     required
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-neutral-100 text-sm focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-amber-800"
                   >
                     <option value="" disabled>Sélectionner une catégorie</option>
                     {categories.map((c) => (
@@ -391,8 +390,8 @@ export default function AdminParfumsPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-amber-200">
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
                   Description de la fragrance
                 </label>
                 <textarea
@@ -400,68 +399,68 @@ export default function AdminParfumsPage() {
                   placeholder="Notes olfactives, inspiration, sillage..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-neutral-100 text-sm focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-amber-800"
                 />
               </div>
 
-              {/* DYNAMIC FORMATS EDITOR (Section 27 & 28) */}
-              <div className="space-y-4 pt-4 border-t border-neutral-800">
+              {/* DYNAMIC FORMATS EDITOR */}
+              <div className="space-y-3 pt-4 border-t border-stone-100">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-200">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-700">
                       Formats disponibles & Tarification
                     </h4>
-                    <p className="text-[10px] text-neutral-400">Définissez la taille (mL), le prix (FCFA) et le stock disponible.</p>
+                    <p className="text-[10px] text-stone-500">Définissez la taille (mL), le prix (FCFA) et le stock disponible.</p>
                   </div>
                   <button
                     type="button"
                     onClick={addFormatField}
-                    className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold"
+                    className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>+ Ajouter un format</span>
                   </button>
                 </div>
 
-                <div className="space-y-3">
-                  {formats.map((fmt, index) => (
+                <div className="space-y-2.5">
+                  {formats.map((fmt) => (
                     <div
                       key={fmt.id}
-                      className="p-3 bg-neutral-950 border border-neutral-800 rounded-xl grid grid-cols-12 gap-3 items-center"
+                      className="p-3 bg-stone-50 border border-stone-200 rounded-lg grid grid-cols-12 gap-3 items-center"
                     >
                       <div className="col-span-3">
-                        <label className="block text-[10px] text-neutral-400 uppercase">Taille (mL)</label>
+                        <label className="block text-[10px] text-stone-500 uppercase font-semibold">Taille (mL)</label>
                         <input
                           type="number"
                           min="1"
                           required
                           value={fmt.sizeMl}
                           onChange={(e) => updateFormatField(fmt.id, 'sizeMl', parseInt(e.target.value) || 0)}
-                          className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-700 rounded-lg text-neutral-100 text-xs focus:outline-none focus:border-amber-500"
+                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-amber-800"
                         />
                       </div>
 
                       <div className="col-span-5">
-                        <label className="block text-[10px] text-neutral-400 uppercase">Prix (FCFA)</label>
+                        <label className="block text-[10px] text-stone-500 uppercase font-semibold">Prix (FCFA)</label>
                         <input
                           type="number"
                           min="0"
                           required
                           value={fmt.price}
                           onChange={(e) => updateFormatField(fmt.id, 'price', parseInt(e.target.value) || 0)}
-                          className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-700 rounded-lg text-neutral-100 text-xs focus:outline-none focus:border-amber-500"
+                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-amber-800"
                         />
                       </div>
 
                       <div className="col-span-3">
-                        <label className="block text-[10px] text-neutral-400 uppercase">Stock</label>
+                        <label className="block text-[10px] text-stone-500 uppercase font-semibold">Stock</label>
                         <input
                           type="number"
                           min="0"
                           required
                           value={fmt.stock}
                           onChange={(e) => updateFormatField(fmt.id, 'stock', parseInt(e.target.value) || 0)}
-                          className="w-full px-3 py-1.5 bg-neutral-900 border border-neutral-700 rounded-lg text-neutral-100 text-xs focus:outline-none focus:border-amber-500"
+                          className="w-full px-2.5 py-1.5 bg-white border border-stone-300 rounded text-stone-900 text-xs focus:outline-none focus:border-amber-800"
                         />
                       </div>
 
@@ -469,7 +468,7 @@ export default function AdminParfumsPage() {
                         <button
                           type="button"
                           onClick={() => removeFormatField(fmt.id)}
-                          className="p-1 rounded text-red-400 hover:bg-red-950"
+                          className="p-1 rounded text-red-600 hover:bg-red-50"
                           title="Supprimer ce format"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -484,7 +483,7 @@ export default function AdminParfumsPage() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold uppercase"
+                  className="px-5 py-2.5 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold uppercase"
                 >
                   Annuler
                 </button>
@@ -492,7 +491,7 @@ export default function AdminParfumsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-neutral-950 text-xs font-bold uppercase tracking-wider shadow-md"
+                  className="px-6 py-2.5 rounded-lg bg-amber-800 hover:bg-amber-900 disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider shadow-xs"
                 >
                   {submitting ? (
                     <span className="flex items-center space-x-2">

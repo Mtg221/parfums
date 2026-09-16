@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MessageCircle, Menu, X, Sparkles } from 'lucide-react';
+import { MessageCircle, Menu, X } from 'lucide-react';
 import { getWhatsAppNumber } from '@/lib/whatsapp';
 
 export const Navbar: React.FC = () => {
@@ -16,13 +16,12 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 15);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
@@ -42,18 +41,19 @@ export const Navbar: React.FC = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-neutral-950/90 backdrop-blur-md border-b border-amber-900/20 shadow-xl py-3'
-          : 'bg-gradient-to-b from-neutral-950/80 to-transparent py-5'
+          ? 'bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-xs py-3.5'
+          : 'bg-[#faf9f6]/90 backdrop-blur-xs py-5 border-b border-stone-200/40'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
+          
           {/* LOGO */}
-          <Link href="/" className="flex items-center space-x-2 group">
-            <span className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center group-hover:border-amber-400 transition-colors">
-              <Sparkles className="w-4 h-4 text-amber-400" />
+          <Link href="/" className="flex items-center space-x-2.5 group">
+            <span className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-800 font-serif font-bold text-sm">
+              A
             </span>
-            <span className="text-xl sm:text-2xl font-serif tracking-widest text-amber-100 font-bold uppercase">
+            <span className="text-xl sm:text-2xl font-serif font-bold tracking-widest text-stone-900 uppercase">
               {siteName}
             </span>
           </Link>
@@ -66,10 +66,10 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm tracking-wider transition-colors duration-200 uppercase font-medium ${
+                  className={`text-xs font-semibold tracking-wider uppercase transition-colors py-1 ${
                     isActive
-                      ? 'text-amber-400 border-b-2 border-amber-400 pb-1'
-                      : 'text-neutral-300 hover:text-amber-200'
+                      ? 'text-amber-800 border-b-2 border-amber-800'
+                      : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
                   {link.label}
@@ -84,7 +84,7 @@ export const Navbar: React.FC = () => {
               href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour, je souhaite me renseigner sur vos parfums.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm tracking-wide shadow-lg shadow-emerald-900/30 transition-all duration-300 transform hover:-translate-y-0.5"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs tracking-wider uppercase shadow-xs transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Commander / WhatsApp</span>
@@ -95,7 +95,7 @@ export const Navbar: React.FC = () => {
           <div className="flex md:hidden items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-amber-100 hover:bg-neutral-900 transition-colors"
+              className="p-2 rounded-lg text-stone-700 hover:bg-stone-100 transition-colors"
               aria-label="Menu principal"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -106,18 +106,18 @@ export const Navbar: React.FC = () => {
 
       {/* MOBILE MENU OVERLAY */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-neutral-950/95 backdrop-blur-xl border-b border-amber-900/20 px-4 pt-4 pb-6 mt-3 space-y-4 animate-fadeIn">
-          <nav className="flex flex-col space-y-3">
+        <div className="md:hidden bg-white border-b border-stone-200 px-4 pt-3 pb-6 mt-3 space-y-4 shadow-lg animate-fadeIn">
+          <nav className="flex flex-col space-y-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium tracking-wider uppercase transition-colors ${
+                  className={`px-4 py-3 rounded-lg text-xs font-semibold tracking-wider uppercase transition-colors ${
                     isActive
-                      ? 'bg-amber-500/10 text-amber-400 border-l-4 border-amber-400'
-                      : 'text-neutral-300 hover:bg-neutral-900 hover:text-amber-200'
+                      ? 'bg-amber-50 text-amber-900 font-bold border-l-4 border-amber-800'
+                      : 'text-stone-700 hover:bg-stone-50'
                   }`}
                 >
                   {link.label}
@@ -125,14 +125,14 @@ export const Navbar: React.FC = () => {
               );
             })}
           </nav>
-          <div className="pt-2 border-t border-neutral-900">
+          <div className="pt-2 border-t border-stone-100">
             <a
               href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour, je souhaite me renseigner sur vos parfums.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center space-x-2 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm tracking-wide shadow-md"
+              className="w-full flex items-center justify-center space-x-2 py-3 rounded-lg bg-emerald-700 text-white font-medium text-xs tracking-wider uppercase shadow-xs"
             >
-              <MessageCircle className="w-5 h-5" />
+              <MessageCircle className="w-4 h-4" />
               <span>Commander sur WhatsApp</span>
             </a>
           </div>

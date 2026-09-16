@@ -9,7 +9,6 @@ import {
   Package, 
   ShoppingBag, 
   LogOut, 
-  Sparkles, 
   Menu, 
   X,
   Database,
@@ -60,18 +59,18 @@ export const AdminSidebar: React.FC = () => {
   return (
     <>
       {/* MOBILE TOP BAR FOR ADMIN */}
-      <div className="lg:hidden bg-neutral-950 border-b border-amber-900/20 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+      <div className="lg:hidden bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center space-x-2">
-          <span className="w-7 h-7 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <span className="w-7 h-7 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center font-serif font-bold text-amber-900 text-xs">
+            A
           </span>
-          <span className="font-serif font-bold text-amber-100 text-sm tracking-wider uppercase">
+          <span className="font-serif font-bold text-stone-900 text-sm tracking-wider uppercase">
             Admin Panel
           </span>
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 rounded-lg text-neutral-300 hover:bg-neutral-900"
+          className="p-2 rounded-lg text-stone-700 hover:bg-stone-100"
         >
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -81,13 +80,13 @@ export const AdminSidebar: React.FC = () => {
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-40 lg:hidden"
         />
       )}
 
       {/* SIDEBAR CONTAINER */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-neutral-950 border-r border-amber-900/20 flex flex-col justify-between p-6 transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white border-r border-stone-200 flex flex-col justify-between p-6 transition-transform duration-300 lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -96,20 +95,20 @@ export const AdminSidebar: React.FC = () => {
           {/* HEADER LOGO */}
           <div className="space-y-1">
             <Link href="/admin" className="flex items-center space-x-2">
-              <span className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-amber-400" />
+              <span className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center font-serif font-bold text-amber-900 text-sm">
+                A
               </span>
-              <span className="text-lg font-serif font-bold text-amber-100 tracking-wider uppercase">
+              <span className="text-lg font-serif font-bold text-stone-900 tracking-wider uppercase">
                 {process.env.NEXT_PUBLIC_SITE_NAME || 'AURA PARFUMS'}
               </span>
             </Link>
-            <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-semibold pl-10">
+            <p className="text-[10px] text-stone-500 uppercase tracking-widest font-semibold pl-10">
               Panneau d&apos;administration
             </p>
           </div>
 
           {/* NAVIGATION LINKS */}
-          <nav className="space-y-1.5">
+          <nav className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -119,13 +118,13 @@ export const AdminSidebar: React.FC = () => {
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
                     isActive
-                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold shadow-md'
-                      : 'text-neutral-400 hover:text-amber-100 hover:bg-neutral-900'
+                      ? 'bg-amber-50 text-amber-900 border-l-4 border-amber-800 font-bold shadow-xs'
+                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-neutral-500'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-amber-800' : 'text-stone-400'}`} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -134,13 +133,13 @@ export const AdminSidebar: React.FC = () => {
         </div>
 
         {/* BOTTOM UTILITIES: USER INFO, SEED & LOGOUT */}
-        <div className="space-y-4 pt-6 border-t border-neutral-900">
+        <div className="space-y-3.5 pt-6 border-t border-stone-100">
           
           {/* USER EMAIL */}
           {user && (
-            <div className="px-3 py-2 rounded-xl bg-neutral-900/60 border border-neutral-800/60">
-              <p className="text-[10px] uppercase text-neutral-500 font-semibold">Connecté en tant que</p>
-              <p className="text-xs text-amber-200 font-mono truncate">{user.email || 'Admin'}</p>
+            <div className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-200/80">
+              <p className="text-[10px] uppercase text-stone-500 font-semibold">Connecté en tant que</p>
+              <p className="text-xs text-stone-900 font-mono truncate">{user.email || 'Admin'}</p>
             </div>
           )}
 
@@ -148,25 +147,25 @@ export const AdminSidebar: React.FC = () => {
           <button
             onClick={handleSeed}
             disabled={seeding}
-            className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-amber-300 border border-neutral-800 text-xs font-medium transition-colors"
+            className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 text-xs font-medium transition-colors"
             title="Injecter des catégories et parfums de test"
           >
             {seeding ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-800" />
             ) : (
-              <Database className="w-3.5 h-3.5 text-amber-400" />
+              <Database className="w-3.5 h-3.5 text-amber-800" />
             )}
             <span>{seeding ? 'Génération...' : 'Injecter démo test'}</span>
           </button>
           
           {seedMessage && (
-            <p className="text-[10px] text-amber-300 text-center leading-tight">{seedMessage}</p>
+            <p className="text-[10px] text-amber-800 text-center leading-tight">{seedMessage}</p>
           )}
 
           {/* PUBLIC SITE LINK */}
           <Link
             href="/"
-            className="block text-center text-xs text-neutral-500 hover:text-amber-400 transition-colors py-1"
+            className="block text-center text-xs text-stone-500 hover:text-stone-800 transition-colors py-1"
           >
             ← Voir le site public
           </Link>
@@ -174,7 +173,7 @@ export const AdminSidebar: React.FC = () => {
           {/* LOGOUT BUTTON */}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-red-950/40 hover:bg-red-900/50 text-red-300 border border-red-900/30 text-xs font-medium transition-colors"
+            className="w-full flex items-center justify-center space-x-2 py-2 px-4 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-semibold transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span>Déconnexion</span>
