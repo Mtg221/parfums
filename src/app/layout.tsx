@@ -18,11 +18,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'AURA PARFUMS'} | Haute Parfumerie & Fragrances d'Exception`,
-  description: "Découvrez notre collection exclusive de parfums de luxe. Eaux de parfum d'exception, commande facile et livraison rapide.",
+  title: `${process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY"} | Haute Parfumerie & Fragrances d'Exception`,
+  description: "Découvrez l'univers exclusif de SONIA’S PERFUMERY. Collection d'eaux de parfum d'exception, commande facile et livraison rapide.",
   openGraph: {
-    title: 'AURA PARFUMS | Parfumerie de Luxe',
-    description: 'Boutique en ligne spécialisée dans la haute parfumerie.',
+    title: "SONIA’S PERFUMERY | Parfumerie de Luxe",
+    description: "Boutique en ligne spécialisée dans la haute parfumerie.",
     type: 'website',
   },
 };

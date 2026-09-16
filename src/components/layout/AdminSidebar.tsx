@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
@@ -61,11 +62,16 @@ export const AdminSidebar: React.FC = () => {
       {/* MOBILE TOP BAR FOR ADMIN */}
       <div className="lg:hidden bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center space-x-2">
-          <span className="w-7 h-7 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center font-serif font-bold text-amber-900 text-xs">
-            A
-          </span>
-          <span className="font-serif font-bold text-stone-900 text-sm tracking-wider uppercase">
-            Admin Panel
+          <div className="relative w-7 h-7 rounded-full overflow-hidden border border-amber-800/30 bg-white flex-shrink-0">
+            <Image
+              src="/logo.JPG"
+              alt="SONIA’S PERFUMERY Logo"
+              fill
+              className="object-cover"
+            />
+          </div>
+          <span className="font-serif font-bold text-stone-900 text-xs tracking-wider uppercase truncate max-w-[180px]">
+            {process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY"}
           </span>
         </div>
         <button
@@ -94,15 +100,20 @@ export const AdminSidebar: React.FC = () => {
           
           {/* HEADER LOGO */}
           <div className="space-y-1">
-            <Link href="/admin" className="flex items-center space-x-2">
-              <span className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center font-serif font-bold text-amber-900 text-sm">
-                A
-              </span>
-              <span className="text-lg font-serif font-bold text-stone-900 tracking-wider uppercase">
-                {process.env.NEXT_PUBLIC_SITE_NAME || 'AURA PARFUMS'}
+            <Link href="/admin" className="flex items-center space-x-3">
+              <div className="relative w-9 h-9 rounded-full overflow-hidden border border-amber-800/30 bg-white flex-shrink-0">
+                <Image
+                  src="/logo.JPG"
+                  alt="SONIA’S PERFUMERY Logo"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <span className="text-base font-serif font-bold text-stone-900 tracking-wider uppercase leading-tight">
+                {process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY"}
               </span>
             </Link>
-            <p className="text-[10px] text-stone-500 uppercase tracking-widest font-semibold pl-10">
+            <p className="text-[10px] text-stone-500 uppercase tracking-widest font-semibold pl-12">
               Panneau d&apos;administration
             </p>
           </div>
@@ -132,7 +143,7 @@ export const AdminSidebar: React.FC = () => {
           </nav>
         </div>
 
-        {/* BOTTOM UTILITIES: USER INFO, SEED & LOGOUT */}
+        {/* BOTTOM UTILITIES */}
         <div className="space-y-3.5 pt-6 border-t border-stone-100">
           
           {/* USER EMAIL */}

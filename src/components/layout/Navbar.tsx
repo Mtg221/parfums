@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { MessageCircle, Menu, X } from 'lucide-react';
 import { getWhatsAppNumber } from '@/lib/whatsapp';
@@ -11,7 +12,7 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'AURA PARFUMS';
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY";
   const whatsappNumber = getWhatsAppNumber();
 
   useEffect(() => {
@@ -41,19 +42,25 @@ export const Navbar: React.FC = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-xs py-3.5'
-          : 'bg-[#faf9f6]/90 backdrop-blur-xs py-5 border-b border-stone-200/40'
+          ? 'bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-xs py-3'
+          : 'bg-[#faf9f6]/90 backdrop-blur-xs py-4 border-b border-stone-200/40'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           
-          {/* LOGO */}
-          <Link href="/" className="flex items-center space-x-2.5 group">
-            <span className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-800 font-serif font-bold text-sm">
-              A
-            </span>
-            <span className="text-xl sm:text-2xl font-serif font-bold tracking-widest text-stone-900 uppercase">
+          {/* LOGO & BRAND NAME */}
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden border border-amber-800/30 bg-white flex-shrink-0 shadow-xs group-hover:border-amber-800 transition-colors">
+              <Image
+                src="/logo.JPG"
+                alt="SONIA’S PERFUMERY Logo"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+            <span className="text-lg sm:text-xl font-serif font-bold tracking-widest text-stone-900 uppercase">
               {siteName}
             </span>
           </Link>

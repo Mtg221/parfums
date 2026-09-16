@@ -2,12 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { MessageCircle, Phone, MapPin, Mail, ShieldCheck } from 'lucide-react';
 import { getWhatsAppNumber } from '@/lib/whatsapp';
 
 export const Footer: React.FC = () => {
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'AURA PARFUMS';
-  const siteSlogan = process.env.NEXT_PUBLIC_SITE_SLOGAN || "L'Essence du Luxe & de l'Élégance";
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY";
+  const siteSlogan = process.env.NEXT_PUBLIC_SITE_SLOGAN || "L'Essence de l'Élégance & du Raffinement";
   const whatsappNumber = getWhatsAppNumber();
 
   return (
@@ -17,11 +18,16 @@ export const Footer: React.FC = () => {
           
           {/* BRAND COLUMN */}
           <div className="space-y-4 md:col-span-1">
-            <Link href="/" className="flex items-center space-x-2.5">
-              <span className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-serif font-bold text-sm">
-                A
-              </span>
-              <span className="text-xl font-serif tracking-widest text-stone-100 font-bold uppercase">
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-amber-500/30 bg-white flex-shrink-0">
+                <Image
+                  src="/logo.JPG"
+                  alt="SONIA’S PERFUMERY Logo"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <span className="text-lg font-serif tracking-widest text-stone-100 font-bold uppercase">
                 {siteName}
               </span>
             </Link>
@@ -82,7 +88,7 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-center space-x-2.5">
                 <Mail className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                <span>contact@auraparfums.com</span>
+                <span>contact@soniasperfumery.com</span>
               </li>
               <li className="flex items-center space-x-2.5">
                 <MapPin className="w-4 h-4 text-amber-400 flex-shrink-0" />
