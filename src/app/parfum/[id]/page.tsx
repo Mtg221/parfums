@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Minus, ShoppingBag, CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, Minus, ShoppingBag, CheckCircle2, Sliders, Loader2 } from 'lucide-react';
 import { getProductById } from '@/services/productsService';
 import { Product, ProductFormat } from '@/types';
 import { formatPrice } from '@/lib/whatsapp';
@@ -18,6 +18,8 @@ export default function ProductDetailPage({
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedFormat, setSelectedFormat] = useState<ProductFormat | null>(null);
+  const [isCustomFormat, setIsCustomFormat] = useState<boolean>(false);
+  const [customMl, setCustomMl] = useState<number>(10);
   const [quantity, setQuantity] = useState<number>(1);
   const [loading, setLoading] = useState(true);
   
@@ -46,7 +48,7 @@ export default function ProductDetailPage({
   if (loading) {
     return (
       <div className="min-h-screen pt-32 pb-20 flex justify-center items-center">
-        <Loader2 className="w-8 h-8 text-amber-800 animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#9E7B56] animate-spin" />
       </div>
     );
   }
@@ -58,7 +60,7 @@ export default function ProductDetailPage({
         <p className="text-stone-600 text-sm">Le parfum que vous recherchez n&apos;existe pas ou a été retiré.</p>
         <Link
           href="/catalogue"
-          className="inline-flex items-center space-x-2 px-6 py-3 rounded-lg bg-amber-800 text-white font-bold text-xs uppercase"
+          className="inline-flex items-center space-x-2 px-6 py-3 rounded-sm bg-[#9E7B56] text-white font-bold text-xs uppercase"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Retour au catalogue</span>
@@ -67,12 +69,32 @@ export default function ProductDetailPage({
     );
   }
 
-  const isSelectedFormatOutOfStock = selectedFormat ? selectedFormat.stock <= 0 : true;
-  const totalPrice = selectedFormat ? selectedFormat.price * quantity : 0;
+  // Calculate price per mL from available formats (e.g. average price/mL or first format price/mL)
+  const basePricePerMl = product.formats.length > 0
+    ? Math.round(product.formats[0].price / (product.formats[0].sizeMl || 1))
+    : 300;
+
+  const customPrice = customMl * basePricePerMl;
+
+  const activeFormat: ProductFormat = isCustomFormat
+    ? {
+        id: 'custom-' + customMl,
+        sizeMl: customMl,
+        price: customPrice,
+        stock: 99,
+      }
+    : (selectedFormat || {
+        id: 'default',
+        sizeMl: 5,
+        price: 5000,
+        stock: 10,
+      });
+
+  const isSelectedFormatOutOfStock = !isCustomFormat && activeFormat.stock <= 0;
+  const totalPrice = activeFormat.price * quantity;
 
   const incrementQty = () => {
-    if (!selectedFormat) return;
-    if (quantity < selectedFormat.stock) {
+    if (quantity < (activeFormat.stock || 99)) {
       setQuantity(prev => prev + 1);
     }
   };
@@ -90,7 +112,7 @@ export default function ProductDetailPage({
       <div>
         <Link
           href={product.categoryId ? `/catalogue/${product.categoryId}` : '/catalogue'}
-          className="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-amber-800 hover:text-amber-900 transition-colors"
+          className="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider text-[#9E7B56] hover:text-[#886744] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Retour aux parfums</span>
@@ -98,12 +120,12 @@ export default function ProductDetailPage({
       </div>
 
       {/* PRODUCT CONTAINER */}
-      <div className="bg-white border border-stone-200 rounded-2xl p-6 sm:p-10 shadow-xs space-y-8">
+      <div className="bg-white border border-stone-200 rounded-lg p-6 sm:p-10 shadow-xs space-y-8">
         
         {/* HEADER & DESCRIPTION */}
         <div className="space-y-3 border-b border-stone-100 pb-6">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-300/60 text-amber-900 text-xs font-semibold uppercase">
-            <span>Eau de Parfum</span>
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#F5ECE9] border border-amber-300/40 text-[#9E7B56] text-xs font-semibold uppercase">
+            <span>{product.categoryName || 'Eau de Parfum'}</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-serif font-bold text-stone-900">
@@ -115,131 +137,182 @@ export default function ProductDetailPage({
           </p>
         </div>
 
-        {/* FORMAT SELECTOR */}
-        <div className="space-y-3">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-stone-700">
-            1. Choisissez votre format en mL :
-          </h2>
+        {/* FORMAT SELECTOR (5 mL, 16 mL, 20 mL, 100 mL + CUSTOM FORMAT OPTION) */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-800">
+              1. Choisissez votre format (mL) :
+            </h2>
+            <span className="text-[11px] text-[#9E7B56] font-medium">Formats standards & Sur-mesure</span>
+          </div>
 
-          {product.formats.length === 0 ? (
-            <p className="text-sm text-stone-500">Aucun format disponible pour ce parfum.</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {product.formats.map((fmt) => {
-                const isSelected = selectedFormat?.id === fmt.id || selectedFormat?.sizeMl === fmt.sizeMl;
-                const outOfStock = fmt.stock <= 0;
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {product.formats.map((fmt) => {
+              const isSelected = !isCustomFormat && selectedFormat?.id === fmt.id;
+              const outOfStock = fmt.stock <= 0;
 
-                return (
-                  <button
-                    key={fmt.id || fmt.sizeMl}
-                    type="button"
-                    disabled={outOfStock}
-                    onClick={() => {
-                      setSelectedFormat(fmt);
-                      setQuantity(1);
-                    }}
-                    className={`p-4 rounded-xl border text-left transition-all relative overflow-hidden ${
-                      isSelected
-                        ? 'bg-amber-50/80 border-amber-700 text-amber-900 ring-1 ring-amber-700/30 shadow-xs'
-                        : outOfStock
-                        ? 'bg-stone-50 border-stone-200 text-stone-400 cursor-not-allowed opacity-60'
-                        : 'bg-white border-stone-200 text-stone-800 hover:border-stone-300 hover:bg-stone-50'
-                    }`}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-serif font-bold text-lg">{fmt.sizeMl} mL</span>
-                      {isSelected && <CheckCircle2 className="w-4 h-4 text-amber-800" />}
-                    </div>
-                    <p className="text-sm font-bold text-amber-800 mt-1">
-                      {formatPrice(fmt.price)}
-                    </p>
-                    <p className="text-[10px] text-stone-500 mt-1">
-                      {outOfStock ? 'Stock épuisé' : `Stock : ${fmt.stock} disponible(s)`}
-                    </p>
-                  </button>
-                );
-              })}
+              return (
+                <button
+                  key={fmt.id || fmt.sizeMl}
+                  type="button"
+                  disabled={outOfStock}
+                  onClick={() => {
+                    setIsCustomFormat(false);
+                    setSelectedFormat(fmt);
+                    setQuantity(1);
+                  }}
+                  className={`p-3.5 rounded-md border text-left transition-all relative overflow-hidden ${
+                    isSelected
+                      ? 'bg-[#F5ECE9] border-[#9E7B56] text-stone-900 ring-1 ring-[#9E7B56]/40 shadow-xs'
+                      : outOfStock
+                      ? 'bg-stone-50 border-stone-200 text-stone-400 cursor-not-allowed opacity-60'
+                      : 'bg-white border-stone-200 text-stone-800 hover:border-stone-300 hover:bg-stone-50'
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-serif font-bold text-base">{fmt.sizeMl} mL</span>
+                    {isSelected && <CheckCircle2 className="w-4 h-4 text-[#9E7B56]" />}
+                  </div>
+                  <p className="text-xs font-bold text-[#9E7B56] mt-1">
+                    {formatPrice(fmt.price)}
+                  </p>
+                  <p className="text-[10px] text-stone-500 mt-1">
+                    {outOfStock ? 'Épuisé' : `Stock : ${fmt.stock}`}
+                  </p>
+                </button>
+              );
+            })}
+
+            {/* CUSTOM SIZE OPTION (PERSONNALISÉ SUR-MESURE) */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsCustomFormat(true);
+                setQuantity(1);
+              }}
+              className={`p-3.5 rounded-md border text-left transition-all relative overflow-hidden ${
+                isCustomFormat
+                  ? 'bg-amber-50 border-[#9E7B56] text-stone-900 ring-1 ring-[#9E7B56]/40 shadow-xs'
+                  : 'bg-stone-50 border-dashed border-stone-300 text-stone-700 hover:bg-stone-100'
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-serif font-bold text-xs uppercase flex items-center gap-1">
+                  <Sliders className="w-3.5 h-3.5 text-[#9E7B56]" />
+                  <span>Sur-mesure</span>
+                </span>
+                {isCustomFormat && <CheckCircle2 className="w-4 h-4 text-[#9E7B56]" />}
+              </div>
+              <p className="text-[11px] font-semibold text-[#9E7B56] mt-1">
+                Choisir son mL
+              </p>
+              <p className="text-[10px] text-stone-500 mt-0.5">
+                Volume au choix
+              </p>
+            </button>
+          </div>
+
+          {/* CUSTOM ML INPUT IF CUSTOM OPTION IS ACTIVE */}
+          {isCustomFormat && (
+            <div className="p-4 bg-amber-50/60 border border-amber-300/60 rounded-md space-y-2 animate-fadeIn">
+              <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider">
+                Indiquez le volume exact de votre choix (en mL) :
+              </label>
+              <div className="flex items-center space-x-3">
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={customMl}
+                  onChange={(e) => setCustomMl(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-32 px-3 py-2 bg-white border border-stone-300 rounded text-sm text-stone-900 font-bold focus:outline-none focus:border-[#9E7B56]"
+                />
+                <span className="text-xs text-stone-600 font-medium">mL</span>
+                <span className="text-xs text-[#9E7B56] font-bold">
+                  (Prix estimé : {formatPrice(customPrice)})
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-500 font-light">
+                Notre équipe préparera un flacon exactement ajusté à votre besoin de {customMl} mL.
+              </p>
             </div>
           )}
+
         </div>
 
         {/* QUANTITY & TOTAL PRICE SECTION */}
-        {selectedFormat && (
-          <div className="p-6 bg-stone-50 rounded-xl border border-stone-200/80 space-y-6">
+        <div className="p-6 bg-[#F9F5F1] rounded-md border border-stone-200 space-y-6">
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-              
-              {/* QUANTITY COUNTER */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-600">
-                  2. Quantité :
-                </label>
-                <div className="inline-flex items-center space-x-3 bg-white border border-stone-200 rounded-lg p-1.5 shadow-xs">
-                  <button
-                    onClick={decrementQty}
-                    disabled={quantity <= 1 || isSelectedFormatOutOfStock}
-                    className="p-2 rounded bg-stone-100 text-stone-800 hover:bg-stone-200 disabled:opacity-40 transition-colors"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
+            {/* QUANTITY COUNTER */}
+            <div className="space-y-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-stone-700">
+                2. Quantité :
+              </label>
+              <div className="inline-flex items-center space-x-3 bg-white border border-stone-200 rounded-md p-1.5 shadow-xs">
+                <button
+                  onClick={decrementQty}
+                  disabled={quantity <= 1 || isSelectedFormatOutOfStock}
+                  className="p-2 rounded bg-stone-100 text-stone-800 hover:bg-stone-200 disabled:opacity-40 transition-colors"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
 
-                  <span className="w-10 text-center font-bold text-stone-900 text-lg">
-                    {quantity}
-                  </span>
-
-                  <button
-                    onClick={incrementQty}
-                    disabled={quantity >= selectedFormat.stock || isSelectedFormatOutOfStock}
-                    className="p-2 rounded bg-stone-100 text-stone-800 hover:bg-stone-200 disabled:opacity-40 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* TOTAL DISPLAY */}
-              <div className="sm:text-right space-y-1">
-                <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-                  Total de la commande :
+                <span className="w-10 text-center font-bold text-stone-900 text-lg">
+                  {quantity}
                 </span>
-                <p className="text-3xl font-bold text-amber-800">
-                  {formatPrice(totalPrice)}
-                </p>
-                <p className="text-xs text-stone-500 font-light">
-                  ({quantity} x {selectedFormat.sizeMl} mL à {formatPrice(selectedFormat.price)})
-                </p>
-              </div>
 
+                <button
+                  onClick={incrementQty}
+                  disabled={isSelectedFormatOutOfStock}
+                  className="p-2 rounded bg-stone-100 text-stone-800 hover:bg-stone-200 disabled:opacity-40 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* ACTION BUTTON */}
-            <div className="pt-2">
-              <button
-                type="button"
-                disabled={isSelectedFormatOutOfStock}
-                onClick={() => setIsModalOpen(true)}
-                className="w-full flex items-center justify-center space-x-2 py-4 px-8 rounded-lg bg-amber-800 hover:bg-amber-900 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm uppercase tracking-wider shadow-sm transition-colors"
-              >
-                <ShoppingBag className="w-4 h-4" />
-                <span>{isSelectedFormatOutOfStock ? 'Rupture de stock' : 'Commander ce parfum'}</span>
-              </button>
+            {/* TOTAL DISPLAY */}
+            <div className="sm:text-right space-y-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
+                Total de la commande :
+              </span>
+              <p className="text-3xl font-bold text-[#9E7B56]">
+                {formatPrice(totalPrice)}
+              </p>
+              <p className="text-xs text-stone-500 font-light">
+                ({quantity} x {activeFormat.sizeMl} mL à {formatPrice(activeFormat.price)})
+              </p>
             </div>
 
           </div>
-        )}
+
+          {/* ACTION BUTTON */}
+          <div className="pt-2">
+            <button
+              type="button"
+              disabled={isSelectedFormatOutOfStock}
+              onClick={() => setIsModalOpen(true)}
+              className="w-full flex items-center justify-center space-x-2 py-4 px-8 rounded-sm bg-[#9E7B56] hover:bg-[#886744] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-colors"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span>{isSelectedFormatOutOfStock ? 'Rupture de stock' : 'Commander ce parfum'}</span>
+            </button>
+          </div>
+
+        </div>
 
       </div>
 
       {/* ORDER CHECKOUT MODAL */}
-      {selectedFormat && (
-        <OrderModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          product={product}
-          selectedFormat={selectedFormat}
-          quantity={quantity}
-        />
-      )}
+      <OrderModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        product={product}
+        selectedFormat={activeFormat}
+        quantity={quantity}
+      />
 
     </div>
   );
