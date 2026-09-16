@@ -19,17 +19,14 @@ import {
 } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '@/services/productsService';
 import { getCategories } from '@/services/categoriesService';
+import { getBrands, Brand } from '@/services/brandsService';
 import { Product, Category, ProductFormat } from '@/types';
 import { formatPrice } from '@/lib/whatsapp';
-
-const POPULAR_BRANDS = [
-  'DIOR', 'CHANEL', 'YVES SAINT LAURENT', 'TOM FORD', 'GIORGIO ARMANI', 
-  'GUERLAIN', 'LANCOME', 'CREED', 'MAISON FRANCIS KURKDJIAN', 'KILIAN PARIS'
-];
 
 export default function AdminParfumsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
 
@@ -64,14 +61,16 @@ export default function AdminParfumsPage() {
   const fetchInitialData = async () => {
     setLoading(true);
     try {
-      const [prodData, catData] = await Promise.all([
+      const [prodData, catData, brandData] = await Promise.all([
         getProducts(),
         getCategories(),
+        getBrands(),
       ]);
       setProducts(prodData);
       setCategories(catData);
+      setBrands(brandData);
     } catch (err: any) {
-      setError('Impossible de charger les parfums ou catégories.');
+      setError('Impossible de charger les parfums, catégories ou maisons.');
     } finally {
       setLoading(false);
     }
@@ -80,7 +79,7 @@ export default function AdminParfumsPage() {
   const handleOpenAddModal = () => {
     setEditingProduct(null);
     setName('');
-    setBrand('DIOR');
+    setBrand(brands.length > 0 ? brands[0].name : 'DIOR');
     setDescription('');
     setCategoryId(categories.length > 0 ? categories[0].id : '');
     setImageUrl('');
@@ -100,7 +99,7 @@ export default function AdminParfumsPage() {
   const handleOpenEditModal = (prod: Product) => {
     setEditingProduct(prod);
     setName(prod.name);
-    setBrand(prod.brand || 'DIOR');
+    setBrand(prod.brand || (brands.length > 0 ? brands[0].name : 'DIOR'));
     setDescription(prod.description || '');
     setCategoryId(prod.categoryId);
     setImageUrl(prod.imageUrl || '');
@@ -423,25 +422,34 @@ export default function AdminParfumsPage() {
                   />
                 </div>
 
+                {/* SELECT DROPDOWN FOR MAISON DE PARFUM */}
                 <div className="space-y-1">
                   <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
                     <Building2 className="w-3.5 h-3.5 text-[#B76E79]" />
-                    <span>Maison de Parfum (Marque)</span>
+                    <span>Maison de Parfum (Marque) <span className="text-red-600">*</span></span>
                   </label>
-                  <input
-                    type="text"
-                    list="brand-list"
+                  <select
                     required
-                    placeholder="Ex: DIOR, CHANEL, YSL..."
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs uppercase font-bold focus:outline-none focus:border-[#B76E79]"
-                  />
-                  <datalist id="brand-list">
-                    {POPULAR_BRANDS.map((b) => (
-                      <option key={b} value={b} />
-                    ))}
-                  </datalist>
+                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs font-bold uppercase focus:outline-none focus:border-[#B76E79]"
+                  >
+                    {brands.length === 0 ? (
+                      <>
+                        <option value="DIOR">DIOR</option>
+                        <option value="CHANEL">CHANEL</option>
+                        <option value="YVES SAINT LAURENT">YVES SAINT LAURENT</option>
+                        <option value="TOM FORD">TOM FORD</option>
+                        <option value="GUERLAIN">GUERLAIN</option>
+                      </>
+                    ) : (
+                      brands.map((b) => (
+                        <option key={b.id} value={b.name}>
+                          {b.name}
+                        </option>
+                      ))
+                    )}
+                  </select>
                 </div>
               </div>
 
