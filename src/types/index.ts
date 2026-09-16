@@ -17,11 +17,14 @@ export interface ProductFormat {
 export interface Product {
   id: string;
   name: string;
+  brand?: string; // Maison de Parfum (e.g. Dior, Chanel, YSL)
   description: string;
   categoryId: string;
   categoryName?: string;
+  imageUrl?: string;
   formats: ProductFormat[];
   allowCustomVolume?: boolean; // If true, customer can choose custom mL
+  isBestSeller?: boolean; // Display in Best-Sellers section
   createdAt?: string | number | Date;
   updatedAt?: string | number | Date;
 }

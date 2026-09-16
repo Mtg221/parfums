@@ -24,11 +24,14 @@ export async function getProducts(): Promise<Product[]> {
       products.push({
         id: docSnap.id,
         name: data.name || '',
+        brand: data.brand || '',
         description: data.description || '',
         categoryId: data.categoryId || '',
         categoryName: data.categoryName || '',
+        imageUrl: data.imageUrl || '',
         formats: data.formats || [],
-        allowCustomVolume: data.allowCustomVolume ?? true, // default to true if undefined
+        allowCustomVolume: data.allowCustomVolume ?? true,
+        isBestSeller: data.isBestSeller ?? true,
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
         updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
       });
@@ -51,11 +54,14 @@ export async function getProductsByCategory(categoryId: string): Promise<Product
       products.push({
         id: docSnap.id,
         name: data.name || '',
+        brand: data.brand || '',
         description: data.description || '',
         categoryId: data.categoryId || '',
         categoryName: data.categoryName || '',
+        imageUrl: data.imageUrl || '',
         formats: data.formats || [],
         allowCustomVolume: data.allowCustomVolume ?? true,
+        isBestSeller: data.isBestSeller ?? true,
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
         updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
       });
@@ -76,11 +82,14 @@ export async function getProductById(id: string): Promise<Product | null> {
     return {
       id: docSnap.id,
       name: data.name || '',
+      brand: data.brand || '',
       description: data.description || '',
       categoryId: data.categoryId || '',
       categoryName: data.categoryName || '',
+      imageUrl: data.imageUrl || '',
       formats: data.formats || [],
       allowCustomVolume: data.allowCustomVolume ?? true,
+      isBestSeller: data.isBestSeller ?? true,
       createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
       updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
     };
@@ -92,16 +101,20 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 export async function createProduct(data: {
   name: string;
+  brand?: string;
   description: string;
   categoryId: string;
   categoryName?: string;
+  imageUrl?: string;
   formats: ProductFormat[];
   allowCustomVolume?: boolean;
+  isBestSeller?: boolean;
 }): Promise<string> {
   try {
     const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), {
       ...data,
       allowCustomVolume: data.allowCustomVolume ?? true,
+      isBestSeller: data.isBestSeller ?? true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -116,11 +129,14 @@ export async function updateProduct(
   id: string,
   data: Partial<{
     name: string;
+    brand?: string;
     description: string;
     categoryId: string;
     categoryName?: string;
+    imageUrl?: string;
     formats: ProductFormat[];
     allowCustomVolume?: boolean;
+    isBestSeller?: boolean;
   }>
 ): Promise<void> {
   try {

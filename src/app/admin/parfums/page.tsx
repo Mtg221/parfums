@@ -12,12 +12,20 @@ import {
   X,
   Filter,
   Layers,
-  Sparkles
+  Sparkles,
+  Star,
+  Building2,
+  Image as ImageIcon
 } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '@/services/productsService';
 import { getCategories } from '@/services/categoriesService';
 import { Product, Category, ProductFormat } from '@/types';
 import { formatPrice } from '@/lib/whatsapp';
+
+const POPULAR_BRANDS = [
+  'DIOR', 'CHANEL', 'YVES SAINT LAURENT', 'TOM FORD', 'GIORGIO ARMANI', 
+  'GUERLAIN', 'LANCOME', 'CREED', 'MAISON FRANCIS KURKDJIAN', 'KILIAN PARIS'
+];
 
 export default function AdminParfumsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,11 +39,17 @@ export default function AdminParfumsPage() {
 
   // Form Fields
   const [name, setName] = useState('');
+  const [brand, setBrand] = useState('DIOR');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [allowCustomVolume, setAllowCustomVolume] = useState<boolean>(true);
+  const [isBestSeller, setIsBestSeller] = useState<boolean>(true);
   const [formats, setFormats] = useState<ProductFormat[]>([
-    { id: 'fmt-1', sizeMl: 50, price: 22000, stock: 15 },
+    { id: 'fmt-1', sizeMl: 5, price: 3000, stock: 50 },
+    { id: 'fmt-2', sizeMl: 16, price: 8000, stock: 30 },
+    { id: 'fmt-3', sizeMl: 20, price: 10000, stock: 25 },
+    { id: 'fmt-4', sizeMl: 100, price: 35000, stock: 10 },
   ]);
 
   // UI Alerts
@@ -66,9 +80,12 @@ export default function AdminParfumsPage() {
   const handleOpenAddModal = () => {
     setEditingProduct(null);
     setName('');
+    setBrand('DIOR');
     setDescription('');
     setCategoryId(categories.length > 0 ? categories[0].id : '');
+    setImageUrl('');
     setAllowCustomVolume(true);
+    setIsBestSeller(true);
     setFormats([
       { id: 'fmt-' + Date.now() + '-1', sizeMl: 5, price: 3000, stock: 50 },
       { id: 'fmt-' + Date.now() + '-2', sizeMl: 16, price: 8000, stock: 30 },
@@ -83,9 +100,12 @@ export default function AdminParfumsPage() {
   const handleOpenEditModal = (prod: Product) => {
     setEditingProduct(prod);
     setName(prod.name);
+    setBrand(prod.brand || 'DIOR');
     setDescription(prod.description || '');
     setCategoryId(prod.categoryId);
+    setImageUrl(prod.imageUrl || '');
     setAllowCustomVolume(prod.allowCustomVolume ?? true);
+    setIsBestSeller(prod.isBestSeller ?? true);
     setFormats(prod.formats || []);
     setError(null);
     setSuccess(null);
@@ -137,11 +157,14 @@ export default function AdminParfumsPage() {
       const selectedCat = categories.find((c) => c.id === categoryId);
       const payload = {
         name: name.trim(),
+        brand: brand.trim(),
         description: description.trim(),
         categoryId,
         categoryName: selectedCat ? selectedCat.name : '',
+        imageUrl: imageUrl.trim(),
         formats,
         allowCustomVolume,
+        isBestSeller,
       };
 
       if (editingProduct) {
@@ -191,7 +214,7 @@ export default function AdminParfumsPage() {
             <span>Gestion des Parfums & Formats</span>
           </h1>
           <p className="text-xs text-stone-500 font-light mt-1">
-            Gérez vos eaux de parfum, activez l&apos;option sur-mesure et suivez les stocks disponibles par format.
+            Gérez vos fragrances, maisons de parfum, catégories univers, options sur-mesure et best-sellers.
           </p>
         </div>
 
@@ -282,17 +305,31 @@ export default function AdminParfumsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-[10px] uppercase tracking-widest text-[#B76E79] font-semibold">
-                        {prod.categoryName || 'Catégorie n/a'}
+                      <span className="text-[10px] uppercase tracking-widest text-[#B76E79] font-bold">
+                        {prod.brand || 'DIOR'}
                       </span>
+                      <span className="text-[10px] text-stone-400">&bull;</span>
+                      <span className="text-[10px] uppercase tracking-wider text-stone-500">
+                        {prod.categoryName || 'Parfum'}
+                      </span>
+                    </div>
+
+                    <h2 className="text-xl font-serif font-bold text-stone-900 mt-1">{prod.name}</h2>
+
+                    <div className="flex flex-wrap gap-1.5 mt-2">
                       {prod.allowCustomVolume !== false && (
                         <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-[#FDF6F7] border border-[#D8A7B1]/50 text-[10px] text-[#B76E79] font-semibold">
                           <Sparkles className="w-2.5 h-2.5" />
-                          <span>Sur-mesure activé</span>
+                          <span>Sur-mesure</span>
+                        </span>
+                      )}
+                      {prod.isBestSeller !== false && (
+                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-300/60 text-[10px] text-amber-900 font-semibold">
+                          <Star className="w-2.5 h-2.5 text-amber-600 fill-amber-500" />
+                          <span>Best-Seller</span>
                         </span>
                       )}
                     </div>
-                    <h2 className="text-xl font-serif font-bold text-stone-900 mt-1">{prod.name}</h2>
                   </div>
 
                   <div className="flex space-x-1.5">
@@ -313,7 +350,7 @@ export default function AdminParfumsPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-stone-600 font-light leading-relaxed line-clamp-3">
+                <p className="text-xs text-stone-600 font-light leading-relaxed line-clamp-2 pt-1">
                   {prod.description || 'Aucune description.'}
                 </p>
               </div>
@@ -322,7 +359,7 @@ export default function AdminParfumsPage() {
               <div className="pt-4 border-t border-stone-100 space-y-2">
                 <p className="text-[10px] uppercase tracking-wider font-semibold text-stone-500 flex items-center space-x-1">
                   <Layers className="w-3.5 h-3.5 text-[#B76E79]" />
-                  <span>Formats & Stocks définis :</span>
+                  <span>Formats & Stocks :</span>
                 </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -340,7 +377,7 @@ export default function AdminParfumsPage() {
                         <span className="text-[#B76E79]">{formatPrice(fmt.price)}</span>
                       </div>
                       <div className="text-[10px] text-stone-500">
-                        {fmt.stock > 0 ? `Stock : ${fmt.stock}` : 'Rupture'}
+                        {fmt.stock > 0 ? `Stock: ${fmt.stock}` : 'Rupture'}
                       </div>
                     </div>
                   ))}
@@ -359,7 +396,7 @@ export default function AdminParfumsPage() {
             
             <div className="flex justify-between items-center border-b border-stone-100 pb-4">
               <h3 className="text-xl font-serif font-bold text-stone-900">
-                {editingProduct ? 'Modifier le parfum' : 'Ajouter un parfum'}
+                {editingProduct ? 'Modifier le parfum' : 'Ajouter un nouveau parfum'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -379,7 +416,7 @@ export default function AdminParfumsPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Ex: Sauvage Elixir"
+                    placeholder="Ex: Sauvage Elixir / Bleu de Chanel"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
@@ -387,8 +424,31 @@ export default function AdminParfumsPage() {
                 </div>
 
                 <div className="space-y-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
+                    <Building2 className="w-3.5 h-3.5 text-[#B76E79]" />
+                    <span>Maison de Parfum (Marque)</span>
+                  </label>
+                  <input
+                    type="text"
+                    list="brand-list"
+                    required
+                    placeholder="Ex: DIOR, CHANEL, YSL..."
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs uppercase font-bold focus:outline-none focus:border-[#B76E79]"
+                  />
+                  <datalist id="brand-list">
+                    {POPULAR_BRANDS.map((b) => (
+                      <option key={b} value={b} />
+                    ))}
+                  </datalist>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
                   <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
-                    Catégorie <span className="text-red-600">*</span>
+                    Catégorie (Univers) <span className="text-red-600">*</span>
                   </label>
                   <select
                     required
@@ -396,46 +456,82 @@ export default function AdminParfumsPage() {
                     onChange={(e) => setCategoryId(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
                   >
-                    <option value="" disabled>Sélectionner une catégorie</option>
+                    <option value="" disabled>Sélectionner un univers</option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
                 </div>
+
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
+                    <ImageIcon className="w-3.5 h-3.5 text-[#B76E79]" />
+                    <span>Image URL (Flacon)</span>
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
-                  Description de la fragrance
+                  Description olfactive
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Notes olfactives, inspiration, sillage..."
+                  placeholder="Notes de tête, de cœur, de fond..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
                 />
               </div>
 
-              {/* CHECKBOX SUR-MESURE */}
-              <div className="p-4 rounded-xl bg-[#FDF6F7] border border-[#D8A7B1]/40 space-y-2">
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={allowCustomVolume}
-                    onChange={(e) => setAllowCustomVolume(e.target.checked)}
-                    className="w-4 h-4 rounded text-[#B76E79] focus:ring-[#B76E79] border-stone-300"
-                  />
-                  <div className="flex items-center space-x-2">
-                    <Sparkles className="w-4 h-4 text-[#B76E79]" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-stone-900">
-                      Choisir du sur mesure (Activer le litrage libre)
-                    </span>
-                  </div>
-                </label>
-                <p className="text-[11px] text-stone-600 pl-7 font-light">
-                  En cochant cette option, les clients pourront saisir eux-mêmes leur propre besoin en millilitres (mL) lors de leur commande.
-                </p>
+              {/* OPTIONS COCHABLES */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-[#FDF6F7] border border-[#D8A7B1]/40 space-y-1.5">
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={allowCustomVolume}
+                      onChange={(e) => setAllowCustomVolume(e.target.checked)}
+                      className="w-4 h-4 rounded text-[#B76E79] focus:ring-[#B76E79] border-stone-300"
+                    />
+                    <div className="flex items-center space-x-1.5">
+                      <Sparkles className="w-4 h-4 text-[#B76E79]" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-stone-900">
+                        Choisir du sur mesure
+                      </span>
+                    </div>
+                  </label>
+                  <p className="text-[11px] text-stone-600 pl-7 font-light">
+                    Le client peut saisir son nombre de mL souhaité.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-300/60 space-y-1.5">
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isBestSeller}
+                      onChange={(e) => setIsBestSeller(e.target.checked)}
+                      className="w-4 h-4 rounded text-amber-800 focus:ring-amber-800 border-stone-300"
+                    />
+                    <div className="flex items-center space-x-1.5">
+                      <Star className="w-4 h-4 text-amber-700 fill-amber-500" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-stone-900">
+                        Afficher en Best-Seller
+                      </span>
+                    </div>
+                  </label>
+                  <p className="text-[11px] text-stone-600 pl-7 font-light">
+                    Met en avant ce parfum dans la section Best-Sellers.
+                  </p>
+                </div>
               </div>
 
               {/* DYNAMIC FORMATS EDITOR */}
@@ -445,7 +541,7 @@ export default function AdminParfumsPage() {
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-700">
                       Formats standards (ex: 5 mL, 16 mL, 20 mL, 100 mL)
                     </h4>
-                    <p className="text-[10px] text-stone-500">Définissez la taille (mL), le prix (FCFA) et le stock disponible.</p>
+                    <p className="text-[10px] text-stone-500">Taille (mL), Prix (FCFA) et Stock disponible.</p>
                   </div>
                   <button
                     type="button"
