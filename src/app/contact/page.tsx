@@ -6,7 +6,7 @@ import { getWhatsAppNumber } from '@/lib/whatsapp';
 
 export default function ContactPage() {
   const whatsappNumber = getWhatsAppNumber();
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'AURA PARFUMS';
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY";
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -73,7 +73,7 @@ export default function ContactPage() {
                 <Mail className="w-5 h-5 text-amber-800 mt-0.5 flex-shrink-0" />
                 <div>
                   <h3 className="font-bold text-stone-900 text-xs">Adresse Email</h3>
-                  <p className="text-stone-700 mt-0.5">contact@auraparfums.com</p>
+                  <p className="text-stone-700 mt-0.5">contact@soniasperfumery.com</p>
                 </div>
               </div>
 

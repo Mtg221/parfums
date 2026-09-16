@@ -3,7 +3,7 @@ import { getCategories } from '@/services/categoriesService';
 import { getProducts } from '@/services/productsService';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://aura-parfums.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://soniasperfumery.vercel.app';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

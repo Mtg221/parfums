@@ -19,8 +19,8 @@ export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'AURA PARFUMS';
-  const siteSlogan = process.env.NEXT_PUBLIC_SITE_SLOGAN || "L'Essence du Luxe & de l'Élégance";
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "SONIA’S PERFUMERY";
+  const siteSlogan = process.env.NEXT_PUBLIC_SITE_SLOGAN || "L'Essence de l'Élégance & du Raffinement";
 
   useEffect(() => {
     async function loadData() {
@@ -85,7 +85,7 @@ export default function HomePage() {
               <div className="relative w-full max-w-md aspect-[4/5] rounded-2xl overflow-hidden border border-stone-200 shadow-md group">
                 <Image
                   src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=1000&auto=format&fit=crop"
-                  alt="Aura Parfums Flacon de Luxe"
+                  alt="SONIA’S PERFUMERY Flacon de Luxe"
                   fill
                   priority
                   className="object-cover group-hover:scale-105 transition-transform duration-700"

@@ -67,7 +67,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
-                placeholder="admin@auraparfums.com"
+                placeholder="admin@soniasperfumery.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-amber-800 focus:ring-1 focus:ring-amber-800"
