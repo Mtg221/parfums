@@ -13,10 +13,7 @@ import {
   Truck, 
   CreditCard, 
   Heart,
-  Sliders,
-  Sparkles,
-  LayoutGrid,
-  Crown
+  Sliders
 } from 'lucide-react';
 import { getBrands, Brand } from '@/services/brandsService';
 import { getProducts } from '@/services/productsService';
@@ -122,11 +119,9 @@ export default function CataloguePage() {
     };
   });
 
-  // Filter Brands by Search and Category Tab
+  // Filter Brands by Search
   const filteredBrandsList = combinedBrands.filter(b => {
-    const matchesSearch = b.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTab = activeTab === 'toutes' || b.category === activeTab;
-    return matchesSearch && matchesTab;
+    return b.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
   // Filter Products for Selected Brand
@@ -241,66 +236,34 @@ export default function CataloguePage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* LEFT SIDEBAR FILTERS (EXACT MATCH EXEMPLE1.JPEG) */}
+            {/* LEFT SIDEBAR FILTERS */}
             <div className="lg:col-span-3 space-y-6">
               
-              {/* Category Tabs Box */}
-              <div className="bg-[#FAF0ED] border border-[#E8D5D0] rounded-sm p-3 space-y-1">
-                <button
-                  onClick={() => setActiveTab('toutes')}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-sm text-xs font-serif font-bold uppercase transition-colors ${
-                    activeTab === 'toutes'
-                      ? 'bg-[#E5C1C1] text-stone-900 shadow-2xs'
-                      : 'text-stone-700 hover:bg-white/60'
-                  }`}
-                >
-                  <LayoutGrid className="w-4 h-4 text-stone-800" />
-                  <span>Toutes les maisons</span>
-                </button>
+              {/* Gender / Senteurs Filter Box */}
+              <div className="bg-white border border-stone-200/80 rounded-sm p-4 space-y-3 font-serif shadow-2xs">
+                <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider pb-2 border-b border-stone-100 flex items-center justify-between">
+                  <span>FILTRER PAR SENTEUR</span>
+                  <Sliders className="w-3.5 h-3.5 text-[#9B7B56]" />
+                </h3>
 
                 <button
-                  onClick={() => setActiveTab('maisons')}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-sm text-xs font-serif transition-colors ${
-                    activeTab === 'maisons'
-                      ? 'bg-[#E5C1C1] text-stone-900 font-bold shadow-2xs'
-                      : 'text-stone-700 hover:bg-white/60'
+                  onClick={() => setSelectedGender('all')}
+                  className={`w-full flex justify-between items-center py-2 px-2 text-xs transition-colors ${
+                    selectedGender === 'all'
+                      ? 'font-bold text-[#9B7B56] bg-[#FAF0ED] rounded-sm'
+                      : 'text-stone-700 hover:text-stone-900'
                   }`}
                 >
-                  <Crown className="w-4 h-4 text-stone-700" />
-                  <span>Maisons de parfum</span>
+                  <span>Tous les parfums</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
                 </button>
 
-                <button
-                  onClick={() => setActiveTab('arabes')}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-sm text-xs font-serif transition-colors ${
-                    activeTab === 'arabes'
-                      ? 'bg-[#E5C1C1] text-stone-900 font-bold shadow-2xs'
-                      : 'text-stone-700 hover:bg-white/60'
-                  }`}
-                >
-                  <Sparkles className="w-4 h-4 text-stone-700" />
-                  <span>Parfums arabes</span>
-                </button>
-
-                <button
-                  onClick={() => setActiveTab('autres')}
-                  className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-sm text-xs font-serif transition-colors ${
-                    activeTab === 'autres'
-                      ? 'bg-[#E5C1C1] text-stone-900 font-bold shadow-2xs'
-                      : 'text-stone-700 hover:bg-white/60'
-                  }`}
-                >
-                  <Search className="w-4 h-4 text-stone-700" />
-                  <span>Autres marques</span>
-                </button>
-              </div>
-
-              {/* Gender Filter Buttons */}
-              <div className="bg-white border border-stone-200/80 rounded-sm p-4 space-y-2 text-xs font-serif">
                 <button
                   onClick={() => setSelectedGender('femme')}
-                  className={`w-full flex justify-between items-center py-2 px-2 border-b border-stone-100 ${
-                    selectedGender === 'femme' ? 'font-bold text-[#9B7B56]' : 'text-stone-700 hover:text-stone-900'
+                  className={`w-full flex justify-between items-center py-2 px-2 text-xs border-t border-stone-100 transition-colors ${
+                    selectedGender === 'femme'
+                      ? 'font-bold text-[#9B7B56] bg-[#FAF0ED] rounded-sm'
+                      : 'text-stone-700 hover:text-stone-900'
                   }`}
                 >
                   <span>Femme</span>
@@ -309,8 +272,10 @@ export default function CataloguePage() {
 
                 <button
                   onClick={() => setSelectedGender('homme')}
-                  className={`w-full flex justify-between items-center py-2 px-2 border-b border-stone-100 ${
-                    selectedGender === 'homme' ? 'font-bold text-[#9B7B56]' : 'text-stone-700 hover:text-stone-900'
+                  className={`w-full flex justify-between items-center py-2 px-2 text-xs border-t border-stone-100 transition-colors ${
+                    selectedGender === 'homme'
+                      ? 'font-bold text-[#9B7B56] bg-[#FAF0ED] rounded-sm'
+                      : 'text-stone-700 hover:text-stone-900'
                   }`}
                 >
                   <span>Homme</span>
@@ -319,8 +284,10 @@ export default function CataloguePage() {
 
                 <button
                   onClick={() => setSelectedGender('unisexe')}
-                  className={`w-full flex justify-between items-center py-2 px-2 ${
-                    selectedGender === 'unisexe' ? 'font-bold text-[#9B7B56]' : 'text-stone-700 hover:text-stone-900'
+                  className={`w-full flex justify-between items-center py-2 px-2 text-xs border-t border-stone-100 transition-colors ${
+                    selectedGender === 'unisexe'
+                      ? 'font-bold text-[#9B7B56] bg-[#FAF0ED] rounded-sm'
+                      : 'text-stone-700 hover:text-stone-900'
                   }`}
                 >
                   <span>Unisexe</span>
