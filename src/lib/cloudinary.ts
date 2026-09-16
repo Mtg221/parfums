@@ -2,7 +2,7 @@
  * Uploads an image file to Cloudinary using unsigned upload preset
  */
 export async function uploadToCloudinary(file: File): Promise<string> {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dm9iz5eqf';
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'aura_categories';
 
   if (!cloudName) {
@@ -34,7 +34,7 @@ export async function uploadToCloudinary(file: File): Promise<string> {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData?.error?.message || "Échec de l'envoi de l'image sur Cloudinary");
+    throw new Error(errorData?.error?.message || "Échec de l'envoi de l'image sur Cloudinary. Vérifiez que l'upload preset 'aura_categories' est configuré en mode 'Unsigned'.");
   }
 
   const data = await response.json();
