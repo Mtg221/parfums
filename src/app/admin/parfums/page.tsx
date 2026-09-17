@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { 
   Plus, 
   Trash2, 
@@ -16,13 +17,15 @@ import {
   Star,
   Building2,
   Image as ImageIcon,
-  FolderTree
+  FolderTree,
+  Upload
 } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '@/services/productsService';
 import { getCategories } from '@/services/categoriesService';
 import { getBrands, Brand } from '@/services/brandsService';
 import { Product, Category, ProductFormat } from '@/types';
 import { formatPrice } from '@/lib/whatsapp';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 export default function AdminParfumsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -41,6 +44,9 @@ export default function AdminParfumsPage() {
   const [description, setDescription] = useState('');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [allowCustomVolume, setAllowCustomVolume] = useState<boolean>(true);
   const [isBestSeller, setIsBestSeller] = useState<boolean>(true);
   const [formats, setFormats] = useState<ProductFormat[]>([
@@ -77,6 +83,14 @@ export default function AdminParfumsPage() {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleOpenAddModal = () => {
     setEditingProduct(null);
     setName('');
@@ -84,6 +98,9 @@ export default function AdminParfumsPage() {
     setDescription('');
     setSelectedCategoryIds(categories.length > 0 ? [categories[0].id] : []);
     setImageUrl('');
+    setImageFile(null);
+    setImagePreview(null);
+    setUploading(false);
     setAllowCustomVolume(true);
     setIsBestSeller(true);
     setFormats([
@@ -107,6 +124,9 @@ export default function AdminParfumsPage() {
       : (prod.categoryId ? [prod.categoryId] : []);
     setSelectedCategoryIds(currentCatIds);
     setImageUrl(prod.imageUrl || '');
+    setImageFile(null);
+    setImagePreview(prod.imageUrl || null);
+    setUploading(false);
     setAllowCustomVolume(prod.allowCustomVolume ?? true);
     setIsBestSeller(prod.isBestSeller ?? true);
     setFormats(prod.formats || []);
@@ -153,11 +173,26 @@ export default function AdminParfumsPage() {
     setSubmitting(true);
 
     try {
+      let finalImageUrl = imageUrl.trim();
+
+      if (imageFile) {
+        setUploading(true);
+        try {
+          finalImageUrl = await uploadToCloudinary(imageFile);
+        } catch (uploadErr: any) {
+          setError(uploadErr.message || "Échec de l'envoi de l'image.");
+          setSubmitting(false);
+          setUploading(false);
+          return;
+        }
+        setUploading(false);
+      }
+
       const payload = {
         name: name.trim(),
         brand: brand.trim(),
         description: description.trim(),
-        imageUrl: imageUrl.trim(),
+        imageUrl: finalImageUrl,
         formats,
         allowCustomVolume,
         isBestSeller,
@@ -178,6 +213,7 @@ export default function AdminParfumsPage() {
       setError(err.message || 'Erreur lors de l\'enregistrement du parfum.');
     } finally {
       setSubmitting(false);
+      setUploading(false);
     }
   };
 
@@ -421,18 +457,47 @@ export default function AdminParfumsPage() {
 
 
 
-              <div className="space-y-1">
+              {/* CLOUDINARY FILE UPLOAD + URL FALLBACK */}
+              <div className="space-y-2">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
                   <ImageIcon className="w-3.5 h-3.5 text-[#B76E79]" />
-                  <span>Image URL (Flacon)</span>
+                  <span>Photo du Flacon / Parfum</span>
                 </label>
-                <input
-                  type="url"
-                  placeholder="https://..."
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
-                />
+                
+                {(imagePreview || imageUrl) && (
+                  <div className="relative w-32 h-32 mx-auto rounded-lg overflow-hidden border border-stone-200 bg-stone-50 p-2 flex items-center justify-center">
+                    <Image 
+                      src={imagePreview || imageUrl} 
+                      alt="Aperçu du parfum" 
+                      fill 
+                      className="object-contain p-1" 
+                    />
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-3">
+                  <label className="flex-1 cursor-pointer flex items-center justify-center space-x-2 py-3 px-4 rounded-lg bg-stone-50 hover:bg-stone-100 border border-dashed border-stone-300 text-stone-700 text-xs font-semibold transition-colors">
+                    <Upload className="w-4 h-4 text-[#B76E79]" />
+                    <span>{imageFile ? imageFile.name : 'Changer/Téléverser une photo (JPG, PNG, WEBP)'}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                <div className="pt-1">
+                  <label className="block text-[10px] text-stone-500 uppercase font-light">Ou saisir directement une URL d&apos;image externe :</label>
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    className="w-full px-3.5 py-2 mt-1 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -578,13 +643,13 @@ export default function AdminParfumsPage() {
 
                 <button
                   type="submit"
-                  disabled={submitting}
+                  disabled={submitting || uploading}
                   className="px-6 py-2.5 rounded-lg bg-[#B76E79] hover:bg-[#a25a65] disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider shadow-xs"
                 >
-                  {submitting ? (
+                  {submitting || uploading ? (
                     <span className="flex items-center space-x-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Enregistrement...</span>
+                      <span>{uploading ? 'Téléversement...' : 'Enregistrement...'}</span>
                     </span>
                   ) : (
                     <span>Enregistrer</span>
