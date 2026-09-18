@@ -55,17 +55,8 @@ export default function HomePage() {
   return (
     <div className="space-y-16 sm:space-y-20 pb-20 bg-[#FAF9F6]">
       
-      {/* 1. HERO SECTION (RELIABLE HIGH RES IMAGE FIX) */}
+      {/* 1. HERO SECTION */}
       <section className="relative pt-36 pb-20 sm:pt-40 sm:pb-28 bg-[#181514] text-white overflow-hidden min-h-[550px] flex items-center">
-        <div className="absolute inset-0 z-0 opacity-40">
-          <Image
-            src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=1600&q=80"
-            alt="Perfume Luxury Background"
-            fill
-            className="object-cover object-center"
-            priority
-          />
-        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-[#181514] via-[#181514]/85 to-transparent z-0" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -103,28 +94,14 @@ export default function HomePage() {
                 <span>&bull;</span>
                 <span>Parfums authentiques</span>
               </div>
-
-              <div className="flex items-center space-x-2 pt-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#9B7B56]"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-stone-600"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-stone-600"></span>
-              </div>
             </div>
 
             {/* Right Side Bottle Display */}
             <div className="lg:col-span-5 relative hidden lg:flex justify-center items-center">
-              <div className="relative w-80 h-96">
-                <div className="absolute -top-6 -left-6 z-20 text-right">
-                  <p className="italic font-serif text-xl text-[#C5928E] font-medium rotate-[-6deg]">
-                    Plus qu&apos;un parfum,<br />une émotion.
-                  </p>
-                </div>
-                <Image
-                  src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"
-                  alt="Chanel Perfume Bottle"
-                  fill
-                  className="object-contain drop-shadow-2xl"
-                />
+              <div className="relative w-80 h-96 flex items-center justify-center border border-stone-800 rounded-sm bg-stone-900/50">
+                <p className="italic font-serif text-xl text-[#C5928E] font-medium text-center">
+                  Plus qu&apos;un parfum,<br />une émotion.
+                </p>
               </div>
             </div>
 
@@ -156,13 +133,8 @@ export default function HomePage() {
           
           {/* Card 1: Huiles parfumées */}
           <div className="bg-[#FAF0ED] border border-[#E8D5D0] rounded-sm overflow-hidden flex flex-col justify-between group shadow-2xs">
-            <div className="relative aspect-[4/3] w-full bg-stone-100 overflow-hidden">
-              <Image
-                src="https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=800&q=80"
-                alt="Huiles Parfumées"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+            <div className="relative aspect-[4/3] w-full bg-[#FAF0ED] overflow-hidden flex items-center justify-center border-b border-[#E8D5D0]">
+              <Droplet className="w-16 h-16 text-[#9B7B56]/30 group-hover:scale-110 transition-transform duration-500" />
             </div>
             <div className="p-6 text-center space-y-3">
               <div className="w-8 h-8 mx-auto rounded-full bg-white/80 flex items-center justify-center text-[#9B7B56]">
@@ -187,13 +159,8 @@ export default function HomePage() {
 
           {/* Card 2: Extraits de parfum */}
           <div className="bg-[#FAF0ED] border border-[#E8D5D0] rounded-sm overflow-hidden flex flex-col justify-between group shadow-2xs">
-            <div className="relative aspect-[4/3] w-full bg-stone-100 overflow-hidden">
-              <Image
-                src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"
-                alt="Extraits de Parfum"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+            <div className="relative aspect-[4/3] w-full bg-[#FAF0ED] overflow-hidden flex items-center justify-center border-b border-[#E8D5D0]">
+              <Sparkles className="w-16 h-16 text-[#9B7B56]/30 group-hover:scale-110 transition-transform duration-500" />
             </div>
             <div className="p-6 text-center space-y-3">
               <div className="w-8 h-8 mx-auto rounded-full bg-white/80 flex items-center justify-center text-[#9B7B56]">
@@ -218,13 +185,8 @@ export default function HomePage() {
 
           {/* Card 3: Parfums authentiques */}
           <div className="bg-[#FAF0ED] border border-[#E8D5D0] rounded-sm overflow-hidden flex flex-col justify-between group shadow-2xs">
-            <div className="relative aspect-[4/3] w-full bg-stone-100 overflow-hidden">
-              <Image
-                src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"
-                alt="Parfums Authentiques"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+            <div className="relative aspect-[4/3] w-full bg-[#FAF0ED] overflow-hidden flex items-center justify-center border-b border-[#E8D5D0]">
+              <Diamond className="w-16 h-16 text-[#9B7B56]/30 group-hover:scale-110 transition-transform duration-500" />
             </div>
             <div className="p-6 text-center space-y-3">
               <div className="w-8 h-8 mx-auto rounded-full bg-white/80 flex items-center justify-center text-[#9B7B56]">
@@ -317,12 +279,16 @@ export default function HomePage() {
                   </button>
 
                   <div className="relative aspect-square bg-stone-50 rounded-sm overflow-hidden flex items-center justify-center p-2 border border-stone-100">
-                    <Image
-                      src={prod.imageUrl || "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"}
-                      alt={prod.name}
-                      fill
-                      className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                    />
+                    {prod.imageUrl ? (
+                      <Image
+                        src={prod.imageUrl}
+                        alt={prod.name}
+                        fill
+                        className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <Sparkles className="w-8 h-8 text-stone-300" />
+                    )}
                   </div>
 
                   <div className="text-center pt-1">

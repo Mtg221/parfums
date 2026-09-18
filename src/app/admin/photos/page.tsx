@@ -16,13 +16,23 @@ import {
 import { getSitePhotos, saveSitePhoto, deleteSitePhoto, SitePhoto } from '@/services/sitePhotosService';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 
+export const PHOTO_LOCATIONS = [
+  { key: 'hero_banner', label: 'Bannière Principale (Accueil Hero Background)' },
+  { key: 'hero_flacon', label: 'Flacon Mis en Avant (Hero Droite)' },
+  { key: 'univers_huiles', label: 'Image Univers - Huiles Parfumées' },
+  { key: 'univers_extraits', label: 'Image Univers - Extraits de Parfum' },
+  { key: 'univers_authentiques', label: 'Image Univers - Parfums Authentiques' },
+  { key: 'banner_coffrets', label: 'Bannière Section Coffrets' },
+  { key: 'banner_contact', label: 'Bannière Section Contact' },
+];
+
 export default function AdminPhotosPage() {
   const [photos, setPhotos] = useState<SitePhoto[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [label, setLabel] = useState('');
+  const [selectedLocationKey, setSelectedLocationKey] = useState(PHOTO_LOCATIONS[0].key);
   const [url, setUrl] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -57,7 +67,7 @@ export default function AdminPhotosPage() {
   };
 
   const handleOpenModal = () => {
-    setLabel('');
+    setSelectedLocationKey(PHOTO_LOCATIONS[0].key);
     setUrl('');
     setImageFile(null);
     setImagePreview(null);
@@ -71,13 +81,8 @@ export default function AdminPhotosPage() {
     setError(null);
     setSuccess(null);
 
-    if (!label.trim()) {
-      setError('Veuillez donner un nom ou emplacement à cette photo.');
-      return;
-    }
-
     if (!imageFile && !url.trim()) {
-      setError('Veuillez téléverser une photo ou saisir une URL.');
+      setError('Veuillez téléverser une photo ou saisir une URL d\'image.');
       return;
     }
 
@@ -92,10 +97,10 @@ export default function AdminPhotosPage() {
         setUploading(false);
       }
 
-      const key = label.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      await saveSitePhoto(key, label.trim(), finalUrl);
+      const selectedLoc = PHOTO_LOCATIONS.find(l => l.key === selectedLocationKey) || PHOTO_LOCATIONS[0];
+      await saveSitePhoto(selectedLoc.key, selectedLoc.label, finalUrl);
 
-      setSuccess(`Photo "${label}" ajoutée avec succès !`);
+      setSuccess(`Photo pour "${selectedLoc.label}" enregistrée avec succès !`);
       setIsModalOpen(false);
       fetchPhotos();
     } catch (err: any) {
@@ -132,7 +137,7 @@ export default function AdminPhotosPage() {
             <span>Gestion des Photos du Site</span>
           </h1>
           <p className="text-xs text-stone-500 font-light mt-1">
-            Ajoutez et téléversez vos propres photos pour personnaliser l&apos;interface du site (Bannières, Univers, etc.).
+            Choisissez l&apos;emplacement du site (Hero, Univers, Bannières) et téléversez vos propres photos.
           </p>
         </div>
 
@@ -160,56 +165,91 @@ export default function AdminPhotosPage() {
         </div>
       )}
 
-      {/* PHOTOS GRID */}
+      {/* PHOTOS LIST BY LOCATION */}
       {loading ? (
         <div className="flex justify-center py-20">
           <Loader2 className="w-8 h-8 text-[#B76E79] animate-spin" />
         </div>
-      ) : photos.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-stone-200 space-y-3 p-8">
-          <ImageIcon className="w-12 h-12 text-stone-300 mx-auto" />
-          <p className="text-stone-700 font-medium text-sm">Aucune photo personnalisée enregistrée pour le moment.</p>
-          <button
-            onClick={handleOpenModal}
-            className="text-xs font-semibold text-[#B76E79] hover:underline block mx-auto"
-          >
-            + Téléverser votre première photo
-          </button>
-        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {photos.map((p) => (
-            <div
-              key={p.id}
-              className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs flex flex-col justify-between group hover:border-[#D8A7B1] transition-all"
-            >
-              <div className="relative aspect-[16/9] w-full bg-stone-100">
-                <Image
-                  src={p.url}
-                  alt={p.label}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
-                <span className="absolute bottom-3 left-4 font-serif font-bold text-sm text-white uppercase tracking-wide">
-                  {p.label}
-                </span>
-              </div>
+        <div className="space-y-8">
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {PHOTO_LOCATIONS.map((loc) => {
+              const activePhoto = photos.find(p => p.key === loc.key || p.label === loc.label);
 
-              <div className="p-4 flex justify-between items-center bg-stone-50 border-t border-stone-100">
-                <span className="text-[10px] text-stone-500 font-mono truncate max-w-[200px]">
-                  {p.url}
-                </span>
-                <button
-                  onClick={() => handleDelete(p.id, p.label)}
-                  className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors"
-                  title="Supprimer la photo"
+              return (
+                <div
+                  key={loc.key}
+                  className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs flex flex-col justify-between group hover:border-[#D8A7B1] transition-all"
                 >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+                  <div className="p-3 bg-stone-50 border-b border-stone-100 flex items-center justify-between">
+                    <span className="text-xs font-serif font-bold text-stone-900 truncate">
+                      {loc.label}
+                    </span>
+                    {activePhoto ? (
+                      <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                        En ligne
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-bold">
+                        Non configuré
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="relative aspect-[16/9] w-full bg-stone-100 flex items-center justify-center">
+                    {activePhoto ? (
+                      <Image
+                        src={activePhoto.url}
+                        alt={loc.label}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="text-center p-4 space-y-2">
+                        <ImageIcon className="w-8 h-8 text-stone-300 mx-auto" />
+                        <p className="text-[11px] text-stone-400 font-light">Aucune photo téléversée</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-3 bg-white flex justify-between items-center border-t border-stone-100">
+                    {activePhoto ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            setSelectedLocationKey(loc.key);
+                            handleOpenModal();
+                          }}
+                          className="text-xs font-bold text-[#B76E79] hover:underline"
+                        >
+                          Remplacer la photo
+                        </button>
+                        <button
+                          onClick={() => handleDelete(activePhoto.id, activePhoto.label)}
+                          className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setSelectedLocationKey(loc.key);
+                          handleOpenModal();
+                        }}
+                        className="w-full py-2 rounded-lg bg-[#B76E79] hover:bg-[#a25a65] text-white font-bold text-xs uppercase tracking-wider text-center"
+                      >
+                        + Uploader pour cet emplacement
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
         </div>
       )}
 
@@ -220,7 +260,7 @@ export default function AdminPhotosPage() {
             
             <div className="flex justify-between items-center border-b border-stone-100 pb-4">
               <h3 className="text-xl font-serif font-bold text-stone-900">
-                Ajouter une Photo
+                Téléverser une Photo du Site
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -231,35 +271,40 @@ export default function AdminPhotosPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              
+              {/* DROPDOWN EM PLACEMENT */}
               <div className="space-y-1">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
-                  Nom / Emplacement de la photo <span className="text-red-600">*</span>
+                  Choisir l&apos;emplacement exact sur le site <span className="text-red-600">*</span>
                 </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: Bannière d'accueil, Univers Huiles, Hero..."
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs focus:outline-none focus:border-[#B76E79]"
-                />
+                <select
+                  value={selectedLocationKey}
+                  onChange={(e) => setSelectedLocationKey(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs font-bold focus:outline-none focus:border-[#B76E79]"
+                >
+                  {PHOTO_LOCATIONS.map((loc) => (
+                    <option key={loc.key} value={loc.key}>
+                      {loc.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              {/* UPLOAD AREA */}
-              <div className="space-y-2">
+              {/* FILE SELECTOR */}
+              <div className="space-y-2 pt-2">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
-                  Sélectionner l&apos;image
+                  Fichier photo à téléverser
                 </label>
                 
                 {imagePreview && (
-                  <div className="relative w-full h-36 rounded-lg overflow-hidden border border-stone-200 bg-stone-50">
+                  <div className="relative w-full h-40 rounded-lg overflow-hidden border border-stone-200 bg-stone-50">
                     <Image src={imagePreview} alt="Aperçu" fill className="object-cover" />
                   </div>
                 )}
 
                 <label className="flex items-center justify-center space-x-2 py-3 px-4 rounded-lg bg-stone-50 hover:bg-stone-100 border border-dashed border-stone-300 text-stone-700 text-xs font-semibold cursor-pointer transition-colors">
                   <Upload className="w-4 h-4 text-[#B76E79]" />
-                  <span>{imageFile ? imageFile.name : 'Choisir une photo (JPG, PNG, WEBP)'}</span>
+                  <span>{imageFile ? imageFile.name : 'Choisir votre fichier photo (JPG, PNG, WEBP)'}</span>
                   <input
                     type="file"
                     accept="image/jpeg,image/jpg,image/png,image/webp"
@@ -269,7 +314,7 @@ export default function AdminPhotosPage() {
                 </label>
 
                 <div className="pt-1">
-                  <label className="block text-[10px] text-stone-500 uppercase">Ou coller l&apos;URL de votre image :</label>
+                  <label className="block text-[10px] text-stone-500 uppercase">Ou saisir l&apos;URL externe de l&apos;image :</label>
                   <input
                     type="url"
                     placeholder="https://..."
@@ -300,7 +345,7 @@ export default function AdminPhotosPage() {
                       <span>{uploading ? 'Téléversement...' : 'Enregistrement...'}</span>
                     </span>
                   ) : (
-                    <span>Enregistrer</span>
+                    <span>Valider et Enregistrer</span>
                   )}
                 </button>
               </div>

@@ -141,13 +141,17 @@ export default function PanierPage() {
                     <div key={item.id} className="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       
                       <div className="flex items-center space-x-4">
-                        <div className="relative w-16 h-16 bg-stone-50 border border-stone-200 rounded-sm overflow-hidden flex-shrink-0">
-                          <Image
-                            src={item.imageUrl || "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"}
-                            alt={item.name}
-                            fill
-                            className="object-cover"
-                          />
+                        <div className="relative w-16 h-16 bg-stone-50 border border-stone-200 rounded-sm overflow-hidden flex-shrink-0 flex items-center justify-center">
+                          {item.imageUrl ? (
+                            <Image
+                              src={item.imageUrl}
+                              alt={item.name}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <ShoppingBag className="w-6 h-6 text-stone-300" />
+                          )}
                         </div>
 
                         <div className="space-y-0.5">

@@ -33,12 +33,8 @@ export default function CoffretDetailPage({
             name: coffretId === 'coffret-1' ? 'Coffret Élégance Royale' : coffretId === 'coffret-2' ? 'Coffret Senteurs d\'Orient' : 'Coffret Prestige Féminin',
             description: 'Un coffret cadeau d\'exception conçu avec soin pour offrir une expérience olfactive unique.',
             formats: [{ id: 'fmt-c', sizeMl: 100, price: 35000, stock: 10 }],
-            imageUrl: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80',
-            images: [
-              'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80',
-              'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80',
-              'https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=800&q=80',
-            ],
+            imageUrl: '',
+            images: [],
             coffretContent: ['Parfum Haute Concentration 50ml', 'Huile Parfumée 16ml', 'Extrait Rapprochement 20ml'],
             priceCoffret: 35000,
             isCoffret: true,
@@ -126,14 +122,18 @@ export default function CoffretDetailPage({
         
         {/* GALLERY LEFT */}
         <div className="md:col-span-6 space-y-4">
-          <div className="relative aspect-square bg-stone-50 border border-stone-200 rounded-sm overflow-hidden">
-            <Image
-              src={coffret.imageUrl || "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"}
-              alt={coffret.name}
-              fill
-              className="object-cover"
-              priority
-            />
+          <div className="relative aspect-square bg-stone-50 border border-stone-200 rounded-sm overflow-hidden flex items-center justify-center">
+            {coffret.imageUrl ? (
+              <Image
+                src={coffret.imageUrl}
+                alt={coffret.name}
+                fill
+                className="object-cover"
+                priority
+              />
+            ) : (
+              <Gift className="w-16 h-16 text-stone-300" />
+            )}
           </div>
 
           {/* Thumbnail Gallery */}

@@ -13,7 +13,8 @@ import {
   Truck, 
   CreditCard, 
   Heart,
-  Sliders
+  Sliders,
+  Sparkles
 } from 'lucide-react';
 import { getBrands, Brand } from '@/services/brandsService';
 import { getProducts } from '@/services/productsService';
@@ -121,18 +122,8 @@ export default function CataloguePage() {
 
           {/* Right Hero Image Overlay */}
           <div className="lg:col-span-5 relative hidden lg:flex justify-end items-center">
-            <div className="relative w-80 h-72">
-              <div className="absolute -top-4 right-0 z-20 text-right">
-                <p className="italic font-serif text-sm text-[#C5928E] font-medium rotate-[-4deg]">
-                  Des marques iconiques pour<br />chaque personnalité.
-                </p>
-              </div>
-              <Image
-                src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"
-                alt="Nos Maisons de Parfum"
-                fill
-                className="object-contain drop-shadow-xl"
-              />
+            <div className="relative w-80 h-72 border border-stone-200/50 rounded-sm overflow-hidden bg-stone-100/50 flex items-center justify-center">
+              <Sparkles className="w-16 h-16 text-[#9B7B56]/30" />
             </div>
           </div>
 
@@ -377,12 +368,16 @@ export default function CataloguePage() {
                           </button>
 
                           <div className="relative aspect-square bg-stone-50 rounded-sm overflow-hidden flex items-center justify-center p-2 border border-stone-100">
-                            <Image
-                              src={prod.imageUrl || "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"}
-                              alt={prod.name}
-                              fill
-                              className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                            />
+                            {prod.imageUrl ? (
+                              <Image
+                                src={prod.imageUrl}
+                                alt={prod.name}
+                                fill
+                                className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                              />
+                            ) : (
+                              <Sparkles className="w-10 h-10 text-stone-300" />
+                            )}
                           </div>
 
                           <div className="text-center pt-1">

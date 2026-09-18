@@ -80,13 +80,8 @@ export default function CoffretsPage() {
           </div>
 
           <div className="lg:col-span-5 relative hidden lg:flex justify-end items-center">
-            <div className="relative w-72 h-64">
-              <Image
-                src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"
-                alt="Nos Coffrets"
-                fill
-                className="object-cover rounded-sm drop-shadow-md"
-              />
+            <div className="relative w-72 h-64 border border-stone-200/50 rounded-sm overflow-hidden bg-stone-100/50 flex items-center justify-center">
+              <Gift className="w-16 h-16 text-[#9B7B56]/30" />
             </div>
           </div>
         </div>
@@ -132,12 +127,16 @@ export default function CoffretsPage() {
                     </button>
 
                     <div className="relative aspect-[4/3] bg-stone-50 rounded-sm overflow-hidden flex items-center justify-center border border-stone-100">
-                      <Image
-                        src={coffret.imageUrl || "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"}
-                        alt={coffret.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+                      {coffret.imageUrl ? (
+                        <Image
+                          src={coffret.imageUrl}
+                          alt={coffret.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <Gift className="w-12 h-12 text-stone-300" />
+                      )}
                     </div>
 
                     <div className="space-y-2">

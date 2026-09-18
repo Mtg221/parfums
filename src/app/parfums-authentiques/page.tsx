@@ -84,13 +84,8 @@ export default function ParfumsAuthentiquesPage() {
           </div>
 
           <div className="lg:col-span-5 relative hidden lg:flex justify-end items-center">
-            <div className="relative w-72 h-64">
-              <Image
-                src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"
-                alt="Parfums Authentiques"
-                fill
-                className="object-cover rounded-sm drop-shadow-md"
-              />
+            <div className="relative w-72 h-64 border border-stone-200/50 rounded-sm overflow-hidden bg-stone-100/50 flex items-center justify-center">
+              <Diamond className="w-16 h-16 text-[#9B7B56]/30" />
             </div>
           </div>
         </div>
@@ -157,12 +152,16 @@ export default function ParfumsAuthentiquesPage() {
                   </button>
 
                   <div className="relative aspect-square bg-stone-50 rounded-sm overflow-hidden flex items-center justify-center p-2 border border-stone-100">
-                    <Image
-                      src={prod.imageUrl || "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"}
-                      alt={prod.name}
-                      fill
-                      className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                    />
+                    {prod.imageUrl ? (
+                      <Image
+                        src={prod.imageUrl}
+                        alt={prod.name}
+                        fill
+                        className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <Diamond className="w-10 h-10 text-stone-300" />
+                    )}
                   </div>
 
                   <div className="text-center space-y-1">
