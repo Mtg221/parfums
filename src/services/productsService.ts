@@ -33,7 +33,16 @@ export async function getProducts(): Promise<Product[]> {
         categoryIds: catIds,
         categoryNames: catNames,
         imageUrl: data.imageUrl || '',
+        images: data.images || [],
         formats: data.formats || [],
+        priceHuile: data.priceHuile,
+        priceExtrait: data.priceExtrait,
+        priceAuthentic: data.priceAuthentic,
+        priceCoffret: data.priceCoffret,
+        isAuthentic: data.isAuthentic ?? false,
+        isCoffret: data.isCoffret ?? false,
+        coffretContent: data.coffretContent || [],
+        active: data.active ?? true,
         allowCustomVolume: data.allowCustomVolume ?? true,
         isBestSeller: data.isBestSeller ?? true,
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
@@ -56,11 +65,9 @@ export async function getProductsByCategory(idOrSlug: string): Promise<Product[]
     const targetName = cat ? cat.name.toLowerCase() : idOrSlug.toLowerCase().replace(/-/g, ' ');
 
     return allProducts.filter(p => {
-      // Check direct ID or categoryIds match
       if (p.categoryId === targetId) return true;
       if (p.categoryIds && p.categoryIds.includes(targetId)) return true;
 
-      // Check name / keyword match
       const pCatName = (p.categoryName || '').toLowerCase();
       const pCatNames = (p.categoryNames || []).map(n => n.toLowerCase());
 
@@ -97,7 +104,16 @@ export async function getProductById(id: string): Promise<Product | null> {
       categoryIds: catIds,
       categoryNames: catNames,
       imageUrl: data.imageUrl || '',
+      images: data.images || [],
       formats: data.formats || [],
+      priceHuile: data.priceHuile,
+      priceExtrait: data.priceExtrait,
+      priceAuthentic: data.priceAuthentic,
+      priceCoffret: data.priceCoffret,
+      isAuthentic: data.isAuthentic ?? false,
+      isCoffret: data.isCoffret ?? false,
+      coffretContent: data.coffretContent || [],
+      active: data.active ?? true,
       allowCustomVolume: data.allowCustomVolume ?? true,
       isBestSeller: data.isBestSeller ?? true,
       createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,

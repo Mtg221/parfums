@@ -83,23 +83,10 @@ export async function getBrands(): Promise<Brand[]> {
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
       });
     });
-
-    const combined: Brand[] = [...firestoreBrands];
-    DEFAULT_BRANDS.forEach((def, idx) => {
-      const exists = combined.some(b => b.name.toUpperCase() === def.name.toUpperCase());
-      if (!exists) {
-        combined.push({
-          id: `preset-${idx}`,
-          name: def.name.toUpperCase(),
-          subtitle: def.subtitle || '',
-        });
-      }
-    });
-
-    return combined;
+    return firestoreBrands;
   } catch (error) {
     console.error('Error fetching brands:', error);
-    return DEFAULT_BRANDS.map((b, index) => ({ id: `default-${index}`, ...b }));
+    return [];
   }
 }
 

@@ -26,7 +26,10 @@ export const AdminSidebar: React.FC = () => {
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/maisons', label: 'Maisons de Parfum', icon: Building2 },
-    { href: '/admin/parfums', label: 'Parfums', icon: Package },
+    { href: '/admin/parfums?type=huiles-parfumees', label: 'Huiles Parfumées', icon: Package },
+    { href: '/admin/parfums?type=extraits-parfums', label: 'Extraits de Parfum', icon: Package },
+    { href: '/admin/parfums?type=parfums-authentiques', label: 'Parfums Authentiques', icon: Package },
+    { href: '/admin/parfums?type=coffrets', label: 'Coffrets', icon: Package },
     { href: '/admin/commandes', label: 'Commandes', icon: ShoppingBag },
   ];
 

@@ -31,43 +31,7 @@ export default function CoffretsPage() {
         // Filter products that are coffrets or fallbacks
         const coffretList = prodsData.filter(p => p.isCoffret || p.categoryName?.toLowerCase().includes('coffret'));
         
-        if (coffretList.length > 0) {
-          setCoffrets(coffretList);
-        } else {
-          // Default preset coffrets if database doesn't have custom ones yet
-          setCoffrets([
-            {
-              id: 'coffret-1',
-              name: 'Coffret Élégance Royale',
-              description: 'Un coffret d\'exception réunissant nos 3 plus grands best-sellers.',
-              formats: [{ id: 'cf1', sizeMl: 100, price: 35000, stock: 10 }],
-              imageUrl: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80',
-              coffretContent: ['Parfum Sauvage Elixir 50ml', 'Huile Parfumée Bleu 16ml', 'Extrait Baccarat 20ml'],
-              priceCoffret: 35000,
-              isCoffret: true,
-            },
-            {
-              id: 'coffret-2',
-              name: 'Coffret Senteurs d\'Orient',
-              description: 'Écrin luxueux composé d\'extraits de parfum rares et précieux.',
-              formats: [{ id: 'cf2', sizeMl: 100, price: 42000, stock: 8 }],
-              imageUrl: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80',
-              coffretContent: ['Extrait Oud Wood 30ml', 'Huile Yara Candy 16ml', 'Vaporisateur de voyage'],
-              priceCoffret: 42000,
-              isCoffret: true,
-            },
-            {
-              id: 'coffret-3',
-              name: 'Coffret Prestige Féminin',
-              description: 'Une sélection enchantée des plus belles essences féminines.',
-              formats: [{ id: 'cf3', sizeMl: 100, price: 38000, stock: 12 }],
-              imageUrl: 'https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=800&q=80',
-              coffretContent: ['Parfum Good Girl 50ml', 'Extrait Kay Ali 20ml', 'Lait parfumé pour le corps'],
-              priceCoffret: 38000,
-              isCoffret: true,
-            }
-          ]);
-        }
+        setCoffrets(coffretList);
       } catch (err) {
         console.error('Failed to load Coffrets:', err);
       } finally {
