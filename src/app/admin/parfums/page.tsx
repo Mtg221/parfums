@@ -49,6 +49,12 @@ export default function AdminParfumsPage() {
   const [uploading, setUploading] = useState(false);
   const [allowCustomVolume, setAllowCustomVolume] = useState<boolean>(true);
   const [isBestSeller, setIsBestSeller] = useState<boolean>(true);
+  const [priceHuile, setPriceHuile] = useState<number>(5000);
+  const [priceExtrait, setPriceExtrait] = useState<number>(8000);
+  const [priceAuthentic, setPriceAuthentic] = useState<number>(25000);
+  const [priceCoffret, setPriceCoffret] = useState<number>(35000);
+  const [isCoffret, setIsCoffret] = useState<boolean>(false);
+  const [coffretContentString, setCoffretContentString] = useState<string>('');
   const [formats, setFormats] = useState<ProductFormat[]>([
     { id: 'fmt-1', sizeMl: 5, price: 3000, stock: 50 },
     { id: 'fmt-2', sizeMl: 16, price: 8000, stock: 30 },
@@ -103,6 +109,12 @@ export default function AdminParfumsPage() {
     setUploading(false);
     setAllowCustomVolume(true);
     setIsBestSeller(true);
+    setPriceHuile(5000);
+    setPriceExtrait(8000);
+    setPriceAuthentic(25000);
+    setPriceCoffret(35000);
+    setIsCoffret(false);
+    setCoffretContentString('');
     setFormats([
       { id: 'fmt-' + Date.now() + '-1', sizeMl: 5, price: 3000, stock: 50 },
       { id: 'fmt-' + Date.now() + '-2', sizeMl: 16, price: 8000, stock: 30 },
@@ -129,6 +141,12 @@ export default function AdminParfumsPage() {
     setUploading(false);
     setAllowCustomVolume(prod.allowCustomVolume ?? true);
     setIsBestSeller(prod.isBestSeller ?? true);
+    setPriceHuile(prod.priceHuile || 5000);
+    setPriceExtrait(prod.priceExtrait || 8000);
+    setPriceAuthentic(prod.priceAuthentic || 25000);
+    setPriceCoffret(prod.priceCoffret || 35000);
+    setIsCoffret(prod.isCoffret ?? false);
+    setCoffretContentString(prod.coffretContent ? prod.coffretContent.join(', ') : '');
     setFormats(prod.formats || []);
     setError(null);
     setSuccess(null);
@@ -188,6 +206,10 @@ export default function AdminParfumsPage() {
         setUploading(false);
       }
 
+      const coffretArr = coffretContentString
+        ? coffretContentString.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+
       const payload = {
         name: name.trim(),
         brand: brand.trim(),
@@ -196,6 +218,12 @@ export default function AdminParfumsPage() {
         formats,
         allowCustomVolume,
         isBestSeller,
+        priceHuile,
+        priceExtrait,
+        priceAuthentic,
+        priceCoffret,
+        isCoffret,
+        coffretContent: coffretArr,
       };
 
       if (editingProduct) {

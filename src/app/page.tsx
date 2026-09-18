@@ -141,6 +141,156 @@ export default function HomePage() {
 
 
 
+      {/* 2. NOS 3 UNIVERS SECTION (1:1 MATCH EXEMPLE.JPG) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-center">
+        <div className="space-y-2">
+          <div className="flex items-center justify-center space-x-3 text-stone-400 text-xs tracking-widest uppercase font-serif">
+            <span className="w-12 h-px bg-stone-300"></span>
+            <span>NOS 3 UNIVERS</span>
+            <span className="w-12 h-px bg-stone-300"></span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 uppercase tracking-wide">
+            TROUVEZ VOTRE FRAGRANCE
+          </h2>
+          <p className="text-xs text-stone-500 font-sans font-light italic">
+            Trois façons de vivre le parfum, une seule passion.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+          
+          {/* Card 1: Huiles parfumées */}
+          <div className="bg-[#FAF0ED] border border-[#E8D5D0] rounded-sm overflow-hidden flex flex-col justify-between group shadow-2xs">
+            <div className="relative aspect-[4/3] w-full bg-stone-100 overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=800&q=80"
+                alt="Huiles Parfumées"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="p-6 text-center space-y-3">
+              <div className="w-8 h-8 mx-auto rounded-full bg-white/80 flex items-center justify-center text-[#9B7B56]">
+                <Droplet className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif font-bold text-stone-900 text-base sm:text-lg uppercase tracking-wider">
+                HUILES PARFUMÉES
+              </h3>
+              <p className="text-xs text-stone-600 font-light leading-relaxed min-h-[36px]">
+                Des senteurs en format pratique, idéal pour le quotidien.
+              </p>
+              <div className="pt-2">
+                <Link
+                  href="/huiles-parfumees"
+                  className="inline-block px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-[10px] uppercase tracking-widest shadow-2xs transition-colors"
+                >
+                  DÉCOUVRIR →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Extraits de parfum */}
+          <div className="bg-[#FAF0ED] border border-[#E8D5D0] rounded-sm overflow-hidden flex flex-col justify-between group shadow-2xs">
+            <div className="relative aspect-[4/3] w-full bg-stone-100 overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80"
+                alt="Extraits de Parfum"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="p-6 text-center space-y-3">
+              <div className="w-8 h-8 mx-auto rounded-full bg-white/80 flex items-center justify-center text-[#9B7B56]">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif font-bold text-stone-900 text-base sm:text-lg uppercase tracking-wider">
+                EXTRAITS DE PARFUM
+              </h3>
+              <p className="text-xs text-stone-600 font-light leading-relaxed min-h-[36px]">
+                Des fragrances inspirées de vos parfums préférés, en haute concentration.
+              </p>
+              <div className="pt-2">
+                <Link
+                  href="/extraits-parfums"
+                  className="inline-block px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-[10px] uppercase tracking-widest shadow-2xs transition-colors"
+                >
+                  DÉCOUVRIR →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Parfums authentiques */}
+          <div className="bg-[#FAF0ED] border border-[#E8D5D0] rounded-sm overflow-hidden flex flex-col justify-between group shadow-2xs">
+            <div className="relative aspect-[4/3] w-full bg-stone-100 overflow-hidden">
+              <Image
+                src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80"
+                alt="Parfums Authentiques"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="p-6 text-center space-y-3">
+              <div className="w-8 h-8 mx-auto rounded-full bg-white/80 flex items-center justify-center text-[#9B7B56]">
+                <Diamond className="w-4 h-4" />
+              </div>
+              <h3 className="font-serif font-bold text-stone-900 text-base sm:text-lg uppercase tracking-wider">
+                PARFUMS AUTHENTIQUES
+              </h3>
+              <p className="text-xs text-stone-600 font-light leading-relaxed min-h-[36px]">
+                Les vraies marques, dans leurs flacons et packagings d&apos;origine.
+              </p>
+              <div className="pt-2">
+                <Link
+                  href="/parfums-authentiques"
+                  className="inline-block px-6 py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-[10px] uppercase tracking-widest shadow-2xs transition-colors"
+                >
+                  DÉCOUVRIR →
+                </Link>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 3. NOS MAISONS DE PARFUM (1:1 MATCH EXEMPLE.JPG) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div className="flex justify-between items-center border-b border-stone-200 pb-3">
+          <div>
+            <h2 className="text-lg sm:text-xl font-serif font-bold text-stone-900 uppercase tracking-wider">
+              NOS MAISONS DE PARFUM
+            </h2>
+            <p className="text-xs text-stone-500 font-sans font-light">
+              Les plus grandes marques, réunies pour vous.
+            </p>
+          </div>
+          <Link
+            href="/parfums-authentiques"
+            className="text-[11px] font-serif font-bold text-stone-600 hover:text-stone-900 uppercase tracking-wider flex items-center space-x-1"
+          >
+            <span>VOIR TOUTES</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Brand Logos Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          {['DIOR', 'CHANEL', 'YVES SAINT LAURENT', 'GUERLAIN', 'TOM FORD', 'PACO RABANNE', 'JEAN PAUL GAULTIER', 'CALVIN KLEIN'].map((bName) => (
+            <Link
+              key={bName}
+              href={`/huiles-parfumees?maison=${encodeURIComponent(bName)}`}
+              className="bg-white border border-stone-200/80 hover:border-[#9B7B56] rounded-sm p-4 flex items-center justify-center text-center h-16 shadow-2xs transition-all hover:shadow-xs group"
+            >
+              <span className="font-serif font-bold text-xs tracking-wider text-stone-900 group-hover:text-[#9B7B56] transition-colors uppercase truncate">
+                {bName}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* 4. NOS BEST-SELLERS (DYNAMIC BEST-SELLERS FROM FIRESTORE) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         

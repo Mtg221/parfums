@@ -24,7 +24,17 @@ export interface Product {
   categoryIds?: string[]; // Multiple categories / universes
   categoryNames?: string[];
   imageUrl?: string;
+  images?: string[]; // Gallery images
   formats: ProductFormat[];
+  priceHuile?: number; // Separate price for Huile Parfumée
+  priceExtrait?: number; // Separate price for Extrait de Parfum
+  priceAuthentic?: number; // Price for Authentic Parfum
+  priceCoffret?: number; // Price for Coffret
+  isAuthentic?: boolean;
+  isCoffret?: boolean;
+  coffretContent?: string[]; // E.g. ["Parfum A x 1", "Huile B x 1"]
+  active?: boolean;
+  stock?: number;
   allowCustomVolume?: boolean; // If true, customer can choose custom mL
   isBestSeller?: boolean; // Display in Best-Sellers section
   createdAt?: string | number | Date;

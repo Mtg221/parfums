@@ -17,10 +17,13 @@ import {
 } from 'lucide-react';
 import { getWhatsAppNumber } from '@/lib/whatsapp';
 
+import { useCart } from '@/context/CartContext';
+
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { totalItems } = useCart();
 
   const whatsappNumber = getWhatsAppNumber();
 
@@ -36,10 +39,13 @@ export const Navbar: React.FC = () => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // STRICTLY 3 NAV LINKS AS REQUESTED: Accueil, Parfums, Contact
+  // EXACT 6 NAV LINKS MATCHING EXEMPLE.JPG
   const navLinks = [
     { href: '/', label: 'Accueil' },
-    { href: '/catalogue', label: 'Parfums' },
+    { href: '/huiles-parfumees', label: 'Huiles parfumées' },
+    { href: '/extraits-parfums', label: 'Extraits de parfum' },
+    { href: '/parfums-authentiques', label: 'Parfums authentiques' },
+    { href: '/coffrets', label: 'Coffrets' },
     { href: '/contact', label: 'Contact' },
   ];
 
@@ -119,11 +125,13 @@ export const Navbar: React.FC = () => {
               <button className="p-1.5 text-stone-300 hover:text-white transition-colors hidden sm:block">
                 <Heart className="w-5 h-5" />
               </button>
-              <Link href="/catalogue" className="p-1.5 text-stone-300 hover:text-white transition-colors relative">
+              <Link href="/panier" className="p-1.5 text-stone-300 hover:text-white transition-colors relative" aria-label="Panier">
                 <ShoppingBag className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#C5928E] text-white text-[10px] font-bold flex items-center justify-center">
-                  0
-                </span>
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#C5928E] text-white text-[10px] font-bold flex items-center justify-center animate-fadeIn">
+                    {totalItems}
+                  </span>
+                )}
               </Link>
             </div>
 
