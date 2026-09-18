@@ -211,7 +211,7 @@ function AdminParfumsContent() {
         ? coffretContentString.split(',').map(s => s.trim()).filter(Boolean)
         : [];
 
-      const payload: Partial<Product> = {
+      const rawPayload: Record<string, any> = {
         name: name.trim(),
         brand: brand.trim(),
         description: description.trim(),
@@ -219,10 +219,10 @@ function AdminParfumsContent() {
         formats: formats.length > 0 ? formats : [{ id: 'default', sizeMl: 100, price: priceAuthentic || priceCoffret || 25000, stock: 10 }],
         allowCustomVolume,
         isBestSeller,
-        priceHuile: categoryType === 'huiles-parfumees' ? priceHuile : undefined,
-        priceExtrait: categoryType === 'extraits-parfums' ? priceExtrait : undefined,
-        priceAuthentic: categoryType === 'parfums-authentiques' ? priceAuthentic : undefined,
-        priceCoffret: categoryType === 'coffrets' ? priceCoffret : undefined,
+        priceHuile: categoryType === 'huiles-parfumees' ? priceHuile : null,
+        priceExtrait: categoryType === 'extraits-parfums' ? priceExtrait : null,
+        priceAuthentic: categoryType === 'parfums-authentiques' ? priceAuthentic : null,
+        priceCoffret: categoryType === 'coffrets' ? priceCoffret : null,
         isAuthentic: categoryType === 'parfums-authentiques',
         isCoffret: categoryType === 'coffrets',
         coffretContent: coffretArr,
@@ -231,8 +231,13 @@ function AdminParfumsContent() {
                       categoryType === 'parfums-authentiques' ? 'Parfums authentiques' : 'Coffret',
       };
 
+      // Remove undefined values since Firestore rejects undefined
+      const payload = Object.fromEntries(
+        Object.entries(rawPayload).filter(([_, v]) => v !== undefined)
+      );
+
       if (editingProduct) {
-        await updateProduct(editingProduct.id, payload);
+        await updateProduct(editingProduct.id, payload as any);
         setSuccess('Article mis à jour avec succès.');
       } else {
         await createProduct(payload as any);
