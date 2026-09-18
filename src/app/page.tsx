@@ -25,6 +25,7 @@ import { getWhatsAppNumber, formatPrice } from '@/lib/whatsapp';
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
 
   const whatsappNumber = getWhatsAppNumber();
@@ -33,12 +34,14 @@ export default function HomePage() {
     async function loadData() {
       try {
         setLoading(true);
-        const [catsData, prodsData] = await Promise.all([
+        const [catsData, prodsData, brandsData] = await Promise.all([
           getCategories().catch(() => []),
-          getProducts().catch(() => [])
+          getProducts().catch(() => []),
+          getBrands().catch(() => [])
         ]);
         setCategories(catsData);
         setProducts(prodsData);
+        setBrands(brandsData);
       } catch (err) {
         console.error("Failed to load homepage data:", err);
       } finally {
@@ -232,20 +235,26 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Brand Logos Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-          {['DIOR', 'CHANEL', 'YVES SAINT LAURENT', 'GUERLAIN', 'TOM FORD', 'PACO RABANNE', 'JEAN PAUL GAULTIER', 'CALVIN KLEIN'].map((bName) => (
-            <Link
-              key={bName}
-              href={`/huiles-parfumees?maison=${encodeURIComponent(bName)}`}
-              className="bg-white border border-stone-200/80 hover:border-[#9B7B56] rounded-sm p-4 flex items-center justify-center text-center h-16 shadow-2xs transition-all hover:shadow-xs group"
-            >
-              <span className="font-serif font-bold text-xs tracking-wider text-stone-900 group-hover:text-[#9B7B56] transition-colors uppercase truncate">
-                {bName}
-              </span>
-            </Link>
-          ))}
-        </div>
+        {/* Dynamic Brand Logos / Names Row from Firestore */}
+        {brands.length === 0 ? (
+          <div className="text-center py-6 bg-white border border-stone-200/80 rounded-sm text-xs text-stone-500 font-light">
+            Aucune maison de parfum enregistrée pour le moment.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+            {brands.map((b) => (
+              <Link
+                key={b.id || b.name}
+                href={`/huiles-parfumees?maison=${encodeURIComponent(b.name)}`}
+                className="bg-white border border-stone-200/80 hover:border-[#9B7B56] rounded-sm p-4 flex items-center justify-center text-center h-16 shadow-2xs transition-all hover:shadow-xs group"
+              >
+                <span className="font-serif font-bold text-xs tracking-wider text-stone-900 group-hover:text-[#9B7B56] transition-colors uppercase truncate">
+                  {b.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 4. NOS BEST-SELLERS (DYNAMIC BEST-SELLERS FROM FIRESTORE) */}
