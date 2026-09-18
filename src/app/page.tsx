@@ -20,12 +20,7 @@ import { getBrands, Brand } from '@/services/brandsService';
 import { Category, Product } from '@/types';
 import { getWhatsAppNumber, formatPrice } from '@/lib/whatsapp';
 
-const DEFAULT_UNIVERS_IMAGES: Record<string, string> = {
-  'huiles parfumées': 'https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=800&q=80',
-  'extraits de parfum': 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80',
-  'parfums authentiques': 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80',
-  'default': 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'
-};
+
 
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);

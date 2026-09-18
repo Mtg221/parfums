@@ -12,7 +12,8 @@ import {
   LogOut, 
   Menu, 
   X,
-  Building2
+  Building2,
+  Camera
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -30,6 +31,7 @@ export const AdminSidebar: React.FC = () => {
     { href: '/admin/parfums?type=extraits-parfums', label: 'Extraits de Parfum', icon: Package },
     { href: '/admin/parfums?type=parfums-authentiques', label: 'Parfums Authentiques', icon: Package },
     { href: '/admin/parfums?type=coffrets', label: 'Coffrets', icon: Package },
+    {href: '/admin/photos', label: 'Photos du Site', icon: Camera },
     { href: '/admin/commandes', label: 'Commandes', icon: ShoppingBag },
   ];
 
