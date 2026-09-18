@@ -191,6 +191,12 @@ export default function AdminMaisonsPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3 text-red-800 text-xs">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
                   Nom de la marque <span className="text-red-600">*</span>

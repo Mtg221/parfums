@@ -83,10 +83,21 @@ export async function getBrands(): Promise<Brand[]> {
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
       });
     });
-    return firestoreBrands;
+    if (firestoreBrands.length > 0) {
+      return firestoreBrands;
+    }
+    return DEFAULT_BRANDS.map((b, index) => ({
+      id: `default-brand-${index}`,
+      name: b.name,
+      subtitle: b.subtitle,
+    }));
   } catch (error) {
-    console.error('Error fetching brands:', error);
-    return [];
+    console.warn('Firestore brands fetch error, fallback to default brands:', error);
+    return DEFAULT_BRANDS.map((b, index) => ({
+      id: `default-brand-${index}`,
+      name: b.name,
+      subtitle: b.subtitle,
+    }));
   }
 }
 
