@@ -137,6 +137,13 @@ export async function createProduct(data: {
   formats: ProductFormat[];
   allowCustomVolume?: boolean;
   isBestSeller?: boolean;
+  priceHuile?: number;
+  priceExtrait?: number;
+  priceAuthentic?: number;
+  priceCoffret?: number;
+  isAuthentic?: boolean;
+  isCoffret?: boolean;
+  coffretContent?: string[];
 }): Promise<string> {
   try {
     const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), {
@@ -169,6 +176,13 @@ export async function updateProduct(
     formats: ProductFormat[];
     allowCustomVolume?: boolean;
     isBestSeller?: boolean;
+    priceHuile?: number;
+    priceExtrait?: number;
+    priceAuthentic?: number;
+    priceCoffret?: number;
+    isAuthentic?: boolean;
+    isCoffret?: boolean;
+    coffretContent?: string[];
   }>
 ): Promise<void> {
   try {
