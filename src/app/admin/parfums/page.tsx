@@ -117,7 +117,9 @@ function AdminParfumsContent() {
     setCoffretContentString('');
     setFormats([
       { id: 'fmt-' + Date.now() + '-1', sizeMl: 5, price: 5000, stock: 50 },
-      { id: 'fmt-' + Date.now() + '-2', sizeMl: 16, price: 10000, stock: 30 },
+      { id: 'fmt-' + Date.now() + '-2', sizeMl: 16, price: 10000, stock: 40 },
+      { id: 'fmt-' + Date.now() + '-3', sizeMl: 20, price: 12000, stock: 30 },
+      { id: 'fmt-' + Date.now() + '-4', sizeMl: 100, price: 25000, stock: 20 },
     ]);
     setError(null);
     setSuccess(null);
@@ -540,39 +542,74 @@ function AdminParfumsContent() {
                 )}
               </div>
 
-              {/* SPECIFIC PRICING ACCORDING TO CATEGORY */}
-              <div className="p-4 bg-stone-50 border border-stone-200 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold uppercase text-stone-800">Définition du Prix (FCFA)</h4>
-                
-                {categoryType === 'huiles-parfumees' && (
-                  <div className="space-y-1">
-                    <label className="block text-[11px] font-semibold text-stone-700">Prix Huile Parfumée (FCFA)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      required
-                      value={priceHuile}
-                      onChange={(e) => setPriceHuile(parseInt(e.target.value) || 0)}
-                      className="w-full px-3 py-2 bg-white border border-stone-300 rounded text-xs font-bold text-[#B76E79]"
-                    />
+              {/* SPECIFIC PRICING & FORMAT VOLUMES (5ml, 16ml, 20ml, 100ml & CUSTOM) */}
+              <div className="p-4 bg-stone-50 border border-stone-200 rounded-xl space-y-4">
+                <div className="flex justify-between items-center border-b border-stone-200 pb-2">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase text-stone-800">Contenants et Prix selon vos besoins</h4>
+                    <p className="text-[10px] text-stone-500 font-light">
+                      Définissez les contenants (ex: 5ml, 16ml, 20ml, 100ml) et ajoutez autant de volumes personnalisés que souhaité.
+                    </p>
                   </div>
-                )}
+                  {(categoryType === 'huiles-parfumees' || categoryType === 'extraits-parfums') && (
+                    <button
+                      type="button"
+                      onClick={addFormatField}
+                      className="px-3 py-1.5 rounded bg-[#B76E79] hover:bg-[#a25a65] text-white font-bold text-[10px] uppercase tracking-wider flex items-center space-x-1"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Ajouter un contenant</span>
+                    </button>
+                  )}
+                </div>
 
-                {categoryType === 'extraits-parfums' && (
-                  <div className="space-y-1">
-                    <label className="block text-[11px] font-semibold text-stone-700">Prix Extrait de Parfum (FCFA)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      required
-                      value={priceExtrait}
-                      onChange={(e) => setPriceExtrait(parseInt(e.target.value) || 0)}
-                      className="w-full px-3 py-2 bg-white border border-stone-300 rounded text-xs font-bold text-[#B76E79]"
-                    />
+                {(categoryType === 'huiles-parfumees' || categoryType === 'extraits-parfums') ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-4 gap-2 text-[10px] font-bold uppercase text-stone-500 px-1">
+                      <span>Volume (ml)</span>
+                      <span>Prix (FCFA)</span>
+                      <span>Stock disponible</span>
+                      <span>Action</span>
+                    </div>
+
+                    {formats.map((fmt) => (
+                      <div key={fmt.id} className="grid grid-cols-4 gap-2 items-center bg-white p-2 border border-stone-200 rounded-lg shadow-2xs">
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder="Volume ml"
+                          value={fmt.sizeMl}
+                          onChange={(e) => updateFormatField(fmt.id, 'sizeMl', parseInt(e.target.value) || 0)}
+                          className="px-2.5 py-1.5 bg-stone-50 border border-stone-300 rounded text-xs font-bold text-stone-900"
+                        />
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="Prix FCFA"
+                          value={fmt.price}
+                          onChange={(e) => updateFormatField(fmt.id, 'price', parseInt(e.target.value) || 0)}
+                          className="px-2.5 py-1.5 bg-stone-50 border border-stone-300 rounded text-xs font-bold text-[#B76E79]"
+                        />
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="Stock"
+                          value={fmt.stock}
+                          onChange={(e) => updateFormatField(fmt.id, 'stock', parseInt(e.target.value) || 0)}
+                          className="px-2.5 py-1.5 bg-stone-50 border border-stone-300 rounded text-xs text-stone-900"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeFormatField(fmt.id)}
+                          className="p-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100 justify-self-start"
+                          title="Supprimer ce contenant"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                )}
-
-                {categoryType === 'parfums-authentiques' && (
+                ) : categoryType === 'parfums-authentiques' ? (
                   <div className="space-y-1">
                     <label className="block text-[11px] font-semibold text-stone-700">Prix Flacon Authentique (FCFA)</label>
                     <input
@@ -584,9 +621,7 @@ function AdminParfumsContent() {
                       className="w-full px-3 py-2 bg-white border border-stone-300 rounded text-xs font-bold text-[#B76E79]"
                     />
                   </div>
-                )}
-
-                {categoryType === 'coffrets' && (
+                ) : (
                   <div className="space-y-3">
                     <div className="space-y-1">
                       <label className="block text-[11px] font-semibold text-stone-700">Prix du Coffret (FCFA)</label>
