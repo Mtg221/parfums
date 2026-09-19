@@ -57,7 +57,13 @@ function ExtraitsParfumsContent() {
   );
 
   const selectedBrandProducts = selectedBrand
-    ? products.filter(p => p.brand && p.brand.toUpperCase() === selectedBrand.toUpperCase())
+    ? products.filter(p => 
+        p.brand && 
+        p.brand.toUpperCase() === selectedBrand.toUpperCase() &&
+        !p.isAuthentic &&
+        !p.isCoffret &&
+        (p.priceExtrait || p.categoryName?.toLowerCase().includes('extrait'))
+      )
     : [];
 
   const handleAddToCart = (prod: Product) => {

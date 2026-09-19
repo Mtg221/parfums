@@ -59,7 +59,13 @@ function HuilesParfumeesContent() {
   );
 
   const selectedBrandProducts = selectedBrand
-    ? products.filter(p => p.brand && p.brand.toUpperCase() === selectedBrand.toUpperCase())
+    ? products.filter(p => 
+        p.brand && 
+        p.brand.toUpperCase() === selectedBrand.toUpperCase() &&
+        !p.isAuthentic &&
+        !p.isCoffret &&
+        !p.priceExtrait
+      )
     : [];
 
   const handleAddToCart = (prod: Product) => {

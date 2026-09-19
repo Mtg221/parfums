@@ -40,9 +40,10 @@ export default function ParfumsAuthentiquesPage() {
   }, []);
 
   const filteredProducts = products.filter(p => {
+    const isAuthenticType = (p.isAuthentic || p.priceAuthentic) && !p.isCoffret;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesSearch;
+    return isAuthenticType && matchesSearch;
   });
 
   const handleAddToCart = (prod: Product) => {
