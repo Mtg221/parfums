@@ -202,7 +202,7 @@ function HuilesParfumeesContent() {
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-200 pb-3">
               <h3 className="font-serif font-bold text-stone-900 text-sm uppercase tracking-wider">
-                HUILES PARFUMÉES DISPONIBLES ({selectedBrandProducts.length})
+                SENTEURS DISPONIBLES ({selectedBrandProducts.length})
               </h3>
 
               {/* GENDER FILTER PILLS */}
@@ -225,7 +225,7 @@ function HuilesParfumeesContent() {
 
             {selectedBrandProducts.length === 0 ? (
               <div className="text-center py-16 bg-white border border-stone-200 rounded-sm p-8 space-y-3">
-                <p className="text-stone-800 font-serif font-bold text-base">Aucune huile parfumée enregistrée pour {selectedBrand}.</p>
+                <p className="text-stone-800 font-serif font-bold text-base">Aucune senteur disponible enregistrée pour {selectedBrand}.</p>
                 <a
                   href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Bonjour, je recherche une huile parfumée de la maison ${selectedBrand}.`)}`}
                   target="_blank"
@@ -238,7 +238,6 @@ function HuilesParfumeesContent() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {selectedBrandProducts.map((prod) => {
-                  const displayPrice = prod.priceHuile || (prod.formats?.[0]?.price) || 5000;
                   return (
                     <div
                       key={prod.id}
@@ -249,17 +248,8 @@ function HuilesParfumeesContent() {
                           <Heart className="w-4 h-4" />
                         </button>
 
-                        <div className="relative aspect-square bg-stone-50 rounded-sm overflow-hidden flex items-center justify-center p-2 border border-stone-100">
-                          {prod.imageUrl ? (
-                            <Image
-                              src={prod.imageUrl}
-                              alt={prod.name}
-                              fill
-                              className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <Droplet className="w-10 h-10 text-stone-300" />
-                          )}
+                        <div className="relative aspect-square bg-[#FAF0ED] rounded-sm overflow-hidden flex items-center justify-center p-2 border border-[#E8D5D0]">
+                          <Droplet className="w-12 h-12 text-[#9B7B56]" />
                         </div>
 
                         <div className="text-center space-y-1">
@@ -270,24 +260,15 @@ function HuilesParfumeesContent() {
                             {prod.name}
                           </h4>
                           <p className="text-xs text-stone-500 font-sans font-light line-clamp-2">
-                            {prod.description}
-                          </p>
-                          <p className="text-sm font-bold text-stone-900 font-sans pt-1">
-                            {formatPrice(displayPrice)}
+                            {prod.description || 'Senteur concentrée sans alcool, idéale pour une tenue prolongée toute la journée.'}
                           </p>
                         </div>
                       </div>
 
-                      <div className="space-y-2 pt-2 border-t border-stone-100">
-                        <button
-                          onClick={() => handleAddToCart(prod)}
-                          className="w-full py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-wider block text-center shadow-2xs transition-colors"
-                        >
-                          AJOUTER AU PANIER
-                        </button>
+                      <div className="pt-2 border-t border-stone-100">
                         <Link
                           href={`/parfum/${prod.id}`}
-                          className="w-full py-2 rounded-sm bg-stone-100 hover:bg-stone-200 text-stone-800 font-serif font-semibold text-[10px] uppercase tracking-wider block text-center transition-colors"
+                          className="w-full py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-wider block text-center shadow-2xs transition-colors"
                         >
                           VOIR LES DÉTAILS
                         </Link>

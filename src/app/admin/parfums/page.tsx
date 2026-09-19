@@ -197,9 +197,9 @@ function AdminParfumsContent() {
     setSubmitting(true);
 
     try {
-      let finalImageUrl = imageUrl.trim();
+      let finalImageUrl = (categoryType === 'huiles-parfumees' || categoryType === 'extraits-parfums') ? '' : imageUrl.trim();
 
-      if (imageFile) {
+      if (imageFile && categoryType !== 'huiles-parfumees' && categoryType !== 'extraits-parfums') {
         setUploading(true);
         try {
           finalImageUrl = await uploadToCloudinary(imageFile);
@@ -673,46 +673,53 @@ function AdminParfumsContent() {
               </div>
 
               {/* PHOTO UPLOAD */}
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
-                  <ImageIcon className="w-3.5 h-3.5 text-[#B76E79]" />
-                  <span>Photo de l&apos;article</span>
-                </label>
-                
-                {(imagePreview || imageUrl) && (
-                  <div className="relative w-32 h-32 mx-auto rounded-lg overflow-hidden border border-stone-200 bg-stone-50 p-2 flex items-center justify-center">
-                    <Image 
-                      src={imagePreview || imageUrl} 
-                      alt="Aperçu" 
-                      fill 
-                      className="object-contain p-1" 
+              {categoryType === 'huiles-parfumees' || categoryType === 'extraits-parfums' ? (
+                <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-xl text-xs text-amber-900 font-medium flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 text-amber-700 flex-shrink-0" />
+                  <span>L&apos;upload de photos n&apos;est pas autorisé pour les huiles parfumées et les extraits de parfum.</span>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 flex items-center space-x-1">
+                    <ImageIcon className="w-3.5 h-3.5 text-[#B76E79]" />
+                    <span>Photo de l&apos;article</span>
+                  </label>
+                  
+                  {(imagePreview || imageUrl) && (
+                    <div className="relative w-32 h-32 mx-auto rounded-lg overflow-hidden border border-stone-200 bg-stone-50 p-2 flex items-center justify-center">
+                      <Image 
+                        src={imagePreview || imageUrl} 
+                        alt="Aperçu" 
+                        fill 
+                        className="object-contain p-1" 
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex items-center space-x-3">
+                    <label className="flex-1 cursor-pointer flex items-center justify-center space-x-2 py-3 px-4 rounded-lg bg-stone-50 hover:bg-stone-100 border border-dashed border-stone-300 text-stone-700 text-xs font-semibold transition-colors">
+                      <Upload className="w-4 h-4 text-[#B76E79]" />
+                      <span>{imageFile ? imageFile.name : 'Téléverser une photo (JPG, PNG, WEBP)'}</span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="pt-1">
+                    <input
+                      type="url"
+                      placeholder="Ou saisir une URL d'image externe..."
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      className="w-full px-3.5 py-2 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs"
                     />
                   </div>
-                )}
-
-                <div className="flex items-center space-x-3">
-                  <label className="flex-1 cursor-pointer flex items-center justify-center space-x-2 py-3 px-4 rounded-lg bg-stone-50 hover:bg-stone-100 border border-dashed border-stone-300 text-stone-700 text-xs font-semibold transition-colors">
-                    <Upload className="w-4 h-4 text-[#B76E79]" />
-                    <span>{imageFile ? imageFile.name : 'Téléverser une photo (JPG, PNG, WEBP)'}</span>
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png,image/webp"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
                 </div>
-
-                <div className="pt-1">
-                  <input
-                    type="url"
-                    placeholder="Ou saisir une URL d'image externe..."
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="w-full px-3.5 py-2 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs"
-                  />
-                </div>
-              </div>
+              )}
 
               <div className="space-y-1">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">

@@ -7,6 +7,7 @@ import { getProductById } from '@/services/productsService';
 import { Product, ProductFormat } from '@/types';
 import { formatPrice } from '@/lib/whatsapp';
 import { OrderModal } from '@/components/orders/OrderModal';
+import { useCart } from '@/context/CartContext';
 
 export default function ProductDetailPage({
   params,
@@ -24,6 +25,9 @@ export default function ProductDetailPage({
   const [loading, setLoading] = useState(true);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [addedMessage, setAddedMessage] = useState<string | null>(null);
+
+  const { addItem } = useCart();
 
   useEffect(() => {
     async function loadProduct() {
@@ -105,8 +109,31 @@ export default function ProductDetailPage({
     }
   };
 
+  const handleAddToCart = () => {
+    if (!product || isSelectedFormatOutOfStock) return;
+    const formatName = isCustomFormat ? `Sur-mesure (${activeFormat.sizeMl} mL)` : `${activeFormat.sizeMl} mL`;
+    addItem({
+      productId: product.id,
+      name: product.name,
+      brand: product.brand,
+      category: product.categoryName || 'Parfum',
+      imageUrl: product.imageUrl,
+      price: activeFormat.price,
+      quantity: quantity,
+      formatName: formatName,
+    });
+    setAddedMessage(`"${product.name}" (${formatName}) ajouté au panier avec succès !`);
+    setTimeout(() => setAddedMessage(null), 4000);
+  };
+
   return (
     <div className="pt-28 pb-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      
+      {addedMessage && (
+        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-sm text-xs font-bold text-center animate-fadeIn">
+          {addedMessage}
+        </div>
+      )}
       
       {/* BACK BUTTON */}
       <div>
@@ -295,11 +322,11 @@ export default function ProductDetailPage({
             <button
               type="button"
               disabled={isSelectedFormatOutOfStock}
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleAddToCart}
               className="w-full flex items-center justify-center space-x-2 py-4 px-8 rounded-sm bg-[#9E7B56] hover:bg-[#886744] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-colors"
             >
               <ShoppingBag className="w-4 h-4" />
-              <span>{isSelectedFormatOutOfStock ? 'Rupture de stock' : 'Commander ce parfum'}</span>
+              <span>{isSelectedFormatOutOfStock ? 'Rupture de stock' : 'Ajouter au panier'}</span>
             </button>
           </div>
 
