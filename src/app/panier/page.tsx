@@ -12,7 +12,8 @@ import {
   MessageCircle, 
   CheckCircle2, 
   ShieldCheck, 
-  Truck 
+  Truck,
+  AlertCircle 
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { formatPrice, getWhatsAppNumber } from '@/lib/whatsapp';
@@ -31,11 +32,14 @@ export default function PanierPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
 
     setSubmitting(true);
+    setCheckoutError(null);
     try {
       // Save order to Firestore for each item or main summary
       for (const item of items) {
@@ -50,6 +54,7 @@ export default function PanierPage() {
           formatId: item.formatName || 'standard',
           sizeMl: 50,
           quantity: item.quantity,
+          unitPrice: item.price,
         });
       }
 
@@ -73,8 +78,9 @@ export default function PanierPage() {
       clearCart();
       setOrderSuccess(true);
       window.open(whatsappUrl, '_blank');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Checkout error:', err);
+      setCheckoutError(err.message || 'Une erreur est survenue lors de la validation. Veuillez réessayer.');
     } finally {
       setSubmitting(false);
     }
@@ -241,6 +247,12 @@ export default function PanierPage() {
 
               {/* CHECKOUT FORM */}
               <form onSubmit={handleCheckoutSubmit} className="space-y-4">
+                {checkoutError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-sm flex items-center space-x-2 text-red-800 text-xs font-sans font-medium">
+                    <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                    <span>{checkoutError}</span>
+                  </div>
+                )}
                 <h3 className="text-xs font-bold uppercase tracking-wider text-stone-800">
                   Informations de livraison (Sénégal)
                 </h3>

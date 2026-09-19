@@ -46,10 +46,10 @@ export const Footer: React.FC = () => {
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-widest text-[#E5C158]">Boutique</h4>
             <ul className="space-y-2 text-xs font-sans font-light text-stone-400">
-              <li><Link href="/catalogue/huiles-parfumees" className="hover:text-white transition-colors">Huiles parfumées</Link></li>
-              <li><Link href="/catalogue/extraits-de-parfum" className="hover:text-white transition-colors">Extraits de parfum</Link></li>
-              <li><Link href="/catalogue/parfums-authentiques" className="hover:text-white transition-colors">Parfums authentiques</Link></li>
-              <li><Link href="/catalogue/coffrets" className="hover:text-white transition-colors">Coffrets</Link></li>
+              <li><Link href="/huiles-parfumees" className="hover:text-white transition-colors">Huiles parfumées</Link></li>
+              <li><Link href="/extraits-parfums" className="hover:text-white transition-colors">Extraits de parfum</Link></li>
+              <li><Link href="/parfums-authentiques" className="hover:text-white transition-colors">Parfums authentiques</Link></li>
+              <li><Link href="/coffrets" className="hover:text-white transition-colors">Coffrets</Link></li>
             </ul>
           </div>
 

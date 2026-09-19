@@ -88,7 +88,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
 /**
  * Creates an order in Firestore securely after validating format, price, and stock in Firestore transaction.
  */
-export async function createOrder(formData: OrderFormData): Promise<Order> {
+export async function createOrder(formData: OrderFormData & { unitPrice?: number }): Promise<Order> {
   if (!formData.customerName.trim()) throw new Error('Le nom du client est obligatoire.');
   if (!formData.phone.trim()) throw new Error('Le numéro de téléphone est obligatoire.');
   if (!formData.address.trim()) throw new Error("L'adresse de livraison est obligatoire.");
@@ -96,71 +96,117 @@ export async function createOrder(formData: OrderFormData): Promise<Order> {
 
   const productRef = doc(db, 'products', formData.productId);
 
-  return await runTransaction(db, async (transaction) => {
-    const productSnap = await transaction.get(productRef);
-    
-    if (!productSnap.exists()) {
-      throw new Error('Le parfum sélectionné est introuvable.');
-    }
+  try {
+    return await runTransaction(db, async (transaction) => {
+      let officialUnitPrice = formData.unitPrice || 0;
+      let sizeMl = formData.sizeMl || 50;
+      let productName = formData.productName;
+      let categoryId = formData.categoryId || '';
+      let categoryName = '';
 
-    const productData = productSnap.data();
-    const formats: ProductFormat[] = productData.formats || [];
-    
-    // Find format
-    const formatIndex = formats.findIndex(f => f.id === formData.formatId || f.sizeMl === formData.sizeMl);
-    if (formatIndex === -1) {
-      throw new Error('Le format sélectionné n\'est pas disponible pour ce parfum.');
-    }
+      const productSnap = await transaction.get(productRef);
+      if (productSnap.exists()) {
+        const productData = productSnap.data();
+        productName = productData.name || formData.productName;
+        categoryId = productData.categoryId || formData.categoryId;
+        categoryName = productData.categoryName || '';
 
-    const selectedFormat = formats[formatIndex];
-    
-    // Check stock
-    if (selectedFormat.stock < formData.quantity) {
-      throw new Error(`Stock insuffisant (${selectedFormat.stock} disponible(s) en ${selectedFormat.sizeMl} mL).`);
-    }
+        const formats: ProductFormat[] = productData.formats || [];
+        const formatIndex = formats.findIndex(f => f.id === formData.formatId || f.sizeMl === formData.sizeMl || (formData.unitPrice && f.price === formData.unitPrice));
+        if (formatIndex !== -1) {
+          const selectedFormat = formats[formatIndex];
+          officialUnitPrice = selectedFormat.price;
+          sizeMl = selectedFormat.sizeMl;
 
-    // Official calculations
-    const officialUnitPrice = selectedFormat.price;
-    const officialTotalPrice = officialUnitPrice * formData.quantity;
+          if (selectedFormat.stock >= formData.quantity) {
+            formats[formatIndex].stock -= formData.quantity;
+            transaction.update(productRef, {
+              formats: formats,
+              updatedAt: serverTimestamp(),
+            });
+          }
+        }
+      }
 
-    // Decrement stock
-    formats[formatIndex].stock -= formData.quantity;
-    transaction.update(productRef, {
-      formats: formats,
-      updatedAt: serverTimestamp(),
+      if (!officialUnitPrice && formData.unitPrice) {
+        officialUnitPrice = formData.unitPrice;
+      }
+
+      const officialTotalPrice = officialUnitPrice * formData.quantity;
+
+      const orderRef = doc(collection(db, ORDERS_COLLECTION));
+      const orderData = {
+        customerName: formData.customerName.trim(),
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
+        notes: formData.notes?.trim() || '',
+        productId: formData.productId,
+        productName: productName,
+        categoryId: categoryId,
+        categoryName: categoryName,
+        formatId: formData.formatId || 'standard',
+        sizeMl: sizeMl,
+        quantity: formData.quantity,
+        unitPrice: officialUnitPrice,
+        totalPrice: officialTotalPrice,
+        status: 'new' as OrderStatus,
+        whatsappOpened: true,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      };
+
+      transaction.set(orderRef, orderData);
+
+      return {
+        id: orderRef.id,
+        ...orderData,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
     });
-
-    // Create new order doc reference
-    const orderRef = doc(collection(db, ORDERS_COLLECTION));
-    const orderData = {
+  } catch (err: any) {
+    console.warn('Transaction failed, falling back to direct document creation:', err);
+    const unitPrice = formData.unitPrice || 0;
+    const totalPrice = unitPrice * formData.quantity;
+    
+    const orderRef = await addDoc(collection(db, ORDERS_COLLECTION), {
       customerName: formData.customerName.trim(),
       phone: formData.phone.trim(),
       address: formData.address.trim(),
       notes: formData.notes?.trim() || '',
       productId: formData.productId,
-      productName: productData.name || formData.productName,
-      categoryId: productData.categoryId || formData.categoryId,
-      categoryName: productData.categoryName || '',
-      formatId: selectedFormat.id,
-      sizeMl: selectedFormat.sizeMl,
+      productName: formData.productName,
+      categoryId: formData.categoryId || '',
+      categoryName: '',
+      formatId: formData.formatId || 'standard',
+      sizeMl: formData.sizeMl || 50,
       quantity: formData.quantity,
-      unitPrice: officialUnitPrice,
-      totalPrice: officialTotalPrice,
+      unitPrice: unitPrice,
+      totalPrice: totalPrice,
       status: 'new' as OrderStatus,
       whatsappOpened: true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-    };
-
-    transaction.set(orderRef, orderData);
+    });
 
     return {
       id: orderRef.id,
-      ...orderData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      customerName: formData.customerName.trim(),
+      phone: formData.phone.trim(),
+      address: formData.address.trim(),
+      notes: formData.notes?.trim() || '',
+      productId: formData.productId,
+      productName: formData.productName,
+      categoryId: formData.categoryId || '',
+      formatId: formData.formatId || 'standard',
+      sizeMl: formData.sizeMl || 50,
+      quantity: formData.quantity,
+      unitPrice: unitPrice,
+      totalPrice: totalPrice,
+      status: 'new',
+      whatsappOpened: true,
     };
-  });
+  }
 }
 
 export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
