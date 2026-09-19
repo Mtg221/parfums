@@ -235,36 +235,45 @@ function ExtraitsParfumsContent() {
                 </a>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {selectedBrandProducts.map((prod) => {
                   return (
                     <div
                       key={prod.id}
-                      className="bg-white border border-stone-200/80 rounded-sm p-4 flex flex-col justify-between space-y-4 group hover:border-[#9B7B56] transition-all shadow-2xs"
+                      className="bg-white border border-stone-200/80 rounded-sm p-5 flex flex-col justify-between space-y-4 group hover:border-[#9B7B56] transition-all shadow-2xs hover:shadow-xs"
                     >
-                      <div className="space-y-3 relative">
-                        <button className="absolute top-2 right-2 z-10 text-stone-400 hover:text-red-500 transition-colors">
-                          <Heart className="w-4 h-4" />
-                        </button>
-
-                        <div className="relative aspect-square bg-[#FAF0ED] rounded-sm overflow-hidden flex items-center justify-center p-2 border border-[#E8D5D0]">
-                          <Sparkles className="w-12 h-12 text-[#9B7B56]" />
+                      <div className="space-y-3">
+                        <div className="flex items-start justify-between gap-2 border-b border-stone-100 pb-3">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-8 h-8 rounded-full bg-[#FAF0ED] border border-[#E8D5D0] flex items-center justify-center text-[#9B7B56] flex-shrink-0">
+                              <Sparkles className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-[#9B7B56] font-serif font-bold uppercase tracking-widest block">
+                                Extrait de Parfum
+                              </span>
+                              <h4 className="font-serif font-bold text-stone-900 text-base leading-tight">
+                                {prod.name}
+                              </h4>
+                            </div>
+                          </div>
+                          <button className="text-stone-400 hover:text-red-500 transition-colors pt-1">
+                            <Heart className="w-4 h-4" />
+                          </button>
                         </div>
 
-                        <div className="text-center space-y-1">
-                          <span className="text-[10px] text-[#9B7B56] font-serif font-bold uppercase tracking-widest block">
-                            Extrait de Parfum
+                        {prod.gender && (
+                          <span className="inline-block px-2.5 py-0.5 rounded-xs bg-stone-100 text-stone-600 text-[10px] font-serif font-bold uppercase tracking-wider">
+                            {prod.gender}
                           </span>
-                          <h4 className="font-serif font-bold text-stone-900 text-base truncate">
-                            {prod.name}
-                          </h4>
-                          <p className="text-xs text-stone-500 font-sans font-light line-clamp-2">
-                            {prod.description || 'Haute concentration d\'huiles précieuses pour un sillage d\'exception.'}
-                          </p>
-                        </div>
+                        )}
+
+                        <p className="text-xs text-stone-600 font-sans font-light leading-relaxed line-clamp-3">
+                          {prod.description || 'Haute concentration d\'huiles précieuses pour un sillage d\'exception.'}
+                        </p>
                       </div>
 
-                      <div className="pt-2 border-t border-stone-100">
+                      <div className="pt-3 border-t border-stone-100">
                         <Link
                           href={`/parfum/${prod.id}`}
                           className="w-full py-2.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-wider block text-center shadow-2xs transition-colors"
