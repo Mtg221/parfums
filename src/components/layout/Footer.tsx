@@ -13,13 +13,13 @@ export const Footer: React.FC = () => {
     <footer className="bg-[#12100E] text-stone-300 pt-16 pb-12 border-t border-stone-800 font-serif">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
           
           {/* COLUMN 1: BRAND LOGO & TITLE */}
           <div className="space-y-4">
             <Link href="/" className="flex flex-col items-start space-y-2">
               <div className="flex items-center space-x-2">
-                <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37]/50 bg-white">
+                <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37]/50 bg-white flex-shrink-0">
                   <Image
                     src="/logo.JPG"
                     alt="SONIA'S PERFUMERY"
@@ -37,7 +37,7 @@ export const Footer: React.FC = () => {
                 </div>
               </div>
             </Link>
-            <p className="text-xs text-stone-400 font-sans font-light leading-relaxed">
+            <p className="text-xs text-stone-400 font-sans font-light leading-relaxed max-w-sm">
               L&apos;élégance olfactive et l&apos;art des fragrances rares livrées chez vous au Sénégal.
             </p>
           </div>
@@ -76,7 +76,7 @@ export const Footer: React.FC = () => {
                 <MessageCircle className="w-4 h-4" />
               </a>
             </div>
-            <div className="pt-2 text-right">
+            <div className="pt-2 text-left sm:text-right">
               <p className="italic font-serif text-sm text-[#C5928E]">Your scent, Your signature.</p>
               <Heart className="w-3.5 h-3.5 text-[#C5928E] inline-block mt-1" />
             </div>

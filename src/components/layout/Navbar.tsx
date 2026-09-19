@@ -57,12 +57,12 @@ export const Navbar: React.FC = () => {
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
       
       {/* 1. TOP DUSTY ROSE ANNOUNCEMENT BAR */}
-      <div className="bg-[#C5928E] text-white py-1.5 px-4 sm:px-8 text-[11px] sm:text-xs flex justify-between items-center font-serif">
-        <div className="flex items-center space-x-2">
-          <Truck className="w-3.5 h-3.5" />
-          <span>Livraison partout au Sénégal &nbsp;|&nbsp; Paiement à la livraison</span>
+      <div className="bg-[#C5928E] text-white py-1.5 px-3 sm:px-8 text-[10px] sm:text-xs flex justify-between items-center font-serif">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 truncate">
+          <Truck className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="truncate">Livraison partout au Sénégal &nbsp;|&nbsp; Paiement à la livraison</span>
         </div>
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden md:flex items-center space-x-6 flex-shrink-0">
           <span className="italic font-serif tracking-wide text-white/90">Your scent, Your signature.</span>
           <div className="flex items-center space-x-3 text-white/90">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white"><Camera className="w-3.5 h-3.5" /></a>
@@ -72,13 +72,13 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* 2. MAIN LUXURY DARK NAVBAR */}
-      <div className={`bg-[#141211] text-white transition-all duration-300 border-b border-stone-800 ${isScrolled ? 'py-2 shadow-xl' : 'py-4'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={`bg-[#141211] text-white transition-all duration-300 border-b border-stone-800 ${isScrolled ? 'py-2 shadow-xl' : 'py-3 sm:py-4'}`}>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           
           <div className="flex items-center justify-between">
             
             {/* LEFT ICONS */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="p-1.5 text-stone-300 hover:text-white transition-colors"
@@ -96,8 +96,8 @@ export const Navbar: React.FC = () => {
 
             {/* CENTER BRAND LOGO (SONIA'S PERFUMERY GOLD EMBLEM) */}
             <Link href="/" className="flex flex-col items-center group">
-              <div className="flex items-center space-x-2">
-                <div className="relative w-8 h-8 rounded-full overflow-hidden border border-[#D4AF37]/50 bg-white">
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
+                <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-[#D4AF37]/50 bg-white flex-shrink-0">
                   <Image
                     src="/logo.JPG"
                     alt="SONIA'S PERFUMERY"
@@ -107,10 +107,10 @@ export const Navbar: React.FC = () => {
                   />
                 </div>
                 <div className="flex flex-col items-center">
-                  <span className="text-xl sm:text-2xl font-serif font-bold tracking-[0.25em] text-[#E5C158] uppercase">
+                  <span className="text-base xs:text-lg sm:text-2xl font-serif font-bold tracking-[0.18em] sm:tracking-[0.25em] text-[#E5C158] uppercase">
                     SONIA&apos;S
                   </span>
-                  <span className="text-[9px] font-serif tracking-[0.4em] text-stone-300 uppercase -mt-1">
+                  <span className="text-[8px] sm:text-[9px] font-serif tracking-[0.3em] sm:tracking-[0.4em] text-stone-300 uppercase -mt-0.5 sm:-mt-1">
                     PERFUMERY
                   </span>
                 </div>
@@ -118,7 +118,7 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {/* RIGHT ICONS */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Link href="/login" className="p-1.5 text-stone-300 hover:text-white transition-colors hidden sm:block">
                 <User className="w-5 h-5" />
               </Link>
@@ -138,7 +138,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* SECONDARY NAVIGATION BAR UNDER LOGO (UNISQUEMENT: ACCUEIL | PARFUMS | CONTACT) */}
-          <div className="hidden md:flex items-center justify-center space-x-12 pt-4 pb-1 border-t border-stone-800/60 mt-3 text-xs tracking-widest uppercase font-serif">
+          <div className="hidden md:flex items-center justify-center space-x-8 lg:space-x-12 pt-4 pb-1 border-t border-stone-800/60 mt-3 text-xs tracking-widest uppercase font-serif">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -162,7 +162,7 @@ export const Navbar: React.FC = () => {
 
       {/* MOBILE MENU OVERLAY */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#181514] text-white border-b border-stone-800 px-6 py-6 space-y-4 shadow-2xl">
+        <div className="md:hidden bg-[#181514] text-white border-b border-stone-800 px-6 py-6 space-y-4 shadow-2xl max-h-[85vh] overflow-y-auto">
           <nav className="flex flex-col space-y-3 font-serif">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;

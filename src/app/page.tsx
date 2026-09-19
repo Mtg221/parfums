@@ -71,26 +71,26 @@ export default function HomePage() {
                 SONIA&apos;S PERFUMERY
               </span>
 
-              <h1 className="text-4xl sm:text-6xl font-serif leading-tight">
+              <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-serif leading-tight">
                 <span className="font-bold text-white uppercase block">YOUR SCENT,</span>
-                <span className="italic font-serif text-[#C5928E] block -mt-2">Your Signature.</span>
+                <span className="italic font-serif text-[#C5928E] block -mt-1 sm:-mt-2">Your Signature.</span>
               </h1>
 
-              <p className="text-sm sm:text-base text-stone-300 font-sans font-light max-w-lg leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base text-stone-300 font-sans font-light max-w-lg leading-relaxed">
                 Découvrez des fragrances uniques qui révèlent votre personnalité.
               </p>
 
               <div className="pt-2">
                 <Link
                   href="/catalogue"
-                  className="inline-flex items-center space-x-3 px-8 py-3.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-md transition-colors"
+                  className="inline-flex items-center space-x-3 px-6 sm:px-8 py-3.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-md transition-colors"
                 >
                   <span>EXPLORER NOS PRODUITS</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
 
-              <div className="pt-4 text-[11px] text-stone-400 font-serif tracking-widest space-x-2">
+              <div className="pt-4 text-[10px] sm:text-[11px] text-stone-400 font-serif tracking-widest space-x-1.5 sm:space-x-2 flex-wrap">
                 <span>Huiles parfumées</span>
                 <span>&bull;</span>
                 <span>Extraits de parfum</span>
@@ -100,8 +100,8 @@ export default function HomePage() {
             </div>
 
             {/* Right Side Bottle Display */}
-            <div className="lg:col-span-5 relative hidden lg:flex justify-center items-center">
-              <div className="relative w-80 h-96 flex items-center justify-center border border-stone-800 rounded-sm bg-stone-900/50">
+            <div className="lg:col-span-5 relative hidden lg:flex justify-end items-center">
+              <div className="relative w-full max-w-xs h-80 sm:h-96 flex items-center justify-center border border-stone-800 rounded-sm bg-stone-900/50 p-6">
                 <p className="italic font-serif text-xl text-[#C5928E] font-medium text-center">
                   Plus qu&apos;un parfum,<br />une émotion.
                 </p>
@@ -270,7 +270,7 @@ export default function HomePage() {
         </div>
 
         {/* 6 Product Cards Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {displayBestSellers.map((prod) => {
             const firstFmt = prod.formats?.[0] || { sizeMl: 5, price: 15000 };
             const displayPrice = firstFmt.price;
@@ -278,7 +278,7 @@ export default function HomePage() {
             return (
               <div
                 key={prod.id}
-                className="bg-white border border-stone-200/80 rounded-sm p-3.5 flex flex-col justify-between space-y-3 group hover:border-[#9B7B56] transition-all"
+                className="bg-white border border-stone-200/80 rounded-sm p-3.5 flex flex-col justify-between space-y-3 group hover:border-[#9B7B56] transition-all shadow-2xs"
               >
                 <div className="space-y-2 relative">
                   
@@ -332,9 +332,9 @@ export default function HomePage() {
 
       {/* 5. TRUST BADGES ROW */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-white border border-stone-200/80 rounded-sm divide-y sm:divide-y-0 lg:divide-x divide-stone-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-6 bg-white border border-stone-200/80 rounded-sm shadow-2xs">
           
-          <div className="flex items-center space-x-3.5 p-2 justify-center">
+          <div className="flex items-center space-x-3.5 p-3 rounded-sm bg-stone-50/50 border border-stone-100 sm:border-0 justify-start sm:justify-center">
             <Truck className="w-6 h-6 text-stone-800 flex-shrink-0" />
             <div>
               <h3 className="font-serif font-bold text-xs text-stone-900 uppercase">Livraison rapide</h3>
@@ -342,7 +342,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3.5 p-2 justify-center pt-4 sm:pt-2">
+          <div className="flex items-center space-x-3.5 p-3 rounded-sm bg-stone-50/50 border border-stone-100 sm:border-0 justify-start sm:justify-center">
             <ShieldCheck className="w-6 h-6 text-stone-800 flex-shrink-0" />
             <div>
               <h3 className="font-serif font-bold text-xs text-stone-900 uppercase">Produits authentiques</h3>
@@ -350,7 +350,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3.5 p-2 justify-center pt-4 lg:pt-2">
+          <div className="flex items-center space-x-3.5 p-3 rounded-sm bg-stone-50/50 border border-stone-100 sm:border-0 justify-start sm:justify-center">
             <CreditCard className="w-6 h-6 text-stone-800 flex-shrink-0" />
             <div>
               <h3 className="font-serif font-bold text-xs text-stone-900 uppercase">Paiement à la livraison</h3>
@@ -358,7 +358,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3.5 p-2 justify-center pt-4 lg:pt-2">
+          <div className="flex items-center space-x-3.5 p-3 rounded-sm bg-stone-50/50 border border-stone-100 sm:border-0 justify-start sm:justify-center">
             <Headphones className="w-6 h-6 text-stone-800 flex-shrink-0" />
             <div>
               <h3 className="font-serif font-bold text-xs text-stone-900 uppercase">Service client</h3>

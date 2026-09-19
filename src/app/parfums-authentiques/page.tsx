@@ -117,7 +117,7 @@ export default function ParfumsAuthentiquesPage() {
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
           {/* GENDER FILTER PILLS */}
-          <div className="flex items-center space-x-1 bg-white border border-stone-200 p-1 rounded-sm text-xs">
+          <div className="flex flex-wrap items-center gap-1 bg-white border border-stone-200 p-1 rounded-sm text-xs">
             {(['all', 'femme', 'homme', 'unisexe'] as const).map((g) => (
               <button
                 key={g}

@@ -82,8 +82,8 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-white border border-stone-200 rounded-2xl shadow-xl overflow-hidden text-stone-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs animate-fadeIn">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white border border-stone-200 rounded-2xl shadow-xl text-stone-900">
         
         {/* MODAL HEADER */}
         <div className="flex items-center justify-between px-6 py-4 bg-stone-50 border-b border-stone-200">

@@ -175,8 +175,8 @@ export default function AdminMaisonsPage() {
 
       {/* ADD BRAND MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
             
             <div className="flex justify-between items-center border-b border-stone-100 pb-4">
               <h3 className="text-xl font-serif font-bold text-stone-900">

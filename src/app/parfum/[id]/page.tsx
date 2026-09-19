@@ -155,7 +155,7 @@ export default function ProductDetailPage({
             <span>{product.categoryName || 'Eau de Parfum'}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-serif font-bold text-stone-900">
+          <h1 className="text-2xl xs:text-3xl sm:text-5xl font-serif font-bold text-stone-900">
             {product.name}
           </h1>
 
@@ -166,14 +166,14 @@ export default function ProductDetailPage({
 
         {/* FORMAT SELECTOR (5 mL, 16 mL, 20 mL, 100 mL + CUSTOM FORMAT OPTION) */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
             <h2 className="text-xs font-bold uppercase tracking-wider text-stone-800">
               1. Choisissez votre format (mL) :
             </h2>
             <span className="text-[11px] text-[#9E7B56] font-medium">Formats standards & Sur-mesure</span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
             {product.formats.map((fmt) => {
               const isSelected = !isCustomFormat && selectedFormat?.id === fmt.id;
               const outOfStock = fmt.stock <= 0;
