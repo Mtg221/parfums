@@ -35,6 +35,7 @@ export interface Product {
   coffretContent?: string[]; // E.g. ["Parfum A x 1", "Huile B x 1"]
   active?: boolean;
   stock?: number;
+  gender?: 'homme' | 'femme' | 'unisexe';
   allowCustomVolume?: boolean; // If true, customer can choose custom mL
   isBestSeller?: boolean; // Display in Best-Sellers section
   createdAt?: string | number | Date;

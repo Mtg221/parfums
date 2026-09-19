@@ -27,6 +27,7 @@ function ExtraitsParfumsContent() {
   const [loading, setLoading] = useState(true);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGender, setSelectedGender] = useState<'all' | 'homme' | 'femme' | 'unisexe'>('all');
   const [selectedBrand, setSelectedBrand] = useState<string | null>(initialMaison || null);
   const [addedMessage, setAddedMessage] = useState<string | null>(null);
 
@@ -57,13 +58,16 @@ function ExtraitsParfumsContent() {
   );
 
   const selectedBrandProducts = selectedBrand
-    ? products.filter(p => 
-        p.brand && 
-        p.brand.toUpperCase() === selectedBrand.toUpperCase() &&
-        !p.isAuthentic &&
-        !p.isCoffret &&
-        (p.priceExtrait || p.categoryName?.toLowerCase().includes('extrait'))
-      )
+    ? products.filter(p => {
+        const isBrandMatch = p.brand && p.brand.toUpperCase() === selectedBrand.toUpperCase();
+        const isCorrectType = !p.isAuthentic && !p.isCoffret && (p.priceExtrait || p.categoryName?.toLowerCase().includes('extrait'));
+        const isGenderMatch = selectedGender === 'all' || 
+          p.gender === selectedGender || 
+          (!p.gender && selectedGender === 'unisexe') ||
+          p.description?.toLowerCase().includes(selectedGender) ||
+          p.name?.toLowerCase().includes(selectedGender);
+        return isBrandMatch && isCorrectType && isGenderMatch;
+      })
     : [];
 
   const handleAddToCart = (prod: Product) => {
@@ -195,9 +199,28 @@ function ExtraitsParfumsContent() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-serif font-bold text-stone-900 text-sm uppercase tracking-wider">
-              EXTRAITS DE PARFUM DISPONIBLES ({selectedBrandProducts.length})
-            </h3>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-200 pb-3">
+              <h3 className="font-serif font-bold text-stone-900 text-sm uppercase tracking-wider">
+                EXTRAITS DE PARFUM DISPONIBLES ({selectedBrandProducts.length})
+              </h3>
+
+              {/* GENDER FILTER PILLS */}
+              <div className="flex items-center space-x-1.5 bg-white border border-stone-200 p-1 rounded-sm text-xs">
+                {(['all', 'femme', 'homme', 'unisexe'] as const).map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => setSelectedGender(g)}
+                    className={`px-3 py-1 rounded-xs font-serif font-semibold uppercase tracking-wider text-[11px] transition-all ${
+                      selectedGender === g
+                        ? 'bg-[#9B7B56] text-white shadow-2xs'
+                        : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                    }`}
+                  >
+                    {g === 'all' ? 'Tous' : g}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {selectedBrandProducts.length === 0 ? (
               <div className="text-center py-16 bg-white border border-stone-200 rounded-sm p-8 space-y-3">

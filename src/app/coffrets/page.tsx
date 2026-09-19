@@ -18,6 +18,7 @@ import { useCart } from '@/context/CartContext';
 export default function CoffretsPage() {
   const [coffrets, setCoffrets] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedGender, setSelectedGender] = useState<'all' | 'homme' | 'femme' | 'unisexe'>('all');
   const [addedMessage, setAddedMessage] = useState<string | null>(null);
 
   const whatsappNumber = getWhatsAppNumber();
@@ -40,6 +41,14 @@ export default function CoffretsPage() {
     }
     loadData();
   }, []);
+
+  const filteredCoffrets = coffrets.filter(p => {
+    return selectedGender === 'all' ||
+           p.gender === selectedGender ||
+           (!p.gender && selectedGender === 'unisexe') ||
+           p.description?.toLowerCase().includes(selectedGender) ||
+           p.name?.toLowerCase().includes(selectedGender);
+  });
 
   const handleAddToCart = (coffret: Product) => {
     const price = coffret.priceCoffret || (coffret.formats?.[0]?.price) || 35000;
@@ -95,13 +104,32 @@ export default function CoffretsPage() {
 
       {/* COFFRETS GRID */}
       <div className="space-y-4">
-        <div className="border-b border-stone-200 pb-3">
-          <h2 className="text-lg font-serif font-bold text-stone-900 uppercase tracking-wider">
-            COFFRETS DISPONIBLES ({coffrets.length})
-          </h2>
-          <p className="text-xs text-stone-500 font-light">
-            Découvrez nos ensembles cadeaux complets prêts à offrir.
-          </p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-200 pb-3">
+          <div>
+            <h2 className="text-lg font-serif font-bold text-stone-900 uppercase tracking-wider">
+              COFFRETS DISPONIBLES ({filteredCoffrets.length})
+            </h2>
+            <p className="text-xs text-stone-500 font-light">
+              Découvrez nos ensembles cadeaux complets prêts à offrir.
+            </p>
+          </div>
+
+          {/* GENDER FILTER PILLS */}
+          <div className="flex items-center space-x-1 bg-white border border-stone-200 p-1 rounded-sm text-xs">
+            {(['all', 'femme', 'homme', 'unisexe'] as const).map((g) => (
+              <button
+                key={g}
+                onClick={() => setSelectedGender(g)}
+                className={`px-3 py-1 rounded-xs font-serif font-semibold uppercase tracking-wider text-[11px] transition-all ${
+                  selectedGender === g
+                    ? 'bg-[#9B7B56] text-white shadow-2xs'
+                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                }`}
+              >
+                {g === 'all' ? 'Tous' : g}
+              </button>
+            ))}
+          </div>
         </div>
 
         {loading ? (
@@ -110,7 +138,7 @@ export default function CoffretsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {coffrets.map((coffret) => {
+            {filteredCoffrets.map((coffret) => {
               const displayPrice = coffret.priceCoffret || (coffret.formats?.[0]?.price) || 35000;
               const contentList = coffret.coffretContent && coffret.coffretContent.length > 0 
                 ? coffret.coffretContent 

@@ -65,7 +65,9 @@ export default function CataloguePage() {
     ? products.filter(p => {
         const matchesBrand = p.brand && p.brand.toUpperCase() === selectedBrand.toUpperCase();
         const matchesGender = selectedGender === 'all' || 
-          p.description.toLowerCase().includes(selectedGender) || 
+          p.gender === selectedGender ||
+          (!p.gender && selectedGender === 'unisexe') ||
+          p.description?.toLowerCase().includes(selectedGender) || 
           (p.categoryName && p.categoryName.toLowerCase().includes(selectedGender));
         return matchesBrand && matchesGender;
       })

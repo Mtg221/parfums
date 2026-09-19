@@ -50,6 +50,7 @@ function AdminParfumsContent() {
   const [uploading, setUploading] = useState(false);
   const [allowCustomVolume, setAllowCustomVolume] = useState<boolean>(true);
   const [isBestSeller, setIsBestSeller] = useState<boolean>(false);
+  const [gender, setGender] = useState<'homme' | 'femme' | 'unisexe'>('unisexe');
   
   // Specific Category Flags & Prices
   const [categoryType, setCategoryType] = useState<'huiles-parfumees' | 'extraits-parfums' | 'parfums-authentiques' | 'coffrets'>('huiles-parfumees');
@@ -109,6 +110,7 @@ function AdminParfumsContent() {
     setUploading(false);
     setAllowCustomVolume(true);
     setIsBestSeller(false);
+    setGender('unisexe');
     setCategoryType(defaultCategory as any);
     setPriceHuile(5000);
     setPriceExtrait(8000);
@@ -137,6 +139,7 @@ function AdminParfumsContent() {
     setUploading(false);
     setAllowCustomVolume(prod.allowCustomVolume ?? true);
     setIsBestSeller(prod.isBestSeller ?? false);
+    setGender(prod.gender || 'unisexe');
     
     if (prod.isCoffret) {
       setCategoryType('coffrets');
@@ -218,6 +221,7 @@ function AdminParfumsContent() {
         brand: brand.trim(),
         description: description.trim(),
         imageUrl: finalImageUrl,
+        gender: gender,
         formats: formats.length > 0 ? formats : [{ id: 'default', sizeMl: 100, price: priceAuthentic || priceCoffret || 25000, stock: 10 }],
         allowCustomVolume,
         isBestSeller,
@@ -540,6 +544,22 @@ function AdminParfumsContent() {
                     />
                   </div>
                 )}
+              </div>
+
+              {/* GENRE / GENRE TARGET (Homme, Femme, Unisexe) */}
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
+                  Genre (Cible) <span className="text-red-600">*</span>
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e: any) => setGender(e.target.value as 'homme' | 'femme' | 'unisexe')}
+                  className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg text-stone-900 text-xs font-bold uppercase focus:outline-none focus:border-[#B76E79]"
+                >
+                  <option value="unisexe">Unisexe</option>
+                  <option value="femme">Femme</option>
+                  <option value="homme">Homme</option>
+                </select>
               </div>
 
               {/* SPECIFIC PRICING & FORMAT VOLUMES (5ml, 16ml, 20ml, 100ml & CUSTOM) */}

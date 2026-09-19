@@ -42,6 +42,7 @@ export async function getProducts(): Promise<Product[]> {
         isAuthentic: data.isAuthentic ?? false,
         isCoffret: data.isCoffret ?? false,
         coffretContent: data.coffretContent || [],
+        gender: data.gender || 'unisexe',
         active: data.active ?? true,
         allowCustomVolume: data.allowCustomVolume ?? true,
         isBestSeller: data.isBestSeller ?? true,
@@ -113,6 +114,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       isAuthentic: data.isAuthentic ?? false,
       isCoffret: data.isCoffret ?? false,
       coffretContent: data.coffretContent || [],
+      gender: data.gender || 'unisexe',
       active: data.active ?? true,
       allowCustomVolume: data.allowCustomVolume ?? true,
       isBestSeller: data.isBestSeller ?? true,
@@ -135,6 +137,7 @@ export async function createProduct(data: {
   categoryNames?: string[];
   imageUrl?: string;
   formats: ProductFormat[];
+  gender?: 'homme' | 'femme' | 'unisexe';
   allowCustomVolume?: boolean;
   isBestSeller?: boolean;
   priceHuile?: number;
@@ -148,6 +151,7 @@ export async function createProduct(data: {
   try {
     const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), {
       ...data,
+      gender: data.gender || 'unisexe',
       categoryIds: data.categoryIds || (data.categoryId ? [data.categoryId] : []),
       categoryNames: data.categoryNames || (data.categoryName ? [data.categoryName] : []),
       allowCustomVolume: data.allowCustomVolume ?? true,
@@ -174,6 +178,7 @@ export async function updateProduct(
     categoryNames?: string[];
     imageUrl?: string;
     formats: ProductFormat[];
+    gender?: 'homme' | 'femme' | 'unisexe';
     allowCustomVolume?: boolean;
     isBestSeller?: boolean;
     priceHuile?: number;

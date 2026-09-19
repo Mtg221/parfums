@@ -19,6 +19,7 @@ export default function ParfumsAuthentiquesPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGender, setSelectedGender] = useState<'all' | 'homme' | 'femme' | 'unisexe'>('all');
   const [addedMessage, setAddedMessage] = useState<string | null>(null);
 
   const whatsappNumber = getWhatsAppNumber();
@@ -43,7 +44,12 @@ export default function ParfumsAuthentiquesPage() {
     const isAuthenticType = (p.isAuthentic || p.priceAuthentic) && !p.isCoffret;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase()));
-    return isAuthenticType && matchesSearch;
+    const matchesGender = selectedGender === 'all' ||
+                          p.gender === selectedGender ||
+                          (!p.gender && selectedGender === 'unisexe') ||
+                          p.description?.toLowerCase().includes(selectedGender) ||
+                          p.name?.toLowerCase().includes(selectedGender);
+    return isAuthenticType && matchesSearch && matchesGender;
   });
 
   const handleAddToCart = (prod: Product) => {
@@ -109,15 +115,34 @@ export default function ParfumsAuthentiquesPage() {
           </p>
         </div>
 
-        <div className="relative w-full sm:w-72">
-          <input
-            type="text"
-            placeholder="Rechercher par parfum ou marque..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-4 pr-10 py-2.5 bg-white border border-stone-200 rounded-sm text-xs text-stone-900 focus:outline-none focus:border-[#9B7B56]"
-          />
-          <Search className="w-4 h-4 text-stone-400 absolute right-3 top-3" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          {/* GENDER FILTER PILLS */}
+          <div className="flex items-center space-x-1 bg-white border border-stone-200 p-1 rounded-sm text-xs">
+            {(['all', 'femme', 'homme', 'unisexe'] as const).map((g) => (
+              <button
+                key={g}
+                onClick={() => setSelectedGender(g)}
+                className={`px-3 py-1 rounded-xs font-serif font-semibold uppercase tracking-wider text-[11px] transition-all ${
+                  selectedGender === g
+                    ? 'bg-[#9B7B56] text-white shadow-2xs'
+                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                }`}
+              >
+                {g === 'all' ? 'Tous' : g}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="Rechercher par parfum ou marque..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-4 pr-10 py-2.5 bg-white border border-stone-200 rounded-sm text-xs text-stone-900 focus:outline-none focus:border-[#9B7B56]"
+            />
+            <Search className="w-4 h-4 text-stone-400 absolute right-3 top-3" />
+          </div>
         </div>
       </div>
 
