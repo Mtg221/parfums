@@ -83,19 +83,25 @@ export async function getBrands(): Promise<Brand[]> {
         createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
       });
     });
-    if (firestoreBrands.length > 0) {
-      return firestoreBrands;
-    }
-    return DEFAULT_BRANDS.map((b, index) => ({
+
+    // Map default brands with fixed IDs
+    const defaultBrandsList: Brand[] = DEFAULT_BRANDS.map((b, index) => ({
       id: `default-brand-${index}`,
-      name: b.name,
+      name: b.name.toUpperCase(),
       subtitle: b.subtitle,
     }));
+
+    // Merge: start with default brands, then override or append firestore brands by uppercase name
+    const brandsMap = new Map<string, Brand>();
+    defaultBrandsList.forEach(b => brandsMap.set(b.name, b));
+    firestoreBrands.forEach(b => brandsMap.set(b.name, b));
+
+    return Array.from(brandsMap.values());
   } catch (error) {
     console.warn('Firestore brands fetch error, fallback to default brands:', error);
     return DEFAULT_BRANDS.map((b, index) => ({
       id: `default-brand-${index}`,
-      name: b.name,
+      name: b.name.toUpperCase(),
       subtitle: b.subtitle,
     }));
   }
