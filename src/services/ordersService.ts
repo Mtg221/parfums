@@ -165,8 +165,39 @@ export async function createOrder(formData: OrderFormData & { unitPrice?: number
       };
     });
   } catch (err: any) {
-    console.warn('Transaction failed, falling back to direct document creation:', err);
-    const unitPrice = formData.unitPrice || 0;
+    console.warn('Transaction failed, falling back to direct document creation with price verification:', err);
+    let unitPrice = formData.unitPrice || 0;
+    let productName = formData.productName;
+    let categoryId = formData.categoryId || '';
+    let categoryName = '';
+    let sizeMl = formData.sizeMl || 50;
+
+    // Verify official price from product document to prevent client-side price tampering
+    try {
+      const snap = await getDoc(productRef);
+      if (snap.exists()) {
+        const pData = snap.data();
+        productName = pData.name || productName;
+        categoryId = pData.categoryId || categoryId;
+        categoryName = pData.categoryName || '';
+
+        if (pData.priceAuthentic) {
+          unitPrice = pData.priceAuthentic;
+          sizeMl = 0;
+        } else if (Array.isArray(pData.formats)) {
+          const matchFmt = pData.formats.find(
+            (f: ProductFormat) => f.id === formData.formatId || f.sizeMl === formData.sizeMl
+          );
+          if (matchFmt && matchFmt.price) {
+            unitPrice = matchFmt.price;
+            sizeMl = matchFmt.sizeMl;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Could not verify price from product document:', e);
+    }
+
     const totalPrice = unitPrice * formData.quantity;
     
     const orderRef = await addDoc(collection(db, ORDERS_COLLECTION), {
@@ -175,11 +206,11 @@ export async function createOrder(formData: OrderFormData & { unitPrice?: number
       address: formData.address.trim(),
       notes: formData.notes?.trim() || '',
       productId: formData.productId,
-      productName: formData.productName,
-      categoryId: formData.categoryId || '',
-      categoryName: '',
+      productName: productName,
+      categoryId: categoryId,
+      categoryName: categoryName,
       formatId: formData.formatId || 'standard',
-      sizeMl: formData.sizeMl || 50,
+      sizeMl: sizeMl,
       quantity: formData.quantity,
       unitPrice: unitPrice,
       totalPrice: totalPrice,
@@ -196,10 +227,11 @@ export async function createOrder(formData: OrderFormData & { unitPrice?: number
       address: formData.address.trim(),
       notes: formData.notes?.trim() || '',
       productId: formData.productId,
-      productName: formData.productName,
-      categoryId: formData.categoryId || '',
+      productName: productName,
+      categoryId: categoryId,
+      categoryName: categoryName,
       formatId: formData.formatId || 'standard',
-      sizeMl: formData.sizeMl || 50,
+      sizeMl: sizeMl,
       quantity: formData.quantity,
       unitPrice: unitPrice,
       totalPrice: totalPrice,

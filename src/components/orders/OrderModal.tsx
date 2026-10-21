@@ -71,7 +71,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       setSuccessOrder(createdOrder);
 
       const whatsappUrl = generateCustomerOrderWhatsAppUrl(createdOrder);
-      window.open(whatsappUrl, '_blank');
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
     } catch (err: unknown) {
       console.error('Order error:', err);

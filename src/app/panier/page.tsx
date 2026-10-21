@@ -82,7 +82,7 @@ export default function PanierPage() {
       
       clearCart();
       setOrderSuccess(true);
-      window.open(whatsappUrl, '_blank');
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     } catch (err: unknown) {
       console.error('Checkout error:', err);
       setCheckoutError((err as Error).message || 'Une erreur est survenue lors de la validation. Veuillez réessayer.');
