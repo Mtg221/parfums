@@ -86,6 +86,7 @@ function AdminParfumsContent() {
   const [priceHuile, setPriceHuile] = useState<number>(1000);
   const [priceExtrait, setPriceExtrait] = useState<number>(1500);
   const [priceAuthentic, setPriceAuthentic] = useState<number>(25000);
+  const [stockAuthentic, setStockAuthentic] = useState<number>(50);
   const [priceCoffret, setPriceCoffret] = useState<number>(35000);
   const [coffretContentString, setCoffretContentString] = useState<string>('');
   const [formats, setFormats] = useState<ProductFormat[]>(buildStandardFormats('huile'));
@@ -252,16 +253,23 @@ function AdminParfumsContent() {
     setPriceHuile(1000);
     setPriceExtrait(1500);
     setPriceAuthentic(25000);
+    setStockAuthentic(50);
     setPriceCoffret(35000);
     setCoffretContentString('');
     
-    // Initialise automatiquement les formats conformes au catalogue PDF
+    // Initialise automatiquement les formats conformes
     if (defaultCategory === 'extraits-parfums') {
       setFormats(buildStandardFormats('extrait'));
+      setAllowCustomVolume(true);
     } else if (defaultCategory === 'huiles-parfumees') {
       setFormats(buildStandardFormats('huile'));
+      setAllowCustomVolume(true);
+    } else if (defaultCategory === 'parfums-authentiques') {
+      setFormats([{ id: 'flacon-authentique', sizeMl: 0, price: 25000, stock: 50 }]);
+      setAllowCustomVolume(false);
     } else {
-      setFormats([{ id: 'fmt-' + Date.now(), sizeMl: 100, price: 25000, stock: 50 }]);
+      setFormats([{ id: 'fmt-' + Date.now(), sizeMl: 100, price: 35000, stock: 50 }]);
+      setAllowCustomVolume(false);
     }
 
     setError(null);
@@ -294,10 +302,14 @@ function AdminParfumsContent() {
 
     setPriceHuile(prod.priceHuile || 1000);
     setPriceExtrait(prod.priceExtrait || 1500);
-    setPriceAuthentic(prod.priceAuthentic || 25000);
+    setPriceAuthentic(prod.priceAuthentic || prod.formats?.[0]?.price || 25000);
+    setStockAuthentic(prod.stock ?? prod.formats?.[0]?.stock ?? 50);
     setPriceCoffret(prod.priceCoffret || 35000);
     setCoffretContentString(prod.coffretContent ? prod.coffretContent.join(', ') : '');
     setFormats(prod.formats || []);
+    if (prod.isAuthentic) {
+      setAllowCustomVolume(false);
+    }
     setError(null);
     setSuccess(null);
     setIsModalOpen(true);
@@ -365,14 +377,22 @@ function AdminParfumsContent() {
         ? coffretContentString.split(',').map(s => s.trim()).filter(Boolean)
         : [];
 
+      const finalFormats =
+        categoryType === 'parfums-authentiques'
+          ? [{ id: 'flacon-authentique', sizeMl: 0, price: priceAuthentic, stock: stockAuthentic }]
+          : formats.length > 0
+          ? formats
+          : [{ id: 'default', sizeMl: 100, price: priceAuthentic || priceCoffret || 25000, stock: DEFAULT_STOCK }];
+
       const rawPayload = {
         name: name.trim(),
         brand: brand.trim(),
         description: description.trim(),
         imageUrl: finalImageUrl,
         gender: gender,
-        formats: formats.length > 0 ? formats : [{ id: 'default', sizeMl: 100, price: priceAuthentic || priceCoffret || 25000, stock: DEFAULT_STOCK }],
-        allowCustomVolume,
+        formats: finalFormats,
+        stock: categoryType === 'parfums-authentiques' ? stockAuthentic : undefined,
+        allowCustomVolume: categoryType === 'parfums-authentiques' ? false : allowCustomVolume,
         isBestSeller,
         priceHuile: categoryType === 'huiles-parfumees' ? priceHuile : undefined,
         priceExtrait: categoryType === 'extraits-parfums' ? priceExtrait : undefined,
@@ -824,8 +844,18 @@ function AdminParfumsContent() {
                       {prod.description || 'Senteur élaborée en haute qualité avec une excellente tenue.'}
                     </p>
 
-                    {/* FORMATS CHIPS WITH PRICE & STOCK */}
-                    {prod.formats && prod.formats.length > 0 && (
+                    {/* FORMATS CHIPS OU BADGE FLACON AUTHENTIQUE (PAS DE ML) */}
+                    {prod.isAuthentic || prod.priceAuthentic ? (
+                      <div className="pt-2 flex items-center justify-between text-xs bg-stone-50 border border-stone-200/80 rounded-lg p-2.5">
+                        <div className="flex items-center space-x-1.5 text-stone-700">
+                          <Diamond className="w-3.5 h-3.5 text-emerald-700" />
+                          <span className="font-semibold text-xs">Flacon d&apos;origine authentique</span>
+                        </div>
+                        <span className="text-[11px] font-bold text-stone-600">
+                          Stock : {prod.stock ?? prod.formats?.[0]?.stock ?? 50} unités
+                        </span>
+                      </div>
+                    ) : prod.formats && prod.formats.length > 0 ? (
                       <div className="pt-2">
                         <span className="text-[10px] text-stone-400 uppercase font-bold tracking-wider block mb-1.5">
                           Formats disponibles ({prod.formats.length}) :
@@ -844,7 +874,7 @@ function AdminParfumsContent() {
                           ))}
                         </div>
                       </div>
-                    )}
+                    ) : null}
 
                   </div>
 
@@ -1138,9 +1168,15 @@ function AdminParfumsContent() {
               <div className="p-4 bg-stone-50 border border-stone-200 rounded-xl space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-stone-200 pb-2">
                   <div>
-                    <h4 className="text-xs font-bold uppercase text-stone-800">Contenants et Prix selon vos besoins</h4>
+                    <h4 className="text-xs font-bold uppercase text-stone-800">
+                      {categoryType === 'parfums-authentiques' 
+                        ? 'Tarif & Stock Flacon Authentique' 
+                        : 'Contenants et Prix selon vos besoins'}
+                    </h4>
                     <p className="text-[10px] text-stone-500 font-light">
-                      Grille standard définie selon le catalogue PDF Sonia Perfumery.
+                      {categoryType === 'parfums-authentiques'
+                        ? "Flacon d'origine scellé, aucun choix de mL ni sur-mesure."
+                        : "Grille standard définie selon le catalogue PDF Sonia Perfumery."}
                     </p>
                   </div>
                   {(categoryType === 'huiles-parfumees' || categoryType === 'extraits-parfums') && (
@@ -1211,16 +1247,36 @@ function AdminParfumsContent() {
                     ))}
                   </div>
                 ) : categoryType === 'parfums-authentiques' ? (
-                  <div className="space-y-1">
-                    <label className="block text-[11px] font-semibold text-stone-700">Prix Flacon Authentique (FCFA)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      required
-                      value={priceAuthentic}
-                      onChange={(e) => setPriceAuthentic(parseInt(e.target.value) || 0)}
-                      className="w-full px-3 py-2 bg-white border border-stone-300 rounded text-xs font-bold text-[#B76E79]"
-                    />
+                  <div className="space-y-3">
+                    <div className="p-3 bg-emerald-50/70 border border-emerald-200/80 rounded-lg text-xs text-emerald-900 font-medium flex items-center space-x-2">
+                      <Diamond className="w-4 h-4 text-emerald-700 flex-shrink-0" />
+                      <span>Parfums Authentiques : vendus en flacon d&apos;origine scellé, aucun choix de mL ni sur-mesure.</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-semibold text-stone-700">Prix Flacon Authentique (FCFA) *</label>
+                        <input
+                          type="number"
+                          min="0"
+                          required
+                          value={priceAuthentic}
+                          onChange={(e) => setPriceAuthentic(parseInt(e.target.value) || 0)}
+                          className="w-full px-3 py-2 bg-white border border-stone-300 rounded text-xs font-bold text-[#B76E79]"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-semibold text-stone-700">Stock disponible (unités) *</label>
+                        <input
+                          type="number"
+                          min="0"
+                          required
+                          value={stockAuthentic}
+                          onChange={(e) => setStockAuthentic(parseInt(e.target.value) || 0)}
+                          className="w-full px-3 py-2 bg-white border border-stone-300 rounded text-xs text-stone-900 font-medium"
+                        />
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-3">

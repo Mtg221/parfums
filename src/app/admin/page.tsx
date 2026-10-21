@@ -292,7 +292,7 @@ export default function AdminDashboardPage() {
                     <span className="text-xs text-stone-500">({ord.phone})</span>
                   </div>
                   <p className="text-xs text-stone-600 mt-0.5">
-                    Parfum : <strong className="text-stone-900">{ord.productName}</strong> ({ord.sizeMl} mL x{ord.quantity})
+                    Parfum : <strong className="text-stone-900">{ord.productName}</strong> ({ord.sizeMl && ord.sizeMl > 0 ? `${ord.sizeMl} mL x${ord.quantity}` : `Flacon d'origine x${ord.quantity}`})
                   </p>
                 </div>
 

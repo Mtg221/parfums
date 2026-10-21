@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { 
   ShoppingBag, 
   MessageCircle, 
   Eye, 
   Loader2, 
   X,
-  Filter
+  Filter,
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react';
 import { getOrders, updateOrderStatus } from '@/services/ordersService';
 import { Order, OrderStatus } from '@/types';
@@ -22,22 +24,37 @@ export default function AdminOrdersPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchOrdersData();
-  }, []);
-
-  const fetchOrdersData = async () => {
+  const fetchOrdersData = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getOrders();
       setOrders(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching orders:', err);
       setError('Impossible de charger la liste des commandes.');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        const data = await getOrders();
+        if (isMounted) setOrders(data);
+      } catch (err: unknown) {
+        console.error('Error fetching orders:', err);
+        if (isMounted) setError('Impossible de charger la liste des commandes.');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     setUpdatingId(orderId);
@@ -49,7 +66,7 @@ export default function AdminOrdersPage() {
       if (selectedOrder && selectedOrder.id === orderId) {
         setSelectedOrder((prev) => (prev ? { ...prev, status: newStatus } : null));
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Status update failed:', err);
       alert('Échec de la mise à jour du statut.');
     } finally {
@@ -94,7 +111,22 @@ export default function AdminOrdersPage() {
             Consultez les commandes reçues, modifiez leur statut et contactez directement vos clients sur WhatsApp.
           </p>
         </div>
+
+        <button
+          onClick={fetchOrdersData}
+          className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs transition-colors self-start sm:self-auto"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span>Actualiser</span>
+        </button>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3 text-red-800 text-xs">
+          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
       {/* STATUS FILTER CHIPS */}
       <div className="flex flex-wrap items-center gap-2 p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
@@ -160,7 +192,7 @@ export default function AdminOrdersPage() {
                     <td className="p-4 font-bold text-stone-900">{ord.customerName}</td>
                     <td className="p-4">{ord.phone}</td>
                     <td className="p-4">
-                      <span className="font-semibold text-stone-900">{ord.productName}</span> ({ord.sizeMl} mL x{ord.quantity})
+                      <span className="font-semibold text-stone-900">{ord.productName}</span> ({ord.sizeMl && ord.sizeMl > 0 ? `${ord.sizeMl} mL x${ord.quantity}` : `Flacon d'origine x${ord.quantity}`})
                     </td>
                     <td className="p-4 font-bold text-amber-800">{formatPrice(ord.totalPrice)}</td>
                     <td className="p-4">
@@ -224,7 +256,7 @@ export default function AdminOrdersPage() {
 
                 <div className="text-xs text-stone-700 bg-stone-50 p-3 rounded-lg border border-stone-200 space-y-1">
                   <p>Parfum : <strong className="text-stone-900">{ord.productName}</strong></p>
-                  <p>Format : {ord.sizeMl} mL — Qté : {ord.quantity}</p>
+                  <p>Format : {ord.sizeMl && ord.sizeMl > 0 ? `${ord.sizeMl} mL` : "Flacon d'origine"} — Qté : {ord.quantity}</p>
                   <p className="text-amber-800 font-bold pt-1 text-sm">Total : {formatPrice(ord.totalPrice)}</p>
                 </div>
 
@@ -305,7 +337,7 @@ export default function AdminOrdersPage() {
                   <span className="text-amber-800">{formatPrice(selectedOrder.totalPrice)}</span>
                 </div>
                 <p className="text-stone-600">
-                  Format : {selectedOrder.sizeMl} mL — Quantité : x{selectedOrder.quantity} (Prix unit: {formatPrice(selectedOrder.unitPrice)})
+                  Format : {selectedOrder.sizeMl && selectedOrder.sizeMl > 0 ? `${selectedOrder.sizeMl} mL` : "Flacon d'origine"} — Quantité : x{selectedOrder.quantity} (Prix unit: {formatPrice(selectedOrder.unitPrice)})
                 </p>
               </div>
 

@@ -43,6 +43,10 @@ export default function PanierPage() {
     try {
       // Save order to Firestore for each item or main summary
       for (const item of items) {
+        const parsedMl = item.formatName && item.formatName.includes('mL')
+          ? parseInt(item.formatName.replace(/[^0-9]/g, '')) || 0
+          : 0;
+
         await createOrder({
           customerName,
           phone,
@@ -51,8 +55,8 @@ export default function PanierPage() {
           productId: item.productId,
           productName: item.name,
           categoryId: item.category,
-          formatId: item.formatName || 'standard',
-          sizeMl: 50,
+          formatId: item.formatName || "Flacon d'origine",
+          sizeMl: parsedMl,
           quantity: item.quantity,
           unitPrice: item.price,
         });
@@ -67,7 +71,8 @@ export default function PanierPage() {
       msg += `\n*ARTICLES COMMANDÉS :*\n`;
 
       items.forEach((item, index) => {
-        msg += `${index + 1}. *${item.name}* (${item.category}) x${item.quantity} — ${formatPrice(item.price * item.quantity)}\n`;
+        const fmtText = item.formatName ? ` [${item.formatName}]` : '';
+        msg += `${index + 1}. *${item.name}* (${item.category})${fmtText} x${item.quantity} — ${formatPrice(item.price * item.quantity)}\n`;
       });
 
       msg += `\n💰 *TOTAL DE LA COMMANDE : ${formatPrice(subtotal)}*\n`;
@@ -78,9 +83,9 @@ export default function PanierPage() {
       clearCart();
       setOrderSuccess(true);
       window.open(whatsappUrl, '_blank');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Checkout error:', err);
-      setCheckoutError(err.message || 'Une erreur est survenue lors de la validation. Veuillez réessayer.');
+      setCheckoutError((err as Error).message || 'Une erreur est survenue lors de la validation. Veuillez réessayer.');
     } finally {
       setSubmitting(false);
     }

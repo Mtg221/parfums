@@ -120,18 +120,24 @@ export default function CategoryProductsPage({
                 {/* FORMATS CHIPS SUMMARY */}
                 <div className="space-y-4 pt-4 border-t border-stone-100">
                   <div className="flex flex-wrap gap-2">
-                    {product.formats.map((fmt) => (
-                      <span
-                        key={fmt.id}
-                        className={`text-xs px-2.5 py-1 rounded-md border ${
-                          fmt.stock > 0
-                            ? 'bg-stone-50 text-stone-700 border-stone-200'
-                            : 'bg-stone-100 text-stone-400 border-stone-200 line-through'
-                        }`}
-                      >
-                        {fmt.sizeMl} mL — {formatPrice(fmt.price)}
+                    {product.isAuthentic || product.categoryName?.toLowerCase().includes('authentique') ? (
+                      <span className="text-xs px-2.5 py-1 rounded-md border bg-emerald-50 text-emerald-900 border-emerald-200 font-medium">
+                        Flacon d&apos;origine scellé · Authentique
                       </span>
-                    ))}
+                    ) : (
+                      product.formats.map((fmt) => (
+                        <span
+                          key={fmt.id}
+                          className={`text-xs px-2.5 py-1 rounded-md border ${
+                            fmt.stock > 0
+                              ? 'bg-stone-50 text-stone-700 border-stone-200'
+                              : 'bg-stone-100 text-stone-400 border-stone-200 line-through'
+                          }`}
+                        >
+                          {fmt.sizeMl} mL — {formatPrice(fmt.price)}
+                        </span>
+                      ))
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between pt-2">

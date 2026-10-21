@@ -73,14 +73,31 @@ export default function ProductDetailPage({
     );
   }
 
-  // Calculate price per mL from available formats (e.g. average price/mL or first format price/mL)
-  const basePricePerMl = product.formats.length > 0
+  // Detect if product is Authentic Perfume (no mL)
+  const isAuthenticProduct = Boolean(
+    product.isAuthentic || 
+    product.priceAuthentic || 
+    product.categoryName?.toLowerCase().includes('authentique')
+  );
+
+  const authenticPrice = product.priceAuthentic || (product.formats?.[0]?.price) || 25000;
+  const authenticStock = product.stock ?? product.formats?.[0]?.stock ?? 50;
+
+  // Calculate price per mL from available formats (only for Huiles and Extraits)
+  const basePricePerMl = !isAuthenticProduct && product.formats.length > 0
     ? Math.round(product.formats[0].price / (product.formats[0].sizeMl || 1))
     : 300;
 
   const customPrice = customMl * basePricePerMl;
 
-  const activeFormat: ProductFormat = isCustomFormat
+  const activeFormat: ProductFormat = isAuthenticProduct
+    ? {
+        id: 'flacon-authentique',
+        sizeMl: 0,
+        price: authenticPrice,
+        stock: authenticStock,
+      }
+    : isCustomFormat
     ? {
         id: 'custom-' + customMl,
         sizeMl: customMl,
@@ -94,11 +111,15 @@ export default function ProductDetailPage({
         stock: 10,
       });
 
-  const isSelectedFormatOutOfStock = !isCustomFormat && activeFormat.stock <= 0;
+  const isSelectedFormatOutOfStock = isAuthenticProduct 
+    ? authenticStock <= 0 
+    : (!isCustomFormat && activeFormat.stock <= 0);
+
   const totalPrice = activeFormat.price * quantity;
 
   const incrementQty = () => {
-    if (quantity < (activeFormat.stock || 99)) {
+    const maxStock = isAuthenticProduct ? authenticStock : (activeFormat.stock || 99);
+    if (quantity < maxStock) {
       setQuantity(prev => prev + 1);
     }
   };
@@ -111,12 +132,17 @@ export default function ProductDetailPage({
 
   const handleAddToCart = () => {
     if (!product || isSelectedFormatOutOfStock) return;
-    const formatName = isCustomFormat ? `Sur-mesure (${activeFormat.sizeMl} mL)` : `${activeFormat.sizeMl} mL`;
+    const formatName = isAuthenticProduct 
+      ? "Flacon d'origine" 
+      : isCustomFormat 
+      ? `Sur-mesure (${activeFormat.sizeMl} mL)` 
+      : `${activeFormat.sizeMl} mL`;
+
     addItem({
       productId: product.id,
       name: product.name,
       brand: product.brand,
-      category: product.categoryName || 'Parfum',
+      category: isAuthenticProduct ? 'Parfum authentique' : (product.categoryName || 'Parfum'),
       imageUrl: product.imageUrl,
       price: activeFormat.price,
       quantity: quantity,
@@ -164,110 +190,134 @@ export default function ProductDetailPage({
           </p>
         </div>
 
-        {/* FORMAT SELECTOR (5 mL, 16 mL, 20 mL, 100 mL + CUSTOM FORMAT OPTION) */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-800">
-              1. Choisissez votre format (mL) :
+        {/* FORMAT SELECTOR (SEULEMENT POUR HUILES & EXTRAITS, PAS DE ML POUR AUTHENTIQUES) */}
+        {isAuthenticProduct ? (
+          <div className="p-5 bg-[#FAF0ED] border border-[#E8D5D0] rounded-lg space-y-2">
+            <div className="flex items-center space-x-2 text-[#9E7B56]">
+              <span className="text-xs font-serif font-bold uppercase tracking-widest">
+                Parfum 100% Authentique & Certifié
+              </span>
+            </div>
+            <h2 className="text-lg font-serif font-bold text-stone-900">
+              Flacon d&apos;origine scellé
             </h2>
-            <span className="text-[11px] text-[#9E7B56] font-medium">Formats standards & Sur-mesure</span>
+            <p className="text-xs text-stone-600 font-light leading-relaxed">
+              Ce parfum authentique est vendu dans son flacon et packaging officiel d&apos;origine scellé par la marque. Aucun reconditionnement ni choix de mL.
+            </p>
+            <div className="pt-2 flex items-center space-x-4 text-xs font-semibold">
+              <span className="text-stone-900">
+                Prix officiel : <strong className="text-[#9E7B56]">{formatPrice(authenticPrice)}</strong>
+              </span>
+              <span className="text-stone-300">·</span>
+              <span className={authenticStock > 0 ? "text-emerald-700 font-medium" : "text-red-600"}>
+                {authenticStock > 0 ? `En stock (${authenticStock} unités disponibles)` : 'Épuisé'}
+              </span>
+            </div>
           </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-stone-800">
+                1. Choisissez votre format (mL) :
+              </h2>
+              <span className="text-[11px] text-[#9E7B56] font-medium">Formats standards & Sur-mesure</span>
+            </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
-            {product.formats.map((fmt) => {
-              const isSelected = !isCustomFormat && selectedFormat?.id === fmt.id;
-              const outOfStock = fmt.stock <= 0;
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+              {product.formats.map((fmt) => {
+                const isSelected = !isCustomFormat && selectedFormat?.id === fmt.id;
+                const outOfStock = fmt.stock <= 0;
 
-              return (
+                return (
+                  <button
+                    key={fmt.id || fmt.sizeMl}
+                    type="button"
+                    disabled={outOfStock}
+                    onClick={() => {
+                      setIsCustomFormat(false);
+                      setSelectedFormat(fmt);
+                      setQuantity(1);
+                    }}
+                    className={`p-3.5 rounded-md border text-left transition-all relative overflow-hidden ${
+                      isSelected
+                        ? 'bg-[#F5ECE9] border-[#9E7B56] text-stone-900 ring-1 ring-[#9E7B56]/40 shadow-xs'
+                        : outOfStock
+                        ? 'bg-stone-50 border-stone-200 text-stone-400 cursor-not-allowed opacity-60'
+                        : 'bg-white border-stone-200 text-stone-800 hover:border-stone-300 hover:bg-stone-50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-serif font-bold text-base">{fmt.sizeMl} mL</span>
+                      {isSelected && <CheckCircle2 className="w-4 h-4 text-[#9E7B56]" />}
+                    </div>
+                    <p className="text-xs font-bold text-[#9E7B56] mt-1">
+                      {formatPrice(fmt.price)}
+                    </p>
+                    <p className="text-[10px] text-stone-500 mt-1">
+                      {outOfStock ? 'Épuisé' : `Stock : ${fmt.stock}`}
+                    </p>
+                  </button>
+                );
+              })}
+
+              {/* CUSTOM SIZE OPTION (PERSONNALISÉ SUR-MESURE) */}
+              {product.allowCustomVolume !== false && (
                 <button
-                  key={fmt.id || fmt.sizeMl}
                   type="button"
-                  disabled={outOfStock}
                   onClick={() => {
-                    setIsCustomFormat(false);
-                    setSelectedFormat(fmt);
+                    setIsCustomFormat(true);
                     setQuantity(1);
                   }}
                   className={`p-3.5 rounded-md border text-left transition-all relative overflow-hidden ${
-                    isSelected
-                      ? 'bg-[#F5ECE9] border-[#9E7B56] text-stone-900 ring-1 ring-[#9E7B56]/40 shadow-xs'
-                      : outOfStock
-                      ? 'bg-stone-50 border-stone-200 text-stone-400 cursor-not-allowed opacity-60'
-                      : 'bg-white border-stone-200 text-stone-800 hover:border-stone-300 hover:bg-stone-50'
+                    isCustomFormat
+                      ? 'bg-amber-50 border-[#9E7B56] text-stone-900 ring-1 ring-[#9E7B56]/40 shadow-xs'
+                      : 'bg-stone-50 border-dashed border-stone-300 text-stone-700 hover:bg-stone-100'
                   }`}
                 >
                   <div className="flex justify-between items-center">
-                    <span className="font-serif font-bold text-base">{fmt.sizeMl} mL</span>
-                    {isSelected && <CheckCircle2 className="w-4 h-4 text-[#9E7B56]" />}
+                    <span className="font-serif font-bold text-xs uppercase flex items-center gap-1">
+                      <Sliders className="w-3.5 h-3.5 text-[#9E7B56]" />
+                      <span>Sur-mesure</span>
+                    </span>
+                    {isCustomFormat && <CheckCircle2 className="w-4 h-4 text-[#9E7B56]" />}
                   </div>
-                  <p className="text-xs font-bold text-[#9E7B56] mt-1">
-                    {formatPrice(fmt.price)}
+                  <p className="text-[11px] font-semibold text-[#9E7B56] mt-1">
+                    Choisir son mL
                   </p>
-                  <p className="text-[10px] text-stone-500 mt-1">
-                    {outOfStock ? 'Épuisé' : `Stock : ${fmt.stock}`}
+                  <p className="text-[10px] text-stone-500 mt-0.5">
+                    Volume au choix
                   </p>
                 </button>
-              );
-            })}
+              )}
+            </div>
 
-            {/* CUSTOM SIZE OPTION (PERSONNALISÉ SUR-MESURE) */}
-            {product.allowCustomVolume !== false && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsCustomFormat(true);
-                  setQuantity(1);
-                }}
-                className={`p-3.5 rounded-md border text-left transition-all relative overflow-hidden ${
-                  isCustomFormat
-                    ? 'bg-amber-50 border-[#9E7B56] text-stone-900 ring-1 ring-[#9E7B56]/40 shadow-xs'
-                    : 'bg-stone-50 border-dashed border-stone-300 text-stone-700 hover:bg-stone-100'
-                }`}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="font-serif font-bold text-xs uppercase flex items-center gap-1">
-                    <Sliders className="w-3.5 h-3.5 text-[#9E7B56]" />
-                    <span>Sur-mesure</span>
+            {/* CUSTOM ML INPUT IF CUSTOM OPTION IS ACTIVE */}
+            {isCustomFormat && (
+              <div className="p-4 bg-amber-50/60 border border-amber-300/60 rounded-md space-y-2 animate-fadeIn">
+                <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider">
+                  Indiquez le volume exact de votre choix (en mL) :
+                </label>
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="number"
+                    min="1"
+                    max="1000"
+                    value={customMl}
+                    onChange={(e) => setCustomMl(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-32 px-3 py-2 bg-white border border-stone-300 rounded text-sm text-stone-900 font-bold focus:outline-none focus:border-[#9E7B56]"
+                  />
+                  <span className="text-xs text-stone-600 font-medium">mL</span>
+                  <span className="text-xs text-[#9E7B56] font-bold">
+                    (Prix estimé : {formatPrice(customPrice)})
                   </span>
-                  {isCustomFormat && <CheckCircle2 className="w-4 h-4 text-[#9E7B56]" />}
                 </div>
-                <p className="text-[11px] font-semibold text-[#9E7B56] mt-1">
-                  Choisir son mL
+                <p className="text-[11px] text-stone-500 font-light">
+                  Notre équipe préparera un flacon exactement ajusté à votre besoin de {customMl} mL.
                 </p>
-                <p className="text-[10px] text-stone-500 mt-0.5">
-                  Volume au choix
-                </p>
-              </button>
+              </div>
             )}
           </div>
-
-          {/* CUSTOM ML INPUT IF CUSTOM OPTION IS ACTIVE */}
-          {isCustomFormat && (
-            <div className="p-4 bg-amber-50/60 border border-amber-300/60 rounded-md space-y-2 animate-fadeIn">
-              <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider">
-                Indiquez le volume exact de votre choix (en mL) :
-              </label>
-              <div className="flex items-center space-x-3">
-                <input
-                  type="number"
-                  min="1"
-                  max="1000"
-                  value={customMl}
-                  onChange={(e) => setCustomMl(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-32 px-3 py-2 bg-white border border-stone-300 rounded text-sm text-stone-900 font-bold focus:outline-none focus:border-[#9E7B56]"
-                />
-                <span className="text-xs text-stone-600 font-medium">mL</span>
-                <span className="text-xs text-[#9E7B56] font-bold">
-                  (Prix estimé : {formatPrice(customPrice)})
-                </span>
-              </div>
-              <p className="text-[11px] text-stone-500 font-light">
-                Notre équipe préparera un flacon exactement ajusté à votre besoin de {customMl} mL.
-              </p>
-            </div>
-          )}
-
-        </div>
+        )}
 
         {/* QUANTITY & TOTAL PRICE SECTION */}
         <div className="p-6 bg-[#F9F5F1] rounded-md border border-stone-200 space-y-6">
@@ -277,7 +327,7 @@ export default function ProductDetailPage({
             {/* QUANTITY COUNTER */}
             <div className="space-y-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-stone-700">
-                2. Quantité :
+                {isAuthenticProduct ? '1. Quantité de flacons :' : '2. Quantité :'}
               </label>
               <div className="inline-flex items-center space-x-3 bg-white border border-stone-200 rounded-md p-1.5 shadow-xs">
                 <button
@@ -311,7 +361,9 @@ export default function ProductDetailPage({
                 {formatPrice(totalPrice)}
               </p>
               <p className="text-xs text-stone-500 font-light">
-                ({quantity} x {activeFormat.sizeMl} mL à {formatPrice(activeFormat.price)})
+                {isAuthenticProduct 
+                  ? `(${quantity} x Flacon d'origine à ${formatPrice(activeFormat.price)})`
+                  : `(${quantity} x ${activeFormat.sizeMl} mL à ${formatPrice(activeFormat.price)})`}
               </p>
             </div>
 

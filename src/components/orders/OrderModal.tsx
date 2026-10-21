@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { X, MessageCircle, AlertCircle, CheckCircle2, Loader2, PackageCheck } from 'lucide-react';
-import { Product, ProductFormat, OrderFormData } from '@/types';
+import { Product, ProductFormat, OrderFormData, Order } from '@/types';
 import { formatPrice, generateCustomerOrderWhatsAppUrl } from '@/lib/whatsapp';
 import { createOrder } from '@/services/ordersService';
 
@@ -28,7 +28,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successOrder, setSuccessOrder] = useState<any | null>(null);
+  const [successOrder, setSuccessOrder] = useState<Order | null>(null);
 
   if (!isOpen) return null;
 
@@ -73,9 +73,9 @@ export const OrderModal: React.FC<OrderModalProps> = ({
       const whatsappUrl = generateCustomerOrderWhatsAppUrl(createdOrder);
       window.open(whatsappUrl, '_blank');
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Order error:', err);
-      setError(err.message || 'Une erreur est survenue lors de la création de la commande. Veuillez réessayer.');
+      setError((err as Error).message || 'Une erreur est survenue lors de la création de la commande. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,9 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="font-serif font-bold text-lg text-stone-900">{product.name}</h3>
-                <p className="text-xs text-stone-600">Format : {selectedFormat.sizeMl} mL</p>
+                <p className="text-xs text-stone-600">
+                  Format : {selectedFormat.sizeMl > 0 && !product.isAuthentic ? `${selectedFormat.sizeMl} mL` : "Flacon d'origine"}
+                </p>
               </div>
               <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300/80">
                 Qté: {quantity}
