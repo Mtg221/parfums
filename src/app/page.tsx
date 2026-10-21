@@ -80,16 +80,6 @@ export default function HomePage() {
                 Découvrez des fragrances uniques qui révèlent votre personnalité.
               </p>
 
-              <div className="pt-2">
-                <Link
-                  href="/catalogue"
-                  className="inline-flex items-center space-x-3 px-6 sm:px-8 py-3.5 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-xs uppercase tracking-widest shadow-md transition-colors"
-                >
-                  <span>EXPLORER NOS PRODUITS</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
               <div className="pt-4 text-[10px] sm:text-[11px] text-stone-400 font-serif tracking-widest space-x-1.5 sm:space-x-2 flex-wrap">
                 <span>Huiles parfumées</span>
                 <span>&bull;</span>
