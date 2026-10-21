@@ -3,23 +3,24 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { 
-  FolderTree, 
   Package, 
   DollarSign, 
   ArrowRight, 
   Clock, 
   CheckCircle2, 
   Truck, 
-  Loader2
+  Loader2,
+  FileText,
+  Droplet,
+  Sparkles
 } from 'lucide-react';
-import { getCategories } from '@/services/categoriesService';
 import { getProducts } from '@/services/productsService';
 import { getOrders } from '@/services/ordersService';
-import { Category, Product, Order } from '@/types';
+import { SONIA_CATALOGUE } from '@/data/soniaCatalogue';
+import { Product, Order } from '@/types';
 import { formatPrice } from '@/lib/whatsapp';
 
 export default function AdminDashboardPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,12 +28,10 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function loadDashboardData() {
       try {
-        const [catData, prodData, ordData] = await Promise.all([
-          getCategories(),
+        const [prodData, ordData] = await Promise.all([
           getProducts(),
           getOrders(),
         ]);
-        setCategories(catData);
         setProducts(prodData);
         setOrders(ordData);
       } catch (err) {
@@ -52,6 +51,11 @@ export default function AdminDashboardPage() {
   const totalRevenue = orders
     .filter(o => o.status !== 'cancelled')
     .reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+
+  const totalPdfScents = SONIA_CATALOGUE.reduce((acc, h) => acc + h.scents.length, 0);
+  const extraitsCount = products.filter(p => !p.isCoffret && !p.isAuthentic && p.priceExtrait).length;
+  const huilesCount = products.filter(p => !p.isCoffret && !p.isAuthentic && (p.priceHuile || (!p.priceExtrait && !p.isAuthentic && !p.isCoffret))).length;
+  const authentiquesCount = products.filter(p => p.isAuthentic || p.priceAuthentic).length;
 
   if (loading) {
     return (
@@ -170,6 +174,91 @@ export default function AdminDashboardPage() {
             <p className="text-[10px] uppercase font-semibold text-stone-500">Livrées</p>
             <p className="text-lg font-bold text-stone-900">{deliveredOrders.length}</p>
           </div>
+        </div>
+      </div>
+
+      {/* CATALOGUE SONIA PERFUMERY PDF STATUS */}
+      <div className="bg-[#FAF0ED] border border-[#E8D5D0] rounded-2xl p-6 sm:p-7 space-y-4 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center space-x-1.5 text-[10px] uppercase font-bold tracking-widest text-[#B76E79]">
+              <FileText className="w-3.5 h-3.5" />
+              <span>Sonia_Perfumery_Selection_Homme_Femme_Unisexe.pdf</span>
+            </div>
+            <h2 className="text-xl font-serif font-bold text-stone-900">
+              Statut du Catalogue PDF ({totalPdfScents} Senteurs Répertoriées)
+            </h2>
+            <p className="text-xs text-stone-600 font-light">
+              Suivi en temps réel de vos produits en base par catégorie.
+            </p>
+          </div>
+
+          <Link
+            href="/admin/parfums"
+            className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-[#B76E79] hover:bg-[#a25a65] text-white text-xs font-bold uppercase tracking-wider shadow-xs transition-colors self-start sm:self-auto"
+          >
+            <span>Synchroniser dans l&apos;admin</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+          <Link
+            href="/admin/parfums?type=huiles-parfumees"
+            className="p-4 bg-white rounded-xl border border-stone-200 hover:border-[#B76E79]/50 transition-all flex items-center justify-between group shadow-2xs"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center">
+                <Droplet className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-stone-500 block">Huiles Parfumées</span>
+                <span className="text-lg font-serif font-bold text-stone-900">
+                  {huilesCount} <span className="text-xs text-stone-400 font-sans font-normal">/ {totalPdfScents}</span>
+                </span>
+                <span className="text-[10px] text-stone-400 block">3 à 20 mL · 1000 à 5000 F</span>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-[#B76E79] group-hover:translate-x-1 transition-all" />
+          </Link>
+
+          <Link
+            href="/admin/parfums?type=extraits-parfums"
+            className="p-4 bg-white rounded-xl border border-stone-200 hover:border-[#B76E79]/50 transition-all flex items-center justify-between group shadow-2xs"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-800 flex items-center justify-center">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-stone-500 block">Extraits de Parfum</span>
+                <span className="text-lg font-serif font-bold text-stone-900">
+                  {extraitsCount} <span className="text-xs text-stone-400 font-sans font-normal">/ {totalPdfScents}</span>
+                </span>
+                <span className="text-[10px] text-stone-400 block">16 à 100 mL · 1500 à 15000 F</span>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-[#B76E79] group-hover:translate-x-1 transition-all" />
+          </Link>
+
+          <Link
+            href="/admin/parfums?type=parfums-authentiques"
+            className="p-4 bg-white rounded-xl border border-stone-200 hover:border-[#B76E79]/50 transition-all flex items-center justify-between group shadow-2xs"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                <Package className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-stone-500 block">Parfums Authentiques</span>
+                <span className="text-lg font-serif font-bold text-stone-900">
+                  {authentiquesCount}
+                </span>
+                <span className="text-[10px] text-stone-400 block">Flacons d&apos;origine</span>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-[#B76E79] group-hover:translate-x-1 transition-all" />
+          </Link>
         </div>
       </div>
 

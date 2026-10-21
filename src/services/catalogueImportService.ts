@@ -18,13 +18,16 @@ import {
 const PRODUCTS_COLLECTION = 'products';
 const BATCH_LIMIT = 400; // Firestore limite à 500 opérations par batch
 
-type ScentType = 'extrait' | 'huile';
+export type ScentType = 'extrait' | 'huile';
+export type ImportTargetCategory = 'all' | 'extraits-parfums' | 'huiles-parfumees';
 
 export interface CatalogueImportResult {
+  targetCategory: ImportTargetCategory;
   extraitsCreated: number;
   extraitsUpdated: number;
   huilesCreated: number;
   huilesUpdated: number;
+  totalProcessed: number;
 }
 
 /** Normalise un nom pour la comparaison (casse, accents, apostrophes, espaces). */
@@ -47,7 +50,7 @@ function isSameScent(a: string, b: string, brand: string): boolean {
   return na === `${brandWord} ${nb}` || nb === `${brandWord} ${na}`;
 }
 
-function buildFormats(type: ScentType): ProductFormat[] {
+export function buildStandardFormats(type: ScentType): ProductFormat[] {
   const source = type === 'extrait' ? EXTRAIT_FORMATS : HUILE_FORMATS;
   const prefix = type === 'extrait' ? 'ext' : 'huile';
   return source.map((f) => ({
@@ -65,11 +68,16 @@ function getType(data: DocumentData): ScentType | null {
 }
 
 /**
- * Importe (ou met à jour) toutes les senteurs du catalogue Sonia's Perfumery
- * pour chaque Maison, en Extraits de parfum (16 → 100 mL) et Huiles parfumées (3 → 20 mL).
+ * Importe (ou met à jour) les senteurs du catalogue Sonia's Perfumery
+ * en fonction de la catégorie ciblée :
+ * - 'extraits-parfums' : formats 16, 20, 30, 50, 100 mL | prix 1 500 à 15 000 | stock 50
+ * - 'huiles-parfumees' : formats 3, 5, 6, 10, 15, 20 mL | prix 1 000 à 5 000 | stock 50
+ * - 'all' : les deux catégories
  * L'opération est idempotente : une senteur déjà présente est mise à jour, jamais dupliquée.
  */
-export async function importSoniaCatalogue(): Promise<CatalogueImportResult> {
+export async function importSoniaCatalogue(
+  targetCategory: ImportTargetCategory = 'all'
+): Promise<CatalogueImportResult> {
   const snapshot = await getDocs(collection(db, PRODUCTS_COLLECTION));
 
   const existing: { id: string; name: string; brand: string; type: ScentType }[] = [];
@@ -81,17 +89,26 @@ export async function importSoniaCatalogue(): Promise<CatalogueImportResult> {
   });
 
   const result: CatalogueImportResult = {
+    targetCategory,
     extraitsCreated: 0,
     extraitsUpdated: 0,
     huilesCreated: 0,
     huilesUpdated: 0,
+    totalProcessed: 0,
   };
 
   const operations: ((batch: ReturnType<typeof writeBatch>) => void)[] = [];
   const updatedIds = new Set<string>();
 
-  const extraitFormats = buildFormats('extrait');
-  const huileFormats = buildFormats('huile');
+  const extraitFormats = buildStandardFormats('extrait');
+  const huileFormats = buildStandardFormats('huile');
+
+  const typesToProcess: ScentType[] =
+    targetCategory === 'extraits-parfums'
+      ? ['extrait']
+      : targetCategory === 'huiles-parfumees'
+      ? ['huile']
+      : ['extrait', 'huile'];
 
   const pricingFor = (type: ScentType) => ({
     formats: type === 'extrait' ? extraitFormats : huileFormats,
@@ -102,7 +119,7 @@ export async function importSoniaCatalogue(): Promise<CatalogueImportResult> {
 
   for (const house of SONIA_CATALOGUE) {
     for (const scent of house.scents) {
-      for (const type of ['extrait', 'huile'] as ScentType[]) {
+      for (const type of typesToProcess) {
         const pricing = pricingFor(type);
         const match = existing.find(
           (p) => p.type === type && p.brand === house.brand && isSameScent(p.name, scent.name, house.brand)
@@ -156,6 +173,7 @@ export async function importSoniaCatalogue(): Promise<CatalogueImportResult> {
 
   // Applique aussi les formats / prix / stock standards aux autres extraits et huiles de maisons déjà enregistrés
   for (const p of existing) {
+    if (!typesToProcess.includes(p.type)) continue;
     if (updatedIds.has(p.id)) continue;
     updatedIds.add(p.id);
     const pricing = pricingFor(p.type);
@@ -168,6 +186,12 @@ export async function importSoniaCatalogue(): Promise<CatalogueImportResult> {
     if (p.type === 'extrait') result.extraitsUpdated++;
     else result.huilesUpdated++;
   }
+
+  result.totalProcessed =
+    result.extraitsCreated +
+    result.extraitsUpdated +
+    result.huilesCreated +
+    result.huilesUpdated;
 
   for (let i = 0; i < operations.length; i += BATCH_LIMIT) {
     const batch = writeBatch(db);
