@@ -12,13 +12,15 @@ import {
   Headphones, 
   Heart, 
   Droplet, 
-  Diamond 
+  Diamond,
+  Check
 } from 'lucide-react';
 import { getCategories } from '@/services/categoriesService';
 import { getProducts } from '@/services/productsService';
 import { getBrands, Brand } from '@/services/brandsService';
 import { Category, Product } from '@/types';
 import { getWhatsAppNumber, formatPrice } from '@/lib/whatsapp';
+import { useCart } from '@/context/CartContext';
 
 
 
@@ -27,7 +29,9 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addedMessage, setAddedMessage] = useState<string | null>(null);
 
+  const { addItem } = useCart();
   const whatsappNumber = getWhatsAppNumber();
 
   useEffect(() => {
@@ -50,6 +54,50 @@ export default function HomePage() {
     }
     loadData();
   }, []);
+
+  const handleAddToCart = (prod: Product) => {
+    const isAuthentic = Boolean(
+      prod.isAuthentic || 
+      prod.priceAuthentic || 
+      prod.categoryName?.toLowerCase().includes('authentique')
+    );
+    const isCoffret = Boolean(
+      prod.isCoffret || 
+      prod.priceCoffret || 
+      prod.categoryName?.toLowerCase().includes('coffret')
+    );
+    const price = isAuthentic
+      ? (prod.priceAuthentic || prod.formats?.[0]?.price || 25000)
+      : isCoffret
+      ? (prod.priceCoffret || prod.formats?.[0]?.price || 35000)
+      : (prod.priceExtrait || prod.priceHuile || prod.formats?.[0]?.price || 5000);
+
+    const category = isAuthentic
+      ? 'Parfum authentique'
+      : isCoffret
+      ? 'Coffret'
+      : prod.categoryName || 'Parfum';
+
+    const formatName = isAuthentic
+      ? "Flacon d'Origine"
+      : isCoffret
+      ? "Coffret"
+      : (prod.formats?.[0]?.sizeMl ? `${prod.formats[0].sizeMl} mL` : "Format standard");
+
+    addItem({
+      productId: prod.id,
+      name: prod.name,
+      brand: prod.brand,
+      category: category,
+      imageUrl: prod.imageUrl,
+      price: price,
+      quantity: 1,
+      formatName: formatName,
+    });
+
+    setAddedMessage(`"${prod.name}" ajouté au panier !`);
+    setTimeout(() => setAddedMessage(null), 3000);
+  };
 
   // Best sellers filtered or top products
   const bestSellers = products.filter(p => p.isBestSeller !== false).slice(0, 6);
@@ -248,7 +296,7 @@ export default function HomePage() {
       </section>
 
       {/* 4. NOS BEST-SELLERS (DYNAMIC BEST-SELLERS FROM FIRESTORE) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         
         <div>
           <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 uppercase tracking-wider">
@@ -259,11 +307,34 @@ export default function HomePage() {
           </p>
         </div>
 
+        {addedMessage && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-sm text-xs font-semibold text-center flex items-center justify-center space-x-2 animate-fadeIn">
+            <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>{addedMessage}</span>
+            <Link href="/panier" className="underline text-emerald-950 font-bold ml-2">
+              Voir mon panier →
+            </Link>
+          </div>
+        )}
+
         {/* 6 Product Cards Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {displayBestSellers.map((prod) => {
-            const firstFmt = prod.formats?.[0] || { sizeMl: 5, price: 15000 };
-            const displayPrice = firstFmt.price;
+            const isAuthentic = Boolean(
+              prod.isAuthentic || 
+              prod.priceAuthentic || 
+              prod.categoryName?.toLowerCase().includes('authentique')
+            );
+            const isCoffret = Boolean(
+              prod.isCoffret || 
+              prod.priceCoffret || 
+              prod.categoryName?.toLowerCase().includes('coffret')
+            );
+            const displayPrice = isAuthentic
+              ? (prod.priceAuthentic || prod.formats?.[0]?.price || 25000)
+              : isCoffret
+              ? (prod.priceCoffret || prod.formats?.[0]?.price || 35000)
+              : (prod.priceExtrait || prod.priceHuile || prod.formats?.[0]?.price || 5000);
 
             return (
               <div
@@ -303,15 +374,19 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="pt-1">
-                  <a
-                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Bonjour, je souhaite commander le parfum ${prod.name}.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <div className="space-y-1.5 pt-2 border-t border-stone-100">
+                  <button
+                    onClick={() => handleAddToCart(prod)}
                     className="w-full py-2 rounded-sm bg-[#9B7B56] hover:bg-[#8C6D46] text-white font-serif font-bold text-[10px] uppercase tracking-wider block text-center shadow-2xs transition-colors"
                   >
                     AJOUTER AU PANIER
-                  </a>
+                  </button>
+                  <Link
+                    href={`/parfum/${prod.id}`}
+                    className="w-full py-1.5 rounded-sm bg-stone-100 hover:bg-stone-200 text-stone-700 font-serif font-semibold text-[9px] uppercase tracking-wider block text-center transition-colors"
+                  >
+                    VOIR LE PARFUM
+                  </Link>
                 </div>
               </div>
             );
