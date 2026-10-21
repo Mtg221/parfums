@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '@/services/productsService';
 import { getBrands, Brand } from '@/services/brandsService';
+import { importSoniaCatalogue } from '@/services/catalogueImportService';
 import { Product, ProductFormat } from '@/types';
 import { formatPrice } from '@/lib/whatsapp';
 import { uploadToCloudinary } from '@/lib/cloudinary';
@@ -69,6 +70,7 @@ function AdminParfumsContent() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     fetchInitialData();
@@ -261,6 +263,30 @@ function AdminParfumsContent() {
     }
   };
 
+  const handleImportCatalogue = async () => {
+    if (!window.confirm(
+      'Importer toutes les senteurs des maisons (catalogue PDF) en Extraits de parfum (16 à 100 mL) et Huiles parfumées (3 à 20 mL) ?\n\nLes senteurs déjà présentes seront mises à jour (formats, prix, stock 50), sans doublon.'
+    )) {
+      return;
+    }
+
+    setImporting(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const res = await importSoniaCatalogue();
+      setSuccess(
+        `Catalogue importé : ${res.extraitsCreated} extraits créés, ${res.extraitsUpdated} mis à jour — ${res.huilesCreated} huiles créées, ${res.huilesUpdated} mises à jour.`
+      );
+      fetchInitialData();
+    } catch (err: any) {
+      console.error('Catalogue import error:', err);
+      setError(err.message || 'Erreur lors de l\'import du catalogue.');
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleDelete = async (id: string, prodName: string) => {
     if (!window.confirm(`Êtes-vous sûr de vouloir supprimer "${prodName}" ?`)) {
       return;
@@ -312,13 +338,24 @@ function AdminParfumsContent() {
           </p>
         </div>
 
-        <button
-          onClick={() => handleOpenAddModal()}
-          className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-[#B76E79] hover:bg-[#a25a65] text-white font-bold text-xs uppercase tracking-wider shadow-xs transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Ajouter un article</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleImportCatalogue}
+            disabled={importing}
+            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-white border border-[#B76E79] text-[#B76E79] hover:bg-[#B76E79]/5 disabled:opacity-50 font-bold text-xs uppercase tracking-wider shadow-xs transition-colors"
+          >
+            {importing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+            <span>{importing ? 'Import en cours...' : 'Importer le catalogue des maisons'}</span>
+          </button>
+
+          <button
+            onClick={() => handleOpenAddModal()}
+            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-lg bg-[#B76E79] hover:bg-[#a25a65] text-white font-bold text-xs uppercase tracking-wider shadow-xs transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Ajouter un article</span>
+          </button>
+        </div>
       </div>
 
       {/* NOTIFICATIONS */}

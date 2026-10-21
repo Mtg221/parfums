@@ -55,6 +55,7 @@ const DEFAULT_BRANDS: Omit<Brand, 'id'>[] = [
   { name: 'GUCCI', subtitle: 'Bloom & Flora' },
   { name: 'ESCADA', subtitle: 'Fragrances Estivales' },
   { name: 'ARMANI PRIVÉ', subtitle: 'Haute Parfumerie' },
+  { name: 'LATTAFA', subtitle: 'Yara & Khamrah' },
   { name: 'NINA RICCI', subtitle: 'Nina & L\'Air du Temps' },
   { name: 'YVES ROCHER', subtitle: 'Senteurs Naturelles' },
   { name: 'DIESEL', subtitle: 'Only The Brave & Fuel For Life' },
@@ -66,6 +67,7 @@ const DEFAULT_BRANDS: Omit<Brand, 'id'>[] = [
   { name: 'LIBERTY', subtitle: 'Senteurs Elegantes' },
   { name: 'AL REHAB', subtitle: 'Huiles & Fragrances Orientales' },
   { name: 'CHLOÉ', subtitle: 'Nomade & Signature' },
+  { name: 'LOLITA LEMPICKA', subtitle: 'Lolita Lempicka & Sweet' },
   { name: 'PARFUMS ARABES', subtitle: 'Fragrances Orientales et Attars' },
   { name: 'AUTRES MARQUES', subtitle: 'Sélection Spéciale' }
 ];
