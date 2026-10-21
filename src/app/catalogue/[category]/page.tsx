@@ -87,11 +87,26 @@ export default function CategoryProductsPage({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => {
-            const lowestPrice = product.formats.length > 0 
-              ? Math.min(...product.formats.map(f => f.price))
-              : 0;
+            const isAuthentic = Boolean(
+              product.isAuthentic || 
+              product.priceAuthentic || 
+              product.categoryName?.toLowerCase().includes('authentique')
+            );
+            const isCoffret = Boolean(
+              product.isCoffret ||
+              product.priceCoffret ||
+              product.categoryName?.toLowerCase().includes('coffret')
+            );
 
-            const isOutOfStock = product.formats.every(f => f.stock <= 0);
+            const displayPrice = isAuthentic
+              ? (product.priceAuthentic || product.formats?.[0]?.price || 25000)
+              : isCoffret
+              ? (product.priceCoffret || product.formats?.[0]?.price || 35000)
+              : (product.formats && product.formats.length > 0 ? Math.min(...product.formats.map(f => f.price)) : 0);
+
+            const isOutOfStock = isAuthentic
+              ? (product.stock ?? product.formats?.[0]?.stock ?? 50) <= 0
+              : product.formats.every(f => f.stock <= 0);
 
             return (
               <div
@@ -142,9 +157,15 @@ export default function CategoryProductsPage({
 
                   <div className="flex items-center justify-between pt-2">
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-stone-400">À partir de</p>
+                      {isAuthentic ? (
+                        <p className="text-[10px] uppercase tracking-wider text-stone-400">Prix officiel</p>
+                      ) : isCoffret ? (
+                        <p className="text-[10px] uppercase tracking-wider text-stone-400">Prix coffret</p>
+                      ) : (
+                        <p className="text-[10px] uppercase tracking-wider text-stone-400">À partir de</p>
+                      )}
                       <p className="text-lg font-bold text-amber-800">
-                        {lowestPrice > 0 ? formatPrice(lowestPrice) : 'Prix variable'}
+                        {displayPrice > 0 ? formatPrice(displayPrice) : 'Prix variable'}
                       </p>
                     </div>
 

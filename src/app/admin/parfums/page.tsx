@@ -880,12 +880,24 @@ function AdminParfumsContent() {
 
                   {/* BOTTOM PRICE FOOTER */}
                   <div className="pt-3 border-t border-stone-100 flex justify-between items-center text-xs">
-                    <span className="text-stone-500 font-medium">À partir de</span>
+                    <span className="text-stone-500 font-medium">
+                      {prod.isAuthentic || prod.priceAuthentic ? (
+                        "Prix officiel"
+                      ) : prod.isCoffret || prod.priceCoffret ? (
+                        "Prix coffret"
+                      ) : (
+                        "À partir de"
+                      )}
+                    </span>
                     <span className="font-bold text-[#B76E79] text-sm">
                       {formatPrice(
-                        prod.formats && prod.formats.length > 0
+                        prod.isAuthentic || prod.priceAuthentic
+                          ? (prod.priceAuthentic || (prod.formats?.[0]?.price) || 25000)
+                          : prod.isCoffret || prod.priceCoffret
+                          ? (prod.priceCoffret || (prod.formats?.[0]?.price) || 35000)
+                          : prod.formats && prod.formats.length > 0
                           ? Math.min(...prod.formats.map((f) => f.price))
-                          : (prod.priceHuile || prod.priceExtrait || prod.priceAuthentic || prod.priceCoffret || 0)
+                          : (prod.priceHuile || prod.priceExtrait || 0)
                       )}
                     </span>
                   </div>

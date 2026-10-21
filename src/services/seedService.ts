@@ -77,10 +77,12 @@ export async function seedInitialData() {
       description: 'L\'audace de la tubéreuse alliée à la fève tonka torréfiée pour une féminité affirmée.',
       categoryId: categoryIds['Parfums authentiques'] || Object.values(categoryIds)[0],
       categoryName: 'Parfums authentiques',
+      isAuthentic: true,
+      priceAuthentic: 45000,
+      stock: 15,
+      allowCustomVolume: false,
       formats: [
-        { id: 'f13', sizeMl: 16, price: 16000, stock: 15 },
-        { id: 'f14', sizeMl: 20, price: 20000, stock: 10 },
-        { id: 'f15', sizeMl: 100, price: 45000, stock: 5 },
+        { id: 'flacon-authentique', sizeMl: 0, price: 45000, stock: 15 },
       ],
     },
   ];
